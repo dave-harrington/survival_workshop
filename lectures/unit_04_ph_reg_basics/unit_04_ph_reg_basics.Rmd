@@ -1,0 +1,1185 @@
+---
+title: "Proportional Hazards Regression with Censored Data: Basics"
+author: "Dave Harrington"
+date: "May 14 - 18, 2018"
+output: 
+  beamer_presentation:
+     includes:
+       in_header: ../survival_header.tex
+     fig_width: 3.25
+     fig_height: 3.0
+     fig_caption: true
+     toc: true
+     keep_tex: true
+slide_level: 3
+urlcolor: darkblue 
+linkcolor: darkblue
+citecolor: darkblue
+
+--- 
+
+# Introduction   
+
+###  Regression models for survival data
+
+These notes focus on proportional hazards regression models.
+
+*Proportional Hazards (PH)  models*    
+\[   \lambda(t;{\bf Z}) = \lambda_0(t) \Psi({\bf Z}) \]
+
+    - The second term is usually written $\Psi(Z) =  e^{\beta Z}$.
+
+    - Suppose $Z=1$ for treated subjects and $Z=0$ for untreated subjects.  The hazard is increased by a factor of $e^\beta$ for treated subjects versus untreated subjects.
+         
+    - This is a *semi-parametric* model.
+
+
+### Other regression models for survival data 
+
+*Accelerated Failure Time (AFT) models*   
+\[  \log(T) = \mu + {\bbeta} {\bf Z} +  \sigma W,\]
+
+- $W$ is an *error term*.     
+
+- Typically (but not always), there is a *parametric* model for $W$:   
+     - exponential, Weibull, gamma, or log-normal
+
+
+*Additive Hazards Regression models*
+\[
+   \lambda(t; Z(t) = \beta_0(t) + \sum_{k=1}^p \beta_k(t) Z_k(t)
+\]
+
+Klein \& Moeschberger have excellent treatments of both of these models
+
+### Covariates
+
+In general, ${\bf Z}$ is a $p$-dimensional vector of covariates. ${\bf Z}$ may include
+
+- continuous factors (e.g., age, blood pressure)
+
+- discrete factors (e.g., sex, marital status)
+
+- possible interactions (e.g., age by sex interaction)
+
+Two covariates, $A$ and $B$, interact if 
+
+- hazard of death depends on the combination of $A$ and $B$
+
+- best to only include interactions if the corresponding main effects are also
+included
+
+
+### Covariates\ldots
+
+A categorical covariate $A$ with $a$ levels is usually modeled with   
+
+  - $(a-1)$ binary variables\footnote{These are sometimes called dummy variables or 0-1 variables.} ($U_1,U_2,\ldots,U_a$) such that $U_j=1 \, \, \mbox{  if } A=j$.  
+
+  - Then,
+\[\lambda_i(t)=\lambda_0(t)\exp(\beta_2 U_2+\beta_3 U_3+\cdots+\beta_a U_a)\]
+  
+  - In the above model, the subgroup with $A=1$ or $U_1=1$ is the
+reference group.
+
+Alternatively, in \textsf{R}, categorical covariates can (and should) be stored or converted to *factor* variables.
+
+# The Cox proportional hazards (PH) model
+
+### The Cox model
+
+The Cox (1972) proportional hazards model is given by
+
+$$\lambda(t;{\bf Z}) = \lambda_0(t) \exp(\beta {\bf Z}).$$
+
+This is the most common model used for survival data.\footnote{Some books use $h(t;{\bf X})$ as their standard notation
+instead of $\lambda(t;{\bf Z})$.}
+
+- Natural interpretation
+
+- Allows for flexible choice of covariates
+
+- Fairly easy to fit
+
+- Robust software exists in nearly all standard packages
+
+\small
+
+References     
+
+- Collett, Chapter 3  
+
+- Cox and Oakes, Chapter 7    
+
+- Klein and Moeschberger, Chapters 8 \& 9
+
+### Why the name proportional hazards?
+
+Suppose in two groups, $Z=1$ for treated and $Z=0$ for control.  If
+
+- $\lambda_1(t)$ is the hazard rate for the treated group and
+
+- $\lambda_0(t)$ is the hazard for control, then
+
+\[ \lambda_1(t) = \lambda(t;Z=1) = \lambda_0(t) \exp(\beta Z) = \lambda_0(t) \exp(\beta)\]
+
+The ratio of the two hazards is a constant, $\phi$, which does not depend on time; $\phi$ is referred to as the *hazard ratio*.
+\[\phi = \frac{\lambda_1(t)}{\lambda_0(t)} = e^{\beta} \]
+
+The hazards of the two groups remain proportional over time.
+
+### The baseline hazard function
+
+In general, $\lambda_0(t)$ is called the *baseline hazard function*. 
+
+  - It is the underlying hazard for subjects with all covariates $Z_1, \ldots ,Z_p$ equal to 0 (i.e., the "reference group").  
+
+General form of the PH model:
+\[\lambda(t;{\bf Z}) =  \lambda_0(t) \exp(\beta_1 Z_1 + \beta_2 Z_2 + \cdots + \beta_p Z_p) \]
+
+When all of the $Z_j$'s equal 0:
+\begin{align*}
+\lambda(t;{\bf Z} = 0) &= \lambda_0(t) \exp(\beta_1(0) + \beta_2(0) + \cdots + \beta_p(0)\\
+&= \lambda_0(t)
+\end{align*}
+
+
+
+### Role of the explanatory variables
+
+In the general case, the $i$-th individual has a set of covariates in a column vector ${\bf Z}_i=(Z_{1i}, Z_{2i},..., Z_{pi})$. The hazard rate is modeled as some multiple of the baseline hazard:
+\[ \lambda_i(t;{\bf Z}_i) = \lambda_0(t) \exp(\beta_1 Z_{1i} + \cdots + \beta_p Z_{pi})\]
+
+
+### Why the name proportional hazards? (again!)
+
+The log of the hazard ratio for the $i$-th individual compared to the reference group can be written as
+\[\log \left(\frac{\lambda_i(t)}{\lambda_0(t)}\right) 
+= \beta_1 Z_{1i} + \beta_2 Z_{2i} + \cdots + \beta_p Z_{pi}. \]
+
+The Cox PH model is a linear model for the log of the hazard ratio.
+
+  - Surprisingly, the parameter $\beta$ can be estimated without having to make assumptions about $\lambda_0(t)$.
+
+  - This is the reason for the terminology  *semi-parametric*.
+
+Estimating equations coming after an example.
+
+### Example: Rossi recidivism data, survival curves
+
+```{r, eval = TRUE, echo=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("rossi")
+rossi.recidivism.km <- survfit(Surv(week, arrest) ~ fin, data = rossi)
+plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
+     xlab = "Weeks", 
+     ylab = "Probability of Recidivism", 
+     axes = FALSE, 
+     main = "KM of Recidivism Probability",
+     cex = 0.6, cex.main = 0.8)
+axis(1)
+axis(2)
+legend(10, .5, c("Financial Support", "No Financial Support"), lty = 2:3,
+       col = 3:4, cex = 0.6)
+```
+
+###  Rossi data, cumulative hazards 
+
+```{r, eval = TRUE, echo=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("rossi")
+rossi.recidivism.ch <- survfit(Surv(week, arrest) ~ fin, data = rossi)
+plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
+     fun = "cumhaz",
+     xlab = "Weeks", 
+     ylab = "Cumulative Hazard of Recidivism", 
+     axes = FALSE, 
+     main = "Cumulative Risk of Recidivism Probability",
+     cex = 0.6, cex.main = 0.8)
+axis(1)
+axis(2)
+legend("topleft", inset = c(0.1, 0.3), 
+       c("Financial Support", "No Financial Support"), 
+       lty = 2:3, col = 3:4,
+       cex = 0.6)
+```
+
+### Example: Rossi recidivism data \ldots
+
+Let    
+
+- $T$ be time to recidivism (the variable \texttt{week})
+
+- $Z$ denote randomization to financial incentive (the variable \texttt{fin})
+
+Estimate and interpret the model
+\[
+\lambda(t; Z) = \lambda_0 \exp(\beta Z)
+\]
+
+### Example: Rossi recidivism data \ldots
+
+\small
+```{r}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin, data = rossi)
+```
+\normalsize
+
+
+### Interpretation
+
+The term \texttt{coef} is the $\beta$ coefficient for \texttt{fin}.
+
+- There are 114 events (re-arrests) in 432 cases.
+
+- The value -0.369 implies that the hazard for re-arrest is lower in the financial incentive group by a factor of $\exp(-0.369) = 0.691$.
+
+- The standard error for the coefficient is 0.190.
+
+- The Wald statistic $p$-value for a test of $H_0: \beta = 0$ is 0.052.
+
+    - The Wald test statistic used to test $H_0: \beta = 0$ is given by
+\[\frac{\widehat{\beta}}{\text{s.e.}(\widehat{\beta})}\]
+
+    - The likelihood ratio (LR) test of the same hypothesis has a similar result.  Definition of the LR test coming later.
+    
+There is *no* information about $\lambda_0(t)$ in the output.  That follows from the method of estimation.
+
+
+### Likelihood estimation for the PH model
+
+There have been several derivations of the likelihood used for the PH model.
+
+Cox (1972) derived a *partial likelihood*.
+
+Suppose the data for an individual $i$ are $(X_i, \delta_i, {\bf Z}_i)$, where
+
+- $X_i$ is a censored failure time random variable    
+
+- $\delta_i$ is the failure/censoring indicator (1=fail, 0=censor)  
+
+- ${\bf Z}_i$ represents a set of covariates  
+
+The covariates may be continuous, discrete, or time-varying.
+
+Suppose there are $K$ distinct failure times,  and let $\tau_1,....\tau_K$ represent the $K$ ordered, distinct death times.   
+
+For now, assume there are no tied death times.
+
+### The partial likelihood
+
+Let ${\cal R}(t) = \{ i: x_i \ge t \}$ denote the set of individuals who are ``at risk'' for failure at time $t$.
+
+Notation for risk sets:
+
+- ${\cal R}(\tau_j)$ is the risk set at the $j$-th failure time.
+
+-  ${\cal R}(X_i)$ is the risk set at the failure time of individual $i$.  
+
+-  $r_j$ is the number of individuals in ${\cal R}(\tau_j)$,  while ${\cal R}(\tau_j)$ identifies the subjects at risk.
+
+Intuitively, the partial likelihood is a product over the set of observed failure times of the conditional probabilities of seeing the observed deaths, given the set of individuals at risk at those times.
+
+### The partial likelihood \ldots
+
+At each failure time $\tau_j$, the contribution to the likelihood is:
+\begin{align*}
+ L_j(\bbeta)   &= 
+     P(\mbox{individual $j$ fails} | 1 \mbox{ failure from }{\cal R}(\tau_j) )\\[2ex]
+ &=  \frac
+  {  P(\mbox{individual } j \mbox{ fails} | \mbox{ at risk at } \tau_j)}
+       {\sum_{\ell \in {\cal R}(\tau_j)}
+      P(\mbox{individual } \ell \mbox{ fails} | \mbox{ at risk at } \tau_j) }
+\\[2ex]
+ &= 
+    \frac
+  {  \lambda(\tau_j; {\bf Z}_j) }  {\sum_{\ell \in {\cal R}(\tau_j)}
+       \lambda(\tau_j; {\bf Z}_\ell) } \\
+\end{align*}
+
+### The partial likelihood \ldots
+
+Under the PH assumption,  $\lambda(t; {\bf Z}) = \lambda_0(t) e^{\bbeta \bf Z}$, so
+
+\begin{align*}
+ L^{partial}(\beta)  
+ &= \prod_{j=1}^{K} \frac
+  {  \lambda_0(\tau_j) e^{\bbeta {\bf Z}_j } }   {\sum_{\ell \in {\cal R}(\tau_j)}
+        \lambda_0(\tau_j) e^{\bbeta {\bf Z}_\ell} } \\[2ex]
+ &= \prod_{j=1}^{K} \frac
+  {   e^{\bbeta {\bf Z}_j } }   {\sum_{\ell \in {\cal R}(\tau_j)}
+        e^{\bbeta {\bf Z}_\ell} } \\
+\end{align*}
+
+This is equivalent to the partial likelihood as defined by Cox
+\[L^{partial}(\beta) = \prod_{j=1}^{n} \left[\frac{e^{\beta {\bf Z}_j}}{
+\sum_{\ell\in {\cal R}(X_j)} e^{\beta {\bf Z}_\ell}}\right]^{\delta_i} \]
+
+Contributions to the partial likelihood occur only at failure times.
+
+### A simple example
+
+\begin{center}
+\begin{tabular}{cccc}
+\hline
+individual & ~~$X_i$~~ &  ~~$\delta_i$~~ & ~~$Z_i$~~ \\ 
+\hline
+1  &  ~9 & 1 & 4 \\ 
+2  &  ~8 & 0 & 5 \\ 
+3  &  ~6 & 1 & 7 \\ 
+4  &  10 & 1 & 3 \\ \hline
+\end{tabular}
+\end{center}
+
+Now compile the pieces that go into the partial likelihood contributions at each failure time \ldots
+
+### A simple example \ldots
+
+\footnotesize
+\begin{center}
+\begin{tabular}{ccccc}
+    & ordered & \\
+    & failure & & & Likelihood contribution\\
+$j$ & time $X_i$ &  ${\cal R}(X_i)$  & ~~~$i_j$~~~ & 
+$\left[e^{\beta Z_i}/
+\sum_{j\in {\cal R}(X_i)} e^{\beta Z_j}\right]^{\delta_i}$ \\ \hline 
+~~\\
+1 & ~6 & \{1,2,3,4\} & 3 & 
+$e^{7\beta}/[e^{4\beta} + e^{5\beta} + e^{7\beta} + e^{3\beta}]$\\[3ex]
+2 & ~8 & \{1,2,4\} & 2 & $e^{5\beta}/[e^{4\beta} + e^{5\beta} + e^{3\beta}]^0 = 1$ \\[3ex]
+3 & ~9 & \{1,4\} & 1 & 
+$e^{4\beta}/[e^{4\beta} + e^{3\beta}]$\\[3ex]
+4 & 10 & \{4\} & 4 & 
+$e^{3\beta}/e^{3\beta}=1$ \\ \\ \hline 
+\end{tabular}
+\end{center}
+
+The partial likelihood is the product of these four terms.
+
+The estimate for $\beta$ is the value $\widehat{\beta}$ that maximizes the partial likelihood.
+
+### A more realistic example: Rossi data
+
+\small
+```{r eval=FALSE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+      data = rossi)
+```
+
+Output next slide.
+
+We will discuss interpretation in class.
+
+
+### A more realistic example: Rossi data
+
+\footnotesize
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+      data = rossi)
+```
+\normalsize
+
+### Categorical variables coded as numeric
+
+Education (\texttt{educ}) is coded on the dataset as an integer variable with values 2 - 6.\footnote{See the documentation for definitions.}
+
+The next two slides show two models.
+
+- Model with \texttt{educ} fitted as a numeric variable
+
+- Model with \texttt{educ} converted to a factor variable
+
+
+### Categorical variables coded as numeric \ldots
+
+\small
+```{r eval=TRUE, ECHO=TRUE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + educ, data = rossi)
+```
+
+### Categorical variables coded as numeric: be careful \ldots
+
+\footnotesize
+```{r eval=TRUE, ECHO=TRUE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + as.factor(educ), data = rossi)
+```
+
+### Categorical variables coded as numeric \dots
+
+The second model is preferable.
+
+  - Why?
+
+To assess whether \texttt{educ} signficantly adds to the second model:
+
+- Conduct a likelihood ratio test using the change in log(partial likelihood) when \texttt{educ} is added to a model with \texttt{fin}
+
+- Some theory is needed first.
+
+# The partial likelihood
+
+### Review of likelihood-based inference
+
+Suppose 
+
+-  $L(\beta)$ is the likelihood for a  one dimensional parameter $\beta$ in a model, and 
+
+- $\ell(\beta) = \log(L(\beta))$
+
+Tests of $H_0:\beta = \beta_0$ can be based on three asymptotically equivalent statistics.
+
+### Review of likelihood-based inference\ldots
+
+Wald statistic:
+
+\[  
+  \frac{\widehat{\beta} - \beta_0}{\text{s.e.}(\widehat{\beta})} \sim N(0,1).
+\]
+
+Log-likelihood ratio statistic:
+
+\[
+-2 \left[\log(L(\widehat{\beta})) - \log(L(\beta_0))\right] \sim \chi^2 (1).
+\]
+
+Score test statistic:
+
+\[
+  U(\beta_0) =  \frac{\partial}{\partial \beta}\Bigr|_{\beta = \beta_0} \ell(\beta) \sim N(0,1)
+\]
+
+All have multivariate versions for $p$-dimensional parameter vectors $\bbeta$, not shown here.
+
+### Review of likelihood-based inference\ldots
+
+The statistical literature has results on which test is preferred, but that is not covered here.
+
+The tests are usually similar enough that choice of a statistic is based on convenience.
+
+Example coming later.
+
+### Partial likelihood inference
+
+Inference can be conducted by treating the partial likelihood as though it satisfies all the regular likelihood properties.
+
+The  *log(partial likelihood)* is:
+\begin{align*}
+\ell(\bbeta)   &= \log \left[ \prod_{j=1}^{n}    \frac 
+  {   e^{\bbeta {\bf Z}_j } }   {\sum_{\ell \in {\cal R}(\tau_j)}
+        e^{\bbeta {\bf Z}_\ell} } \right]^{\delta_j}  \\
+       &= \log \left[ \prod_{j=1}^{K}    \frac 
+  {   e^{\bbeta {\bf Z}_j } }   {\sum_{\ell \in {\cal R}(\tau_j)}
+        e^{\bbeta {\bf Z}_\ell} } \right]  \\
+ &= \sum_{j=1}^{K}   \left[ \beta {\bf Z}_j  - 
+      \log [\sum_{\ell \in {\cal R}(\tau_j)} e^{\bbeta {\bf Z}_\ell}] \right]  \\
+ &=  \sum _{j=1}^{K}  l_j (\bbeta) 
+\end{align*}
+where $l_j$ is the log-partial likelihood contribution at the $j$-th
+ordered death time.  
+
+
+
+### Partial likelihood inference
+
+Suppose there is only one covariate ($\beta$ is one-dimensional):
+
+The *partial likelihood score equations* are:
+\[   U(\beta) = \frac{\partial}{\partial \beta} \ell(\beta) = 
+    \sum_{j=1}^{n}   \delta_j \left[   Z_j  -  
+      \frac{ \sum_{\ell \in {\cal R}(\tau_j)}  Z_\ell e^{\beta  Z_\ell} }
+          { \sum_{\ell \in {\cal R}(\tau_j)}   e^{\beta  Z_\ell} } \right]
+\]
+
+ $U(\beta)$ is a sum of *observed* minus *expected* values:
+
+\[   U(\beta) = \frac{\partial}{\partial \beta} \ell(\beta) = 
+    \sum_{j=1}^{n}  \delta_j 
+    (   Z_j  -  \overline{Z}_j  )  \] 
+where $\overline{Z}_j$ is the *weighted average* of Z over the individuals in the risk set at time $\tau_j$. 
+
+Note that $\beta$ is involved through the term $\overline{Z}_j$.
+
+The maximum partial likelihood estimators can be found by solving
+$U(\beta) =0$.  
+
+### Partial Likelihood inference \ldots
+
+Analogous to standard likelihood theory, it can be shown  that
+\[   \frac{(\widehat{\beta}-\beta)}{\text{s.e.}(\hat{\beta})} \sim N(0,1) \]
+The variance of $\widehat{\beta}$ can be obtained by inverting the 
+second derivative of the partial likelihood,
+\[   \text{var}(\widehat{\beta}) \sim \left[
+     -\frac{\partial^2}{\partial \beta^2} \ell(\beta)\right]^{-1}   \]
+From the above expression for $U(\beta)$: 
+\[  
+\frac{\partial^2}{\partial \beta^2} \ell(\beta) = 
+ \sum_{j=1}^{n}   \delta_j \left[     -  
+      \frac{ \sum_{\ell \in {\cal R}(\tau_j)}  (   Z_j  -  \bar{Z}_j  )^2
+        e^{\beta  Z_\ell} }
+          { \sum_{\ell \in {\cal R}(\tau_j)}  e^{\beta  Z_\ell} } \right]
+\]
+
+The actual variance of $\widehat\beta$ is a function of the unknown $\beta$.
+
+The *observed* information is calculated by substituting the partial likelihood estimate of $\beta$ into the above formula for the variance.
+
+### Example: Rossi recidivism data
+
+Suppose the primary interest is in evaluating the effect of financial incentive on changing the rate of recidivism, after adjusting for 
+
+  - \texttt{age}, \texttt{race}, \texttt{mar}, \texttt{educ}
+
+\small
+```{r eval=FALSE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + age + race + mar 
+      + as.factor(educ), data = rossi)
+```
+\normalsize
+
+### Example: Rossi recidivism data \ldots
+
+\footnotesize
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + age + race + mar 
+      + as.factor(educ), data = rossi)
+```
+
+### Interpretation
+
+- Financial incentive appears to significantly reduce the rate of recidivism by approximately 32\% (adjusted hazard ratio 0.68).
+
+- The likelihood ratio (*LR*) test (30 on 8 df) is highly significant; this full set of covariates is significantly associated with the rate of recidivism.
+
+    - Formally, the *LR* test is a test of $H_0:\bbeta = {\bf 0}$.
+    
+    - The statistic is $-2\left[\ell(\widehat{\bbeta}) - \ell({\bf 0})\right]$.
+    
+    - It has 8 df, since the difference in the number of parameters between the full model and the null model is 8.
+
+    - The LR test is analogous to an $F$-test in linear regression
+
+### Interpretation\ldots
+
+- Age is significantly associated with recidivsm: younger participants have a rate that is about 5\% lower.  
+
+    - Why is the $p$-value so small when the effect size is also very small?
+
+- Confidence intervals for the adjusted hazard ratio for age can be found by calculating a confidence interval for $\widehat{\beta}$ then exponentiating.\footnote{Possible to do this entirely within \textsf{R} without any `hand' substitutions; method shown later.}
+
+\small
+
+```{r}
+beta.hat = -0.0555; se.beta.hat = 0.0211
+m = 1.96*se.beta.hat
+exp(beta.hat - m); exp(beta.hat + m)
+```
+
+
+
+### Interpretation \ldots
+
+- Race and marital status do not seem to be associated with a change in rate of recidivism.
+
+- The coefficients for these variables estimate the change in rate compared to the baseline categories of \texttt{race} = \texttt{black} and \texttt{mar} = \texttt{married}.
+
+### Interpretation\ldots
+
+Use a *LR* test to assess whether \texttt{educ} should be in the model.
+
+  - The models with and without \texttt{educ} are *nested* models.
+  
+      - Suppose that $\beta_1,\ldots,\beta_q$ are the parameter values for the 4 variables that do not include \texttt{educ} ($q = 4$), and that
+      
+      - $\beta_{q+1}, \ldots, \beta{p}$ are the 4 parameter values for \texttt{educ}.  
+  - In the full model, the *LR* statistic is 
+  \[-2\left[\ell(\widehat{\bbeta}) - \ell({\bf 0})\right]\]
+      
+  - In the model that does not include \texttt{educ}, the *LR* statistic is
+  \[-2\left[\ell(\hat{\beta_1},\dots,\hat{\beta_q}) - \ell({\bf 0})\right]\]
+  
+  - The difference between the *LR* statistics for the full and reduced models is
+  \[-2\left[\ell(\hat{\beta}_1, \ldots, \hat{\beta}_p) - \ell(\hat{\beta_1},\dots,\hat{\beta_q}) \right] \]
+
+### Interpretation\ldots
+
+- The likelihood ratio test for \texttt{educ} can be calculated as the difference in the likelihood test statistics between the two models.
+
+    - The difference has $p-q$ degrees of freedom. In this case, $p - q = 4$.
+
+- This general principle applies to *LR* tests in nested models.
+
+### Interpretation\ldots
+
+Fit the smaller model without \texttt{educ} to obtain the *LR* statistic.
+
+\footnotesize
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+coxph(Surv(week, arrest) ~ fin + age + race + mar, data = rossi)
+```
+
+\normalsize
+
+  - The difference in *LR* statistics is $30 - 21.2 = 8.8$; with 4 degrees of freedom, $p = 0.066$.
+
+  - Does education seem associated with a change in rate of recidivism?
+
+### Doing the calculations directly in R
+
+\footnotesize
+
+```{r}
+library(survival)
+library(eventtimedata)
+data(rossi)
+full.model <- coxph(Surv(week, arrest) ~ fin + age + race + mar 
+      + as.factor(educ), data = rossi)
+smaller.model <- coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                       data = rossi)
+anova(full.model, smaller.model)
+```
+
+### Doing the calculations directly in R \ldots
+
+\footnotesize
+
+```{r}
+library(survival)
+library(eventtimedata)
+data(rossi)
+full.model <- coxph(Surv(week, arrest) ~ fin + age + race + mar 
+      + as.factor(educ), data = rossi)
+summary(full.model)$conf.int
+```
+
+# Additional details on the Cox model
+
+### The model for two groups
+
+When there are no tied failure times in a model with two groups,
+
+- The score test for $\beta = 0$ is the log rank test. (Derivation not shown.)
+
+Thus, in a model with two groups
+
+- The log-rank test, the PH model estimate, and the KM or cumulative hazard provide complementary information.
+
+### Tied failure times
+
+The PH model assumes a continuous hazard (i.e., no tied failure times). There are 4 methods to adjust for tied failure times:
+
+1. Cox's (1972) modification:  ``discrete'' method     
+2. Exact method (Kalbfleisch and Prentice)  
+3. Peto-Breslow method
+4. Efron's (1977) method
+
+All have advantages/disadvantages.
+
+All are available in \R, but Efron is the default.  It does well in most settings.
+
+Breslow is the default in SAS and Stata.
+
+See Kleinbaum and Moeschberger for a detailed treatment.
+
+### Stratified Cox models
+
+Randomized clinical trials often stratify the randomization to force balance within strata.
+
+The PBT01 trial stratified the randomization on cycle of complete response, which was accounted for in the log-rank statistic.
+
+A Cox model also allows stratification.
+
+  - Suppose $X$ is a categorical variable with $S$ levels, and ${\bf Z}$ is a covariate.
+
+  - In a stratified Cox model, the hazard for the $s^{th}$ level of $X$ is
+\[\lambda(t;X, {\bf Z}) = \lambda_{0s}(t) \exp(\bbeta {\bf Z})\]
+
+  - There is a different baseline hazard for each level of $X$ but the `effect' of ${\bf Z}$ is the same across strata.
+
+### Example: PBT01
+
+\scriptsize
+```{r, echo=TRUE, eval=TRUE}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
+              data = pbt01)
+```
+
+### Stratified Cox models \ldots
+
+The algebra for the statified *PL* is more difficult than a direct explanation.
+
+1. A separate *PL* is calculated for each strata.   
+2. The separate *PLs* are multiplied together, then
+3. Maximized with respect to the common $\beta$.
+4. Estimated variances use the information matrix for the combined *PL*.
+
+### Estimating survival functions with PH
+
+In the Cox PH model $\lambda_i(t,{\bf Z})=\lambda_0(t) \,\exp(\bbeta {\bf Z})$.  
+What does this imply about the survival function, $S_z(t)$, for
+the i-th individual with covariates ${\bf Z}_i$?
+
+Using the relationship between the hazard and the survival function, for the baseline (reference) group:
+\begin{align*}
+S_0(t) &= e^{- \int_0^t \lambda_0(u) du} = e^{-\Lambda_0(t)}
+\end{align*}
+
+### Estimating covariate-specific survival functions with PH \dots
+
+For the $i$-th patient with covariates ${\bf Z}_i$:
+
+\begin{align*}
+S_i(t) &= e^{- \int_0^t \lambda_i(u) du} = e^{-\Lambda_i(t)}
+ \\[1ex]
+       &= e^{- \int_0^t \lambda_0(u) \exp(\bbeta {\bf Z}_i) du}
+ \\[1ex]
+       &= e^{- \exp(\bbeta {\bf Z}_i) \int_0^t \lambda_0(u) du}
+\nonumber  \\[1ex]
+       &= \left[e^{- \int_0^t \lambda_0(u) du}\right]^{\exp(\bbeta {\bf Z}_i)}
+\text{since~~} [e^b]^a = e^{ab} \\[1ex]
+       &= \left[S_0(t)\right]^{\exp(\bbeta {\bf Z}_i)}\\[1ex]
+       &= \left[S_0(t)\right]^{HR}
+\end{align*}
+
+### Estimating covariate-specific survival functions with PH\ldots
+
+So after estimating $\widehat{\beta}$  and using the *MPLE*, 
+
+\[\widehat{S}_i(t) = \left[\widehat{S}_0(t)\right]^{\widehat{HR}}\]
+
+
+### Using R to plot estimated survival functions from a Cox model
+
+Will use the PBT01 data
+
+Easier first to examine an model not stratified by cycle of initial response.
+
+Notice the effect on the curves of the PH model
+
+---
+
+\scriptsize
+```{r, echo=TRUE, eval=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.ph = coxph(Surv(survival,died) ~ treatment,
+              data = pbt01)
+newdata = data.frame(treatment = c("abmt", "control"))
+
+{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+     lty = 2:3, col = 3:4, mark.time = TRUE,
+     axes = FALSE, 
+     main = "Probability of Surviving, Assuming PH",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+
+legend("topright", lty = 2:3, col = 3:4,
+       c("Control", "ABMT"),
+       cex=0.6)
+}
+```
+
+---
+
+\scriptsize
+```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.ph = coxph(Surv(survival,died) ~ treatment,
+              data = pbt01)
+newdata = data.frame(treatment = c("abmt", "control"))
+
+{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+     lty = 2:3, col = 3:4, mark.time = TRUE,
+     axes = FALSE, 
+     main = "Probability of Surviving, Assuming PH",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+
+legend("topright", lty = 2:3, col = 3:4,
+       c("Control", "ABMT"),
+       cex=0.6)
+}
+```
+
+
+### Example: PBT01
+
+Plot the estimated survival functions, by treatment, for each of the two strata defined by cycle of response.   
+
+- Assuming a proportional hazards effect for ABMT
+
+### Example: PBT01
+
+\scriptsize
+```{r, echo=TRUE, eval=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.ph = coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
+              data = pbt01)
+newdata = data.frame(treatment = c("abmt", "control"))
+
+{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+     lty = c(2,2,3,3), col = 3:4, mark.time = TRUE,
+     axes = FALSE, 
+     main = "Probability of Surviving, ABMT",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+
+legend("topright", lty = c(2,2,3,3), col = 3:4,
+       c("ABMT, resp cycle 1", "ABMT, resp cycle 2",
+         "Control, resp cycle 1", "Control, resp cycle 2"),
+       cex=0.6)
+}
+```
+
+----
+
+\scriptsize
+```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.ph = coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
+              data = pbt01)
+newdata = data.frame(treatment = c("abmt", "control"))
+
+{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+     lty = c(2,2,3,3), col = 3:4, mark.time = TRUE,
+     axes = FALSE, 
+     main = "Probability of Surviving, ABMT",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+
+legend("topright", lty = c(2,2,3,3), col = 3:4,
+       c("ABMT, resp cycle 1", "ABMT, resp cycle 2",
+         "Control, resp cycle 1", "Control, resp cycle 2"),
+       cex=0.6)
+}
+```
+
+
+# Time-varying (time-dependent) covariates
+
+### Background and introduction
+
+Conceptually (i.e., mathematically) there is little problem in extending the *PH* model to covariates that depend on time.
+
+The model becomes 
+\[
+		\lambda(t;Z) = \lambda_0(t) \exp[\beta Z(t)]
+\]
+
+However, there can be problems in interpretation, especially when the time-dependent covariate is essentially a surrogate for the event of interest.
+
+### Issues in using time-dependent covariates
+
+The coding of the time-dependent covariate must be done with care.
+
+  - Software has not always been available.  Robust routines are now available in \textsf{R}  and *SAS*.
+
+  - The data structure required in \textsf{R} also works in *SAS*, but *SAS* is more sometimes flexible.
+
+This is best illustrated with an example: an intervention study in drug addiction.\footnote{Hosmer and Lemeshow, \textit{Applied Survival Analysis}}
+
+### Example: UMARU Impact Study (UIS)
+
+Data is from the University of Massachusetts AIDS Research Unit (UMARU) IMPACT Study.\footnote{Dataset \texttt{uis} in the package \texttt{eventtimedata}}    
+
+  - 5-year collaborative project comprised of two concurrent randomized trials of residential treatment for drug abuse
+
+    -  *Program A:* Randomized 444 subjects to a 3- or 6-month program of health education and relapse prevention. Clients taught to recognize "high-risk" situations that are triggers to relapse, and taught skills to cope with these situations without using drugs.
+
+    - *Program B:* Randomized 184 participants to a 6- or 12-month program with highly structured lifestyle in a communal living setting.
+
+  - 628 participants total
+
+### Variables in uis
+
+\begin{tabular}{ll}
+ \texttt{id} &  Subject ID (1-628)\\
+ \texttt{age} &  Age in years\\
+ \texttt{beck} &  Beck depression score\\
+ \texttt{hercoc} &  Heroine or cocaine use prior to entry\\
+ \texttt{ivhx} &  IV Drug use at admission\\
+ \texttt{ndrugtx} &  Number of previous drug treatments\\
+ \texttt{race} &  Race (white, other)\\
+ \texttt{treat} &  Treatment assignment (short vs long)\\
+ \texttt{site} &  Treatment program \\
+ \texttt{los} &  Length of stay in Treatment (days)\\
+ \texttt{time} &  Time to return to drug use (days)\\
+ \texttt{censor} &  Indicator of drug use relapse (1 = yes, 0 = censored)
+\end{tabular}
+
+Details about coding in package documentation.
+
+### An initial model for uis
+
+Initial model estimates treatment effect, adjusting for
+
+  - Beck depression score, age, and race
+  - interaction between age and site
+  - interaction between race and site
+
+```{r eval=FALSE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+coxph(formula = Surv(time, censor) ~ treat + beck +
+age * site + race * site, data = uis)
+```
+
+Model interpretation discussed with the next slide
+
+
+### An initial model for uis\ldots
+
+\footnotesize
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+coxph(formula = Surv(time, censor) ~ treat + beck +
+age * site + race * site, data = uis)
+```
+\normalsize
+
+### What is the effect of coming off treatment?
+
+Hosmer, Lemeshow, and May speculated that the the important effect may simply be stopping treatment, regardless of whether treatment is long or short.
+
+- Natural to look at the association between outcome and a time-dependent covariate that records when a patient stops treatment
+
+The variable \texttt{treat.off} will take values
+
+-  0 while a subject is on treatment
+
+-  1 starting at the time treatment stops
+
+### Time-dependent covariates in R
+
+The work for time-dependent covariates in \textsf{R} is done in the data structure.
+
+If a covariate changes value over time, each case in the dataset should have a row for each interval in which the covariate is constant. Each row contains
+
+  - All fixed covariates and the outcome
+  
+  - Two variables that indicate the start (usually labeled *tstart*) and stop time (labeled *tstop*) for that interval
+  
+  - The value of the time-dependent covariate in that interval
+
+### UIS data with time-dependent variable for treatment
+
+\footnotesize
+
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data("uis")
+
+uis.temp = tmerge(uis, uis, id = id, relapse = event(time, censor))
+uis2 = tmerge(uis.temp, uis.temp, id=id, treat.off = tdc(los))
+
+df = uis2[c(1:8), c(1:3, 10:16)]
+df
+```
+
+\normalsize
+
+Original file has one row per case.
+
+Code to create this file coming later.
+
+### Two models, involving only treatment
+
+\scriptsize
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data("uis")
+
+coxph(Surv(time, censor) ~ treat, data = uis)
+```
+
+\vspace{0.5cm}
+
+```{r eval=TRUE, echo = FALSE}
+library(survival)
+library(eventtimedata)
+data("uis")
+uis.temp = tmerge(uis, uis, id = id, relapse = event(time, censor))
+uis2 = tmerge(uis.temp, uis.temp, id=id, treat.off = tdc(los))
+
+coxph(Surv(tstart, tstop, relapse) ~ treat*treat.off, data = uis2)
+```
+
+
+### Code to create time-dependent covariate and fit models
+
+\footnotesize
+
+```{r eval=FALSE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data("uis")
+
+#model 1: original dataset
+coxph(Surv(time, censor) ~ treat, data = uis)
+
+#create file for time-dependent covariate
+uis.temp = tmerge(uis, uis, id = id, relapse = event(time, censor))
+uis2 = tmerge(uis.temp, uis.temp, id=id, treat.off = tdc(los))
+
+#model 2: time-dependent covariate
+coxph(Surv(tstart, tstop, relapse) ~ treat*treat.off, data = uis2)
+```
+
+### A larger model
+
+\footnotesize
+
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data("uis")
+
+coxph(Surv(tstart, tstop, relapse) ~ treat*treat.off + 
+        beck + age + race +strata(site), data = uis2)
+```
+
+### Coding time-dependent covariates
+
+The function \texttt{tmerge} works in many situations.  See the [\textcolor{darkblue}{R vignette}](../../methods_papers/t_therneau_time_dependent.pdf). by Therneau, Crowson and Atkinson for additional examples.
+
+
+[\textcolor{darkblue}{Fox}](../../methods_papers/j_fox_rossi_time_dependent.pdf)   shows \textsf{R} code for the Rossi dataset, converting from a wide-format to the long-format required by \textsf{R} for the monthly employment status variable.
+
+### Partial likelihood with time-varying covariates 
+
+Suppose there are $K$ distinct failure times
+
+- Let ($\tau_1, \ldots, \tau_K$) represent the $K$ ordered, distinct death times.  For now, assume there are no tied death times.
+
+-  Let ${\cal R}(t) = \{ i: x_i \ge t \}$ denote the set of individuals who are at risk for failure at time $t$.
+
+- Let $i_j$ denote the label or identity of the individual who fails at time $\tau_j$, including the value of his/her time-varying covariate during their time in the study
+\[   \{Z_{i_j}(t), t\in [0,\tau_j]\} \] 
+
+- Let $H_j$ denote the history of the entire data set, up to the $j$-th death or failure time, including the *time* of the failure,  but not the identity
+of the case who fails, also including the values of all covariates for everyone up to and including time $\tau_j$. 
+
+### Partial likelihood with time-varying covariates\ldots
+
+The partial likelihood in this setting can be written as
+\[
+L(\bbeta) = \prod_{j=1}^{d} \frac {\exp(\bbeta {\bf Z}_{jj}) }
+{\sum_{\ell \in {\cal R}(\tau_j)} \exp(\bbeta {\bf Z}_{\ell j}) },
+\]
+where ${\bf Z}_{\ell j}$ is a way to denote the value of the covariate vector for the $\ell$-th person at the $j$-th death time, i.e.
+\[ {\bf Z}_{\ell j} =  {\bf Z}_\ell(\tau_j) \]
+
+Inference proceeds similarly as in the standard case. The main difference is that the values of ${\bf Z}$ changes at each risk set.
+
+
+# Derivations
+
+### Additional derivation of the partial likelihood
+
+In general, the likelihood contributions for censored data fall into two categories:
+
+-  *Individual is censored at $X_i$:* 
+$$L_i(\beta)= S(X_i) = \exp[-\int_0^{X_i} \lambda_i(u)du]$$
+
+-  *Individual fails at $X_i$:*
+$$L_i(\beta)= S(X_i) \lambda_i(X_i) = \lambda_i(X_i) \exp[-\int_0^{X_i} \lambda_i(u)du]$$
+
+Thus, everyone contributes $S(X_i)$ to the likelihood, and only those
+who fail contribute $\lambda_i(X_i)$.
+
+### Additional derivation of the partial likelihood \ldots
+
+The total likelihood will be :
+\begin{align*}
+L(\beta) &= \prod_{i=1}^n \lambda_i(X_i)^{\delta_i} \;
+\exp[-\int_0^{X_i} \lambda_i(u)du]
+\end{align*}
+
+The above likelihood holds for all censored survival data, with general hazard function $\lambda(t)$.  
+
+It does not depend on the PH assumption.
+
+### Additional derivation of the partial likelihood \ldots
+
+Now multiply and divide by the term 
+$\left[\sum_{j\in {\cal R}(X_i)} \lambda_i(X_i)\right]^{\delta_i}$:
+
+\begin{align*}
+L(\beta) &= \prod_{i=1}^n \left[\frac{\lambda_i(X_i)}{\sum_{j\in {\cal R}(X_i)}\lambda_i(X_i)}\right]^{\delta_i} \; 
+\left[\sum_{j\in {\cal R}(X_i)} \lambda_i(X_i)\right]^{\delta_i} \;
+\exp[-\int_0^{X_i} \lambda_i(u)du]
+\end{align*}
+
+Cox (1972) argued that the first term in this product contains almost all the information about $\beta$, while the last two terms contain information about the baseline hazard $\lambda_0(t)$.
+
+### Additional derivation of the partial likelihood \ldots
+
+Under the Cox PH assumption, the first term can be written as
+\begin{align*}
+L(\bbeta) &= \prod_{i=1}^n \left[\frac{\lambda_i(X_i)}{\sum_{j\in
+{\cal R}(X_i)}\lambda_i(X_i)}\right]^{\delta_i}\\
+&=\prod_{i=1}^n \left[ \frac{\lambda_0(X_i)\exp(\beta {\bf Z}_i)}
+{\sum_{j\in {\cal R}(X_i)}
+\lambda_0(X_i)\exp(\bbeta {\bf Z}_j)}\right]^{\delta_i}\\
+&=\prod_{i=1}^n \left[ \frac{\exp(\bbeta {\bf Z}_i)}
+{\sum_{j\in {\cal R}(X_i)}\exp(\bbeta {\bf Z}_j)}\right]^{\delta_i}
+\end{align*}
+
+This is the partial likelihood defined by Cox; it does not depend on the underlying hazard $\lambda_0(\cdot)$.  
+
+Cox recommended treating this as an ordinary likelihood for making inferences
+about $\beta$ in the presence of the nuisance parameter $\lambda_0(\cdot)$.
+
+

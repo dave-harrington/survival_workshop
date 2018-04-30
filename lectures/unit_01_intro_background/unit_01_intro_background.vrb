@@ -1,0 +1,12 @@
+\frametitle{\protect \hypertarget {packages-used}{Packages used}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"devtools)}
+\StringTok{library(devtools)}
+\StringTok{install.packages(c("}\NormalTok{survival}\StringTok{", "}\NormalTok{KMSurv}\StringTok{",}
+\StringTok{                   "}\NormalTok{gsDesign}\StringTok{", "}\NormalTok{Hmisc}\StringTok{"))}
+\StringTok{install_github("}\NormalTok{keaven}\OperatorTok{/}\NormalTok{nphsim}\StringTok{", "}\NormalTok{dave}\OperatorTok{-}\NormalTok{harrington}\OperatorTok{/}\NormalTok{eventtimedata}\StringTok{")}
+\end{Highlighting}
+\end{Shaded}
+

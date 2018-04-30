@@ -1,0 +1,1803 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[ignorenonframetext,]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Power and sample size calculations},
+            pdfauthor={Dave Harrington},
+            colorlinks=true,
+            linkcolor=darkblue,
+            citecolor=darkblue,
+            urlcolor=darkblue,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\newif\ifbibliography
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+\usepackage{caption}
+% These lines are needed to make table captions work with longtable:
+\makeatletter
+\def\fnum@table{\tablename~\thetable}
+\makeatother
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+\setbeamertemplate{part page}{
+\centering
+\begin{beamercolorbox}[sep=16pt,center]{part title}
+  \usebeamerfont{part title}\insertpart\par
+\end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+\centering
+\begin{beamercolorbox}[sep=12pt,center]{part title}
+  \usebeamerfont{section title}\insertsection\par
+\end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+\centering
+\begin{beamercolorbox}[sep=8pt,center]{part title}
+  \usebeamerfont{subsection title}\insertsubsection\par
+\end{beamercolorbox}
+}
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\usepackage{amsmath,verbatim}
+
+\usepackage{fancyvrb}
+\usepackage{manfnt}
+\usepackage[normalem]{ulem}
+
+%\usepackage[colorlinks=true]{hyperref}
+
+\mode<presentation>{\usetheme{Malmoe}}
+
+%\synctex=1
+
+\setbeamertemplate{headline}{}
+
+
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamerfont{frametitle}{shape=\scshape}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercovered{transparent}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]{} 
+
+
+\definecolor{forest}{rgb}{0, .5, 0}
+\definecolor{brick}{rgb}{.5, 0, 0}
+\definecolor{darkgreen}{rgb}{0, .5, 0}
+\definecolor{darkred}{rgb}{.7, .15, .15}
+\definecolor{darkblue}{rgb}{0, 0, .5}
+\definecolor{Green}{rgb}{0.2,1,0.2}
+
+
+\newcommand{\R}{\textsf{R}}
+\newcommand{\RStudio}{\textsl{R Studio}}
+\newcommand{\var}{\mbox{Var}}
+\newcommand{\Cov}{\mbox{Cov}}
+\newcommand{\Cor}{\mbox{Cor}}
+\newcommand{\cip}{\mbox{$\perp\!\!\!\perp$}}
+\newcommand{\bpsi}{\mbox{\boldmath$\psi$}}
+\newcommand{\bbeta}{\mbox{\boldmath$\beta$}}
+\newcommand{\bhat}{\mbox{\boldmath$\hat\beta$}}
+\newcommand{\btheta}{\mbox{\boldmath$\theta$}}
+\newcommand{\beeta}{\mbox{\boldmath$\eta$}}
+\newcommand{\bfeta}{\mbox{\boldmath$\eta$}}
+\newcommand{\bpsinot}{\mbox{\boldmath{$\psi_0$}}}
+\newcommand{\bZ}{\bf Z}
+
+%\usepackage[english]{babel}
+\usepackage{lmodern}
+\renewcommand\ttfamily{\usefont{T1}{lmtt}{m}{n}}
+
+%\usepackage{palatino}
+\usepackage[T1]{fontenc}
+%\usepackage[lmodern]{babel}
+
+% make all tt fonts bold to look more like Verbatim
+\renewcommand\ttfamily{\usefont{T1}{lmtt}{m}{n}}
+
+% Comment these out if you don't want a slide with just the
+% part/section/subsection/subsubsection title:
+\AtBeginPart{
+  \let\insertpartnumber\relax
+  \let\partname\relax
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \let\insertsectionnumber\relax
+  \let\sectionname\relax
+  \frame{\sectionpage}
+}
+\AtBeginSubsection{
+  \let\insertsubsectionnumber\relax
+  \let\subsectionname\relax
+  \frame{\subsectionpage}
+}
+
+\begin{comment}
+
+%reduces space between code chunk and output
+\usepackage{etoolbox}
+\setlength{\parskip}{0pt}
+\setlength{\OuterFrameSep}{0pt}
+\makeatletter
+\preto{\@verbatim}{\topsep=-10pt \partopsep=10pt }
+\makeatother
+
+\end{comment}
+
+\title{Power and sample size calculations}
+\author{Dave Harrington}
+\date{May 14 - 18, 2018}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\tableofcontents[hideallsubsections]
+\end{frame}
+\hypertarget{background}{%
+\section{Background}\label{background}}
+
+\begin{frame}{%
+\protect\hypertarget{an-example}{%
+An example}}
+
+\includegraphics[width=0.7\textwidth,height=\textheight]{../figures/sprint.pdf}
+
+See publication by
+\href{../../clinical_papers/SPRINT_nejm.pdf}{\textcolor{darkblue}{SPRINT writing committee}}.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{design-of-sprint}{%
+Design of SPRINT}}
+
+From the methods section of the paper:
+
+\vspace{2em}
+
+\begin{quote}
+We planned a 2-year recruitment period, with a maximum follow-up of 6 years, and anticipated a loss to follow-up of 2\% per year. With an enrollment target of 9250 participants, we estimated  that the trial would have 88.7\% power to detect  a 20\% effect with respect to the primary outcome, assuming an event rate of 2.2\% in the standard-treatment group.
+\end{quote}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{type-i-error}{%
+Type I error}}
+
+Type I error (alpha error)
+
+\begin{itemize}
+\item
+  Probability that trial will report a false positive, i.e., claim a
+  significant result when there is no treatment effect
+\item
+  Typically set no larger than 5\%
+\item
+  Depends on method of analysis, does not depend on sample size
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{power}{%
+Power}}
+
+\begin{itemize}
+\item
+  Probability that the trial will report a true positive, i.e., claim a
+  significant result when there is a treatment effect
+\item
+  Should be 80\% or greater
+\item
+  Depends on sample size, method of analysis, and size of treatment
+  effect.
+\item
+  Power calculations relevant when study is designed
+\item
+  Power calculations have little value after a study is complete.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Precision measured through confidence intervals
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{overview-of-sample-size-for-censored-data}{%
+Overview of sample size for censored data}}
+
+This unit focuses on the power of tests based on the exponential
+distribution and the log-rank test.
+
+As in standard designs, the power depends on
+
+\begin{itemize}
+\item
+  Type I error (significance level \(\alpha\))
+\item
+  Difference of interest, \(\Delta\), under an alternative hypothesis
+  \(H_A\).
+\end{itemize}
+
+A notable difference from the usual scenario is that power depends on
+the \textbf{number of failures} that will be observed, not the total
+sample size.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{overview}{%
+Overview \ldots}}
+
+In practice, designing a survival study involves deciding how many
+patients or individuals to enter, as well as how long they should be
+followed.
+
+Designs are usually either
+
+\begin{itemize}
+\item
+  \emph{fixed sample size}, with the sample size determined in advance,
+  or
+\item
+  \emph{sequential}, which incorporate the possibility of stopping early
+  for efficacy or futility
+\end{itemize}
+
+Collett, Chapter 12 covers sample size calculations.
+
+\end{frame}
+
+\hypertarget{power-calculations-for-normally-distributed-observations}{%
+\section{Power calculations for normally distributed
+observations}\label{power-calculations-for-normally-distributed-observations}}
+
+\begin{frame}{%
+\protect\hypertarget{testing-for-differences-between-two-means}{%
+Testing for differences between two means}}
+
+Suppose data consist of:
+
+\begin{itemize}
+\tightlist
+\item
+  Group 1: \((Y_{11}, \dots Y_{1n_1})\)
+\item
+  Group 0: \((Y_{01}, \dots Y_{0n_0})\)
+\end{itemize}
+
+Assume \[
+Y_{1j} \sim N(\mu_1,\sigma^2),  ~ Y_{0j} \sim N(\mu_0,\sigma^2)
+\]
+
+The usual objective is to test: \[ 
+H_0:  \mu_1 = \mu_0 \Rightarrow  ~ H_0: \triangle = 0,~
+\text{where } \triangle = \mu_1 - \mu_0
+\]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{power-for-a-two-sample-normal}{%
+Power for a two sample normal}}
+
+The standard test is based on the \(Z\) statistic:
+
+\[   Z = \frac{\overline{Y}_1 - \overline{Y}_0}
+       {\sqrt{s^2 (\frac{1}{n_1} +\frac{1}{n_0}})} \] where \(s^2\) is
+the pooled sample variance (assuming equal variances).
+
+This test statistic has a \(N(0,1)\) distribution under \(H_0\). If the
+sample sizes are equal in the two groups, \(n_0=n_1=n/2\), then:
+
+\begin{align*}
+Z &= \frac{\overline{Y}_1 - \overline{Y}_0}
+{\sqrt{s^2 (\frac{1}{n/2} +\frac{1}{n/2}})} = 
+\frac{\overline{Y}_1 - \overline{Y}_0}{2s/\sqrt{n}}
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{the-steps-for-calculating-sample-size}{%
+The steps for calculating sample size}}
+
+\begin{enumerate}
+[1.]
+\item
+  Determine the critical value, \(c\), for rejecting the null when it is
+  true.
+\item
+  Calculate the probability of rejecting the null when the alternative
+  is true, substituting \(c\) from above.
+\item
+  Write the expression in terms of sample size for a given power.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{step-1}{%
+Step 1}}
+
+Set the significance level, \(\alpha\), the probability of rejecting the
+null hypothesis when it is true, and solve for \(c\): \begin{align*}
+\alpha &=  P\left(|\overline{Y_1} - 
+\overline{Y_0}| > c ~|~ H_0\right)\\[1ex]
+&=  P\left(\frac{|\overline{Y_1} - \overline{Y_0}|}{2s/\sqrt{n}} > 
+\frac{c}{2s/\sqrt{n}} ~|~ H_0 \right) \\[1ex]
+&= P\left(|Z| > \frac{c}{2s/\sqrt{n}}\right) = 
+2  \Phi\left(\frac{c}{2s/\sqrt{n}}\right) \\[1ex]
+\text{so } z_{1-\alpha/2} &=  \frac{c}{2s/\sqrt{n}}\\[2ex]
+\text{or  } c &= \frac{z_{1-\alpha/2} (2)(s)}{\sqrt{n}}
+\end{align*}
+
+Note that \(z_{\gamma}\) is the value such that
+\(\Phi(z_{\gamma})=Pr(Z<z_{\gamma}) = \gamma\).
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{step-2-power-as-a-function-of-sample-size}{%
+Step 2: power as a function of sample size}}
+
+Calculate the probability of rejecting the null when \(H_A\) is true.
+
+Begin by writing down the probability of a Type II error: \begin{align*}
+\beta &= P\left(\text{accept $H_0$} ~|~ H_A\right)\\
+\text{so power } =  1-\beta &=   P\left(\text{reject $H_0$} ~|~ H_A\right)\\
+&=P\left(|\overline{Y}_1 - \overline{Y}_0| > c ~|~ H_A\right)\\
+&= P\left(\frac{|\overline{Y}_1 - \overline{Y}_0| - \Delta}{2s/\sqrt{n}} > 
+\frac{c-\Delta}{2s/\sqrt{n}} ~|~ H_A\right)\\
+&= P\left(Z > \frac{c-\Delta}{2s/\sqrt{n}}\right)\\
+&= P\left(Z > z_{1-\alpha/2} - \frac{\Delta}{2s/\sqrt{n}}\right) \\
+&= 1 - \Phi\left(z_{1-\alpha/2} - \frac{\Delta}{2s/\sqrt{n}}\right)
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{notes-on-power}{%
+Notes on power \ldots}}
+
+The power is an increasing function of the standardized difference:
+\[ \mu_T(\triangle) =  \frac{\triangle}{2s / \sqrt{n}} \]
+
+This is the number of standard errors between the two means, under the
+assumption of equal variances.
+
+\begin{enumerate}
+\item As $n$ increases, the power increases.
+\item For fixed $n$, the power increases with $\triangle$.
+\item For fixed $n$ and $\triangle$, the power decreases with $s$.
+\item Assigning equal numbers of patients to the two groups 
+$(n_1=n_0=n/2)$ is best for maximizing power.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{step-3-sample-size-as-a-function-of-power}{%
+Step 3: sample size as a function of power}}
+
+From the calculation for power:
+
+\begin{align*}
+1 - \beta &= 1 - \Phi\left(z_{1-\alpha/2} - \frac{\Delta}{2s/\sqrt{n}}\right) \\
+&\Longrightarrow \beta = \Phi\left(z_{1-\alpha/2} - \frac{\Delta}{2s/\sqrt{n}}\right) \\
+&\Longrightarrow z_{1 - \beta} = z_{1 - \alpha/2} - \frac{\Delta}{2s/\sqrt{n}} \\
+&\Longrightarrow z_{\beta} + z_{1 - \alpha/2} = \frac{\Delta}{2s/\sqrt{n}} \\
+&\Longrightarrow n  = \frac{(z_{1-\alpha/2} + z_{1-\beta})^2 4} {s^2} \\
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{notes-on-sample-size}{%
+Notes on sample size}}
+
+\begin{enumerate}
+\item  Sample size increases as $s$ decreases.
+\item  Sample size increases as power increases.
+\item  Sample size increases as $\alpha$ decreases.
+
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{an-example-1}{%
+An example}}
+
+Derive the total sample size required for 90\% power for detecting a
+difference of 0.5 standard deviations between means, based on a
+two-sided 0.05 level test.
+
+\begin{center}
+\begin{tabular}{rcl}
+$\alpha$                   & = & ~0.05 \\[1ex]
+$z_{1-\frac{\alpha}{2}}$   & = & ~1.96 \\[1ex]
+$\beta$                    & = & ~0.10 \\[1ex]
+$z_{1 - \beta} = z_{0.90}$ & = & ~1.28 \\[1ex]
+\end{tabular}
+\end{center}
+
+\begin{align*}
+n &=  \frac{\left(1.96  + 1.28 \right)^2
+4 s^2}{\triangle^2} ~ \approx ~ \frac{42 ~s^2}{\triangle^2}
+\end{align*}
+
+For a 0.5 standard deviation difference, \(\Delta/s=0.5\),
+\begin{eqnarray*}
+n & \approx & \frac{42}{(0.5)^2} = 168
+\end{eqnarray*}
+
+\end{frame}
+
+\begin{frame}[fragile]{%
+\protect\hypertarget{calculations-in-r}{%
+Calculations in R}}
+
+In practice, the test statistic is a \(t\)-statistic, not a
+\(Z\)-statistic.
+
+The difference is small when sample sizes are large, but more important
+for smaller sample sizes.
+
+Best to use software based on the \(t\)-distribution. \footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{power.t.test}\NormalTok{(}\DataTypeTok{delta =} \FloatTok{.5}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{1}\NormalTok{, }\DataTypeTok{sig.level =} \FloatTok{0.05}\NormalTok{,}
+             \DataTypeTok{power =} \FloatTok{0.9}\NormalTok{, }\DataTypeTok{type =} \StringTok{"two.sample"}\NormalTok{,}
+             \DataTypeTok{alternative =} \StringTok{"two.sided"}\NormalTok{, }\DataTypeTok{strict =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##      Two-sample t test power calculation 
+## 
+##               n = 85.031
+##           delta = 0.5
+##              sd = 1
+##       sig.level = 0.05
+##           power = 0.9
+##     alternative = two.sided
+## 
+## NOTE: n is number in *each* group
+\end{verbatim}
+
+\end{frame}
+
+\hypertarget{censored-data}{%
+\section{Censored data}\label{censored-data}}
+
+\begin{frame}{%
+\protect\hypertarget{sample-size-based-on-the-log-rank-test}{%
+Sample size based on the log-rank test}}
+
+\emph{Recap of the log-rank}
+
+Consider a two-group survival problem, with equal numbers of individuals
+in the two groups (\(n_0\) in group 0 and \(n_1\) in group 1).
+
+Let \(\tau_1,...,\tau_K\) represent the \(K\) ordered, distinct failure
+times, and at the \(j\)-th event time:
+
+\begin{center}
+\begin{tabular}{cccc}
+\hline
+& \multicolumn{2}{c}{Fail} & \\ \cline{2-3}
+\multicolumn{1}{c}{Group } & ~~~Yes~~~ & ~~~No~~~ & Total\\  \hline
+0 & $d_{0j}$ & $r_{0j} - d_{0j}$ & $r_{0j}$ \\[1ex]
+1 & $d_{1j}$ & $r_{1j} - d_{1j}$ & $r_{1j}$ \\[1ex]
+\hline
+Total &  $d_j  $ & $r_j   - d_j  $ & $r_j  $  \\ 
+ \hline
+\end{tabular}
+\end{center}
+
+where \(d_{0j}\) and \(d_{1j}\) are the number of events in group 0 and
+1, respectively, at the \(j\)-th event time, and \(r_{0j}\) and
+\(r_{1j}\) are the corresponding numbers at risk.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{the-log-rank-test-statistic-z-statistic-version}{%
+The log-rank test statistic (\(Z\)-statistic version)}}
+
+\begin{align*}
+Z_{LR} &=   \frac{\sum_{j=1}^{K} (d_{1j} - e_j)}{ 
+ \sqrt{\sum_{j=1}^{K} v_j}} \qquad \text{ with } e_j = d_j \frac{r_{1j}}{r_j} \\[1ex]
+v_j &= r_{1j} r_{0j} d_j(r_j-d_j)/[r_j^2(r_j-1)]
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{distribution-of-the-log-rank-statistic}{%
+Distribution of the log-rank statistic}}
+
+Suppose that the hazard rates in the two groups are \(\lambda_0(t)\) and
+\(\lambda_1(t)\), with hazard ratio
+\[  \theta= e^\beta = \frac{\lambda_1(t)}{\lambda_0(t)} \]
+
+and suppose \(H_0: \beta=\log(\theta)=0\), which is equivalent to
+\(H_0: \theta=1\).
+
+It is possible to show that if there are no ties, and the observed
+distribution is ``near’’ \(H_0\),
+
+then
+
+\begin{itemize}
+\item
+  \(E(d_{1j} - e_j | d_{1j}, d_{0j}, r_{1j}, r_{0j}) \approx \log(\theta)/4\)
+\item
+  \(v_j \approx 1/4\)
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{distribution-of-the-log-rank-statistic-1}{%
+Distribution of the log-rank statistic \ldots}}
+
+At a value \(\log(\theta)\) under the alternative: \begin{align*} 
+Z_{LR} &\approx  \frac{\sum_{j=1}^K \log(\theta)/4}{\sqrt{\sum_{j=1}^K 1/4}}\\[1ex]
+&=\frac{d \log(\theta)/4}{\sqrt{d/4}}\\[1ex]
+&= \frac{\sqrt{d} \log(\theta)}{2}\\[1ex]
+\text{and } Z_{LR}  &\sim  N(\frac{\sqrt{d} \log(\theta)}{2},1) 
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{power-of-the-log-rank-test}{%
+Power of the log-rank test}}
+
+Using a similar argument to before, the power of a two-sided, level
+\(\alpha\) logrank test is approximately:
+
+\[ \text{Power} (\theta) \approx 
+1 - \Phi\left[z_{1- \frac{\alpha}{2}} - \frac{\sqrt{d} \log(\theta)}{2} \right]  \]
+
+Power depends on only \(d\) and \(\theta\).
+
+\vspace{0.3in}
+
+Possible to solve for required number of events to achieve a certain
+power at a specified value of \(\theta\)\ldots
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{power-of-the-log-rank-test-1}{%
+Power of the log-rank test\ldots}}
+
+For \(\text{Power}(\theta) = 1-\beta\), \(d\) must satisfy
+\begin{align*}
+1 - \beta &= 
+1 - \Phi \left(z_{1- \frac{\alpha}{2}} - \frac{\sqrt{d} \log(\theta)}{2}\right)\\[1ex]
+\Rightarrow  z_{\beta} &=  
+z_{1- \frac{\alpha}{2}} - \frac{\sqrt{d} \log(\theta)}{2}\\[1ex]
+\Rightarrow  d  &=  
+\frac{4 \left(z_{1- \frac{\alpha}{2}} - z_{\beta}\right)^2}
+{[\log(\theta)]^2}\\[1ex]
+\text{or } d &=  
+\frac{4 \left(z_{1- \frac{\alpha}{2}} + z_{1-\beta}\right)^2}{[\log(\theta)]^2} 
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{example}{%
+Example}}
+
+Suppose investigators are planning a 2-arm study, and want to detect a
+hazard ratio of 1.5 with 90\% power at a 2-sided significance level of
+\(\alpha=0.05\).
+
+Required number of events: \begin{align*}
+d &= \frac{4 \left(z_{1- \frac{\alpha}{2}} + z_{1-\beta}\right)^2}
+{[\log(\theta)]^2}\\[1ex]
+&= \frac{4 (1.96 + 1.282)^2}{[\log(1.5)]^2}\\[1ex]
+&\approx \frac{42}{0.1644} = 256
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{events-required-for-various-hazard-ratios}{%
+Events required for various hazard ratios}}
+
+\begin{center}
+\begin{tabular}{ccc}
+Hazard & \multicolumn{2}{c}{\bf Power} \\ \cline{2-3}
+Ratio & ~~80\%~~ & ~~90\%~~ \\ \hline
+1.5 & 191 & 256 \\
+2.0 & ~66 & ~88 \\
+2.5 & ~38 & ~50 \\
+3.0 & ~26 & ~35 \\
+\hline
+\end{tabular}
+\end{center}
+
+Most studies are designed to detect a hazard ratio of 1.5-2.0.
+
+\#Practical considerations
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{practical-considerations}{%
+Practical considerations}}
+
+\begin{itemize}
+\tightlist
+\item
+  Deciding on \(\theta\)
+\item
+  Translating the number of failures to number of enrolled participants
+\end{itemize}
+
+Easiest to think about this for the hazard ratio \(\theta\) of two
+exponential distributions.
+
+If \(T_i \sim exp(\lambda_i)\), then
+\[   \text{Median}(T_i) = -\log(0.5)/\lambda_i \]
+
+It follows that \[
+\frac{\text{Median}(T_1)}{\text{Median}(T_0)} = \frac{\lambda_0}{\lambda_1} = e^{-\beta} = \frac{1}{\theta}
+\] Doubling the median survival of a treatment group compared to a
+control group corresponds to halving the hazard.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{using-r-year-survival-rates-with-an-exponential-distribution}{%
+Using \(R\)-year survival rates with an exponential distribution}}
+
+Suppose the \(R\)-year survival rate is \(S_1(R)\) in group 1 and
+\(S_0(R)\) in group 0.
+
+Under the exponential model: \[ S_i(R) = \exp(-\lambda_i R) \]
+
+Hence, \[   \frac{\log(S_1(R))}{\log(S_0(R))} 
+= \frac{-\lambda_1 R}{-\lambda_0 R} =\frac{\lambda_1}{\lambda_0} =
+e^{\beta} = \theta\]
+
+Hence, doubling the hazard rate from group 1 to group 0 corresponds to
+doubling the log of the \(R\)-year survival rate.
+
+Note that this result does not depend on \(R\).
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{example-1}{%
+Example}}
+
+Suppose the 5-year survival rate on treatment A is 20\% and
+investigators want 90\% power to detect an improvement to 30\%.
+
+The corresponding hazard ratio of treatment to control is:
+\[ \frac{ln(0.3)}{ln(0.2)} = \frac{-1.204}{-1.609} = 0.748 \]
+
+From the power formula for the log-rank, the number of events needed to
+detect this improvement with 90\% power, based on a 2-sided 5\% level
+test is \[    d = \frac{4 (1.96 + 1.282)^2}{[\log(0.748)]^2}  =  499 \]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{translating-to-number-of-enrolled-patients}{%
+Translating to number of enrolled patients}}
+
+Suppose a study enters all \(N\) patients at time 0, and will continue
+the study for \(F\) units of time.
+
+Under \(H_0\), the probability that an individual will fail during the
+study is: \begin{align*}  
+P(fail)   &=    \int_{0}^{F} \lambda_0 e^{-\lambda_0 t} dt\\[1ex]
+   &=   1- e^{-\lambda_0 F}\\
+\end{align*} Hence, if power calculations imply the study needs \(d\)
+failures, then
+
+\[  d = (N/2)(1 - e^{-\lambda_0 F}) + (N/2)(1 - e^{-\lambda_1 F})\]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{translating-to-number-of-enrolled}{%
+Translating to number of enrolled\ldots}}
+
+The solution for \(N\) requires values of \(F\) and \(d\).
+
+\begin{enumerate}
+[1.]
+\item
+  Assume a HR \(\theta\), then calculate \(d\).
+\item
+  Assume a follow-up period \(F\), then calculate \(N\).
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{example-2}{%
+Example}}
+
+Suppose investigators wish to detect a 50\% improvement in the median
+survival from 12 months to 18 months with 80\% power at \(\alpha=0.05\),
+and plan to follow participants for 3 years (36 months).
+
+Use the two medians to calculate \(\lambda_0\), \(\lambda_1\), and the
+hazard ratio, \(\theta\): \begin{align*}
+\text{Median}(T_i) &= -\log(0.5)/\lambda_i \\[1ex]
+\text{so } 
+\lambda_1 &=  \frac{-\log(0.5)}{M1} = \frac{0.6931}{18} = 0.0385\\[1ex]
+\lambda_0 &=  \frac{-\log(0.5)}{M0} = \frac{0.6931}{12} = 0.0578\\[1ex]
+\theta &= \frac{\lambda_1}{\lambda_0} = \frac{0.0385}{0.0578} 
+= \frac{12}{18} = 0.667
+\end{align*}
+
+From the earlier table, the number of events required is \(d=191\) (same
+for \(\theta=1.5\) as it is for \(\theta = 1/1.5=0.667\)).
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{example-3}{%
+Example \ldots}}
+
+Now solve\ldots \begin{align*}
+191 &=  (N/2)(1 - e^{-0.0578(36)}) + (N/2)(1 - e^{-0.0385(36)})\\[1ex]
+    &=  (N/2)(0.875) + (N/2)(0.7500) = (N/2)(1.625)\\[1ex]
+\Rightarrow N &= 235
+\end{align*}
+
+Round up to 236 and randomize 118 patients to each treatment group.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{another-example}{%
+Another example}}
+
+Even if accrual does not all happen at time 0, this formula can be
+surprisingly useful.
+
+A clinical trial in esophageal cancer will randomize patients to
+radiotherapy alone (Rx A) versus radiotherapy plus chemotherapy (Rx B).
+
+\begin{itemize}
+\item
+  The goal of the study is to compare the two treatments with respect to
+  survival, using the log-rank test.
+\item
+  From historical data, the median survival on Rx A for this disease is
+  around 9 months.
+\item
+  Want 90\% power to detect an improvement in the median to 14 months.
+\item
+  Past studies have been able to accrue approximately 50 patients per
+  year.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{%
+\protect\hypertarget{esophageal-cancer}{%
+Esophageal cancer}}
+
+\small
+
+Start by estimating the number of events the trial will need for 90\%
+power.
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# using years as time scale}
+\NormalTok{alpha =}\StringTok{ }\FloatTok{0.05}\NormalTok{; beta =}\StringTok{ }\FloatTok{0.10}
+\NormalTok{med}\FloatTok{.0}\NormalTok{ =}\StringTok{ }\FloatTok{0.75}\NormalTok{; med}\FloatTok{.1}\NormalTok{ =}\StringTok{ }\DecValTok{14}\OperatorTok{/}\DecValTok{12}
+
+\NormalTok{num.events =}\StringTok{ }\DecValTok{4} \OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{qnorm}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{alpha}\OperatorTok{/}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\StringTok{ }\KeywordTok{qnorm}\NormalTok{(}\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{beta))}\OperatorTok{^}\DecValTok{2} \OperatorTok{/}
+\StringTok{  }\KeywordTok{log}\NormalTok{(med}\FloatTok{.1}\OperatorTok{/}\NormalTok{med}\FloatTok{.0}\NormalTok{)}\OperatorTok{^}\DecValTok{2}
+\NormalTok{num.events}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 215.3
+\end{verbatim}
+
+\small
+
+The trial has to enroll a minimum of 216 patients (with complete
+follow-up).
+
+If the anticipated accrual rate (50 patients per year) is correct, the
+trial could enroll 250 patients over 4 years, then follow participants
+until 216 events are observed.
+
+\begin{itemize}
+\tightlist
+\item
+  How long should participants be followed?
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{a-more-realistic-accrual-pattern}{%
+A more realistic accrual pattern}}
+
+In reality, not everyone will enter the study on the same day.
+
+Instead, the accrual will occur in a ``staggered’’ manner over a period
+of time.
+
+\emph{The standard assumption about enrollment}
+
+Participants enter the study uniformly over an accrual period lasting
+\(A\) units of time, and that after the accrual period, follow-up will
+continue for another \(F\) units of time.
+
+The translation \(d\) to \(N\) requires the probability that a
+participant is observed to have an event under this accrual and
+follow-up scenario.
+
+\begin{align}
+\nonumber
+P(\text{fail}) &=  
+\int_{0}^{A} P(\text{fail}|\text{enter at } a) f(a) da \\[1ex]
+&= 1-\frac{\int_{0}^{A} S(a+F)~ da}{A}
+\label{exactP}
+\end{align}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{a-more-realistic-accrual-pattern-1}{%
+A more realistic accrual pattern \ldots}}
+
+Solve for \(d\), where \(P_c\) is the proportion of failures in the
+control group and \(P_e\) is the proportion of failures in the
+experimental group: \begin{align*}
+d &= (N/2) P(\text{fail};\lambda_0) +(N/2) P(\text{fail};\lambda_1)\\
+  &= (N/2) P_c + (N/2) P_e\\
+  &= (N/2) (P_c + P_e)
+\end{align*}
+
+Solve for \(N\) based on the previous formula for \(d\): \begin{align*}
+N &= \frac{2~d}{(P_c + P_e)}\\[1ex]
+N &= \frac{8 ~ \left(z_{1-\frac{\alpha}{2}} + z_{1-\beta}\right)^2}
+{[\log(\theta)]^2} \times \frac{1}{(P_c + P_e)}
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{calculating-p_c-and-p_e-from-equation}{%
+Calculating \(P_c\) and \(P_e\) from equation (\ref{exactP})}}
+
+If failure times are exponential distributed, (\ref{exactP}) implies:
+
+\begin{align} \label{pExp}
+P_i &= 1 - \frac{exp(-\lambda_i F) (1-exp(-\lambda_i A))}{\lambda_i A} \qquad \text{ for } i = c, e 
+\end{align}
+
+Freedman suggested an approximation for \(P_c\) and \(P_e\), by
+computing the probability of an event at the median duration of
+follow-up, \((A/2 + F)\): \begin{align*}
+P_i = P(\text{fail};\lambda_i) &= 1 - exp[-\lambda_i (A/2 + F)]
+\end{align*}
+
+He showed that this approximation works pretty well for the exponential
+distribution (i.e., it gives values close to (\ref{pExp})).
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{other-approximations}{%
+Other approximations}}
+
+Rubenstein, Gail, and Santer (1981) and Lachin and Foulkes (1986) have
+given more accurate approximations for calculating the probablilty of an
+event.
+
+\begin{itemize}
+\item
+  These methods are more complicated and require software
+\item
+  Software now widely available in \textsf{R} and other packages
+\end{itemize}
+
+\textsf{R} packages: \texttt{Hmisc}, \texttt{TrialSize},
+\texttt{gsDesign}
+
+\begin{itemize}
+\item
+  Many other \textsf{R} packages and programs
+  \href{https://cran.r-project.org/web/views/ClinicalTrials.html}{here}
+\item
+  \texttt{cpower()} in \texttt{Hmisc} is a simple and robust program for
+  computing power as a function of the ususal parameters
+\item
+  \texttt{nSurv()} more complicated to use, but allows many more options
+\end{itemize}
+
+Commercial packages: EaST, nQuery, SAS, etc.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{using-cpower}{%
+Using cpower()}}
+
+Parameters:
+
+\begin{itemize}
+\item
+  \texttt{tref}: time point at which mortalities estimated, usually
+  given in years
+\item
+  \texttt{n}: total sample size (both groups combined). If allocation is
+  unequal so that there are not n/2 observations in each group, sample
+  sizes can be specified in \texttt{nc} and \texttt{ni}.
+\item
+  \texttt{mc}: tref-year mortality, control group, as a decimal. This is
+  the value of the control survivor function at \texttt{tref}.
+\item
+  \texttt{r}: relative \% reduction in mc by intervention. A reduction
+  from 50\% to 40\% mortality at time tref is a 20\% reduction.
+\item
+  \texttt{accrual}: duration of accrual period, in same units as
+  \texttt{tref}
+\item
+  \texttt{tmin}: minimum follow-up time
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{using-cpower-1}{%
+Using cpower()\ldots}}
+
+\begin{itemize}
+\item
+  \texttt{noncomp.c}: \% non-compliant in control group (drop-ins)
+\item
+  \texttt{noncomp.i}: \% non-compliant in intervention group (drop-outs,
+  non-adherers)
+\item
+  \texttt{alpha}: type I error probability. A 2-tailed test is assumed.
+\item
+  \texttt{nc}: number of subjects in control group
+\item
+  \texttt{ni}: number of subjects in intervention group. \texttt{nc} and
+  \texttt{ni} are specified exclusive of n.
+\item
+  \texttt{pr}: set to FALSE to suppress printing of details
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{using-cpower-for-esophageal-cancer-example}{%
+Using cpower() for esophageal cancer example}}
+
+The parameters:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{tref} is 9 months, or 0.75 years, and since that is the median
+  in the control group, \texttt{mc} = 0.5 = \(S_c(0.75)\)
+\item
+  \texttt{n} = 150 patients enrolled over 3 years
+\item
+  \texttt{accrual} = 3, and let us set \texttt{tmin} = 1 year of
+  follow-up
+\item
+  \texttt{alpha} = 0.05\\
+\item
+  Assume no non-compliance
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{using-cpower-for-esophageal-cancer-example-1}{%
+Using cpower() for esophageal cancer example \ldots}}
+
+Calculating \texttt{r}, using approximations \ldots
+
+The median for the intervention is 14 months, so
+
+\begin{itemize}
+\item
+  \(\lambda_i = \log(2)/(14/12) = 0.59\)
+\item
+  \(S_i(0.75) = \exp(-(0.59)(0.75)) = 0.64\)
+\end{itemize}
+
+Mortality at 0.75 years is reduced from 50\% to 36\%, a proportionate
+reduction of (14/50) = 0.28, or 28\%.
+
+\end{frame}
+
+\begin{frame}[fragile]{%
+\protect\hypertarget{using-cpower-for-esophageal-cancer-example-2}{%
+Using cpower() for esophageal cancer example \ldots}}
+
+What if we allow 1 year of follow-up?
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(Hmisc)}
+\KeywordTok{cpower}\NormalTok{(}\DataTypeTok{tref =} \FloatTok{0.75}\NormalTok{, }\DataTypeTok{n =} \DecValTok{150}\NormalTok{, }\DataTypeTok{mc =} \FloatTok{0.5}\NormalTok{, }
+       \DataTypeTok{r =} \DecValTok{28}\NormalTok{, }\DataTypeTok{accrual =} \DecValTok{3}\NormalTok{, }\DataTypeTok{tmin =} \DecValTok{1}\NormalTok{, }
+       \DataTypeTok{noncomp.c =} \DecValTok{0}\NormalTok{, }\DataTypeTok{noncomp.i =} \DecValTok{0}\NormalTok{, }
+       \DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{pr =} \OtherTok{TRUE}\NormalTok{)   }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\scriptsize
+
+\begin{verbatim}
+## 
+## Accrual duration: 3 y  Minimum follow-up: 1 y
+## 
+## Total sample size: 150 
+## 
+## Alpha= 0.05 
+## 
+## 0.75-year Mortalities
+##      Control Intervention 
+##         0.50         0.36 
+## 
+## Hazard Rates
+##      Control Intervention 
+##      0.92420      0.59505 
+## 
+## Probabilities of an Event During Study
+##      Control Intervention 
+##      0.86581      0.74288 
+## 
+## Expected Number of Events
+##      Control Intervention 
+##         64.9         55.7 
+## 
+## Hazard ratio: 0.64386 
+## Standard deviation of log hazard ratio: 0.18261
+\end{verbatim}
+
+\begin{verbatim}
+##   Power 
+## 0.67402
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{example-esophageal-cancer}{%
+Example: Esophageal cancer}}
+
+Power of initial guess is too low.
+
+\begin{itemize}
+\tightlist
+\item
+  67\% power because only 65 + 56 = 121 events
+\end{itemize}
+
+We can increase enrollment time or follow-up time or both.
+
+\texttt{cpower()} can be used to search for a design.
+
+\end{frame}
+
+\begin{frame}[fragile]{%
+\protect\hypertarget{searching-for-a-design}{%
+Searching for a design}}
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{accrual.period =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{)}
+\NormalTok{followup.period =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{)}
+\NormalTok{num.accrual.periods =}\StringTok{ }\KeywordTok{length}\NormalTok{(accrual.period)}
+\NormalTok{num.followup.periods =}\StringTok{ }\KeywordTok{length}\NormalTok{(followup.period)}
+\NormalTok{perc.reduct =}\StringTok{ }\DecValTok{28}
+\NormalTok{p =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DataTypeTok{nrow =}\NormalTok{ num.accrual.periods, }\DataTypeTok{ncol =}\NormalTok{ num.followup.periods)}
+\ControlFlowTok{for}\NormalTok{(jj }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{num.followup.periods)\{}
+\NormalTok{  p[}\DecValTok{1}\NormalTok{,jj]=}\StringTok{ }\KeywordTok{cpower}\NormalTok{(}\DataTypeTok{tref =} \FloatTok{0.75}\NormalTok{, }\DataTypeTok{n =} \DecValTok{150}\NormalTok{, }\DataTypeTok{mc =} \FloatTok{.50}\NormalTok{, }\DataTypeTok{r =}\NormalTok{ perc.reduct, }
+       \DataTypeTok{accrual =}\NormalTok{ accrual.period, }\DataTypeTok{tmin =}\NormalTok{ followup.period[jj], }
+       \DataTypeTok{noncomp.c =} \DecValTok{0}\NormalTok{, }\DataTypeTok{noncomp.i =} \DecValTok{0}\NormalTok{, }
+       \DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{pr =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{  \}}
+\NormalTok{p}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         [,1]    [,2]    [,3]    [,4]
+## [1,] 0.67402 0.72517 0.74768 0.75829
+\end{verbatim}
+
+\normalsize
+
+A more thorough search\ldots
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{accrual.period =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{9}\NormalTok{)}
+\NormalTok{enrollment.total =}\StringTok{ }\DecValTok{50}\OperatorTok{*}\NormalTok{accrual.period}
+\NormalTok{followup.period =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{7}\NormalTok{)}
+\NormalTok{num.accrual.periods =}\StringTok{ }\KeywordTok{length}\NormalTok{(accrual.period)}
+\NormalTok{num.followup.periods =}\StringTok{ }\KeywordTok{length}\NormalTok{(followup.period)}
+\NormalTok{perc.reduct =}\StringTok{ }\DecValTok{28}
+\NormalTok{p =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DataTypeTok{nrow =}\NormalTok{ num.accrual.periods, }\DataTypeTok{ncol =}\NormalTok{ num.followup.periods)}
+\ControlFlowTok{for}\NormalTok{(ii }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{num.accrual.periods)\{}
+   \ControlFlowTok{for}\NormalTok{(jj }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{num.followup.periods)\{}
+\NormalTok{     p[ii,jj]=}\StringTok{ }\KeywordTok{cpower}\NormalTok{(}\DataTypeTok{tref =} \FloatTok{0.75}\NormalTok{, }\DataTypeTok{n =}\NormalTok{ enrollment.total[ii], }
+                      \DataTypeTok{mc =} \FloatTok{.50}\NormalTok{, }\DataTypeTok{r =}\NormalTok{ perc.reduct, }
+                      \DataTypeTok{accrual =}\NormalTok{ accrual.period[ii], }
+                      \DataTypeTok{tmin =}\NormalTok{ followup.period[jj], }
+                      \DataTypeTok{noncomp.c =} \DecValTok{0}\NormalTok{, }\DataTypeTok{noncomp.i =} \DecValTok{0}\NormalTok{, }
+                      \DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{pr =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{   \}}
+\NormalTok{\}}
+\NormalTok{power.table =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ num.accrual.periods }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{,}
+                     \DataTypeTok{ncol =}\NormalTok{ num.followup.periods }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{)}
+\NormalTok{power.table[}\DecValTok{1}\NormalTok{,] =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, followup.period)}
+\NormalTok{power.table[,}\DecValTok{1}\NormalTok{] =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, accrual.period)}
+\ControlFlowTok{for}\NormalTok{(ii }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{num.accrual.periods)\{}
+  \ControlFlowTok{for}\NormalTok{(jj }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{num.followup.periods)\{}
+\NormalTok{  power.table[ii }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, jj }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{] =}\StringTok{ }\NormalTok{p[ii,jj]}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\NormalTok{power.table }
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{rownames}\NormalTok{(power.table) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"yrs follow-up"}\NormalTok{, }\KeywordTok{rep}\NormalTok{(}\StringTok{"-"}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\KeywordTok{colnames}\NormalTok{(power.table) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"yrs enrollment"}\NormalTok{, }\KeywordTok{rep}\NormalTok{(}\StringTok{"-"}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\KeywordTok{round}\NormalTok{(power.table, }\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               yrs enrollment     -     -     -     -
+## yrs follow-up              0 1.000 3.000 5.000 7.000
+## -                          3 0.674 0.748 0.764 0.768
+## -                          5 0.900 0.928 0.934 0.935
+## -                          7 0.975 0.982 0.984 0.984
+## -                          9 0.994 0.996 0.997 0.997
+\end{verbatim}
+
+\normalsize
+
+Studies often need to be larger than anticipated.
+
+Take a closer look at the design with 5 years of enrollment and 3 years
+of follow-up.
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\scriptsize
+
+\begin{verbatim}
+## 
+## Accrual duration: 5 y  Minimum follow-up: 3 y
+## 
+## Total sample size: 250 
+## 
+## Alpha= 0.05 
+## 
+## 0.75-year Mortalities
+##      Control Intervention 
+##         0.50         0.36 
+## 
+## Hazard Rates
+##      Control Intervention 
+##      0.92420      0.59505 
+## 
+## Probabilities of an Event During Study
+##      Control Intervention 
+##      0.98661      0.94649 
+## 
+## Expected Number of Events
+##      Control Intervention 
+##        123.3        118.3 
+## 
+## Hazard ratio: 0.64386 
+## Standard deviation of log hazard ratio: 0.12869
+\end{verbatim}
+
+\begin{verbatim}
+##   Power 
+## 0.92803
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{what-is-the-effect-of-non-compliance}{%
+What is the effect of non-compliance?}}
+
+ITT: analyze according to assigned treatment, not treatment received.
+\medskip
+
+Main justification:
+
+\begin{itemize}
+\item
+  \(p\)-values are calculated assuming no treatment difference (the null
+  hypothesis)
+\item
+  Under that assumption, assigned treatment does not affect outcome
+\item
+  \(p\)-values will be correct (valid) when comparing the two groups
+  according to treatment assignment
+\end{itemize}
+
+Example may help make this clear.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{simple-trial-no-difference-non-random-crossover}{%
+Simple trial, no difference, non-random crossover}}
+
+Suppose two treatments (\(A\) and \(B\)) are equally effective.
+
+100 participants randomized to each treatment.
+
+ITT table:
+
+\begin{longtable}[]{@{}ccc@{}}
+\toprule
+\begin{minipage}[b]{0.15\columnwidth}\centering
+Response\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering
+Treatment \(A\)\strut
+\end{minipage} & \begin{minipage}[b]{0.25\columnwidth}\centering
+Treatment \(B\)\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Success\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+40\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+40\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Failure\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+60\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+60\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Now assume, after randomization:
+
+\begin{itemize}
+\item
+  10 participants with good prognosis (future responders) switch from
+  \(A\) to \(B\)
+\item
+  10 participants with bad prognosis (future non-responders) switch from
+  \(B\) to \(A\)
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{simple-trial-no-difference-non-random-crossover-1}{%
+Simple trial, no difference, non-random crossover\ldots}}
+
+Two treatments still equally effective.
+
+Table for the as-treated groups:
+
+\begin{longtable}[]{@{}ccc@{}}
+\toprule
+\begin{minipage}[b]{0.15\columnwidth}\centering
+Response\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering
+Treatment \(A\)\strut
+\end{minipage} & \begin{minipage}[b]{0.25\columnwidth}\centering
+Treatment \(B\)\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Success\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+30\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+50\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Failure\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+70\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+50\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+An as-treated analysis would imply that \(B\) is more effective than
+\(A\).
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{simple-trial-difference-random-crossover}{%
+Simple trial, difference, random crossover}}
+
+ITT can be biased when there is a real treatment effect (random
+crossovers).
+
+Suppose \(B\) is more effective than \(A\), so for 100 in each group:
+
+\begin{longtable}[]{@{}ccc@{}}
+\toprule
+\begin{minipage}[b]{0.15\columnwidth}\centering
+Response\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering
+Treatment \(A\)\strut
+\end{minipage} & \begin{minipage}[b]{0.25\columnwidth}\centering
+Treatment \(B\)\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Success\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+30\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+50\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Failure\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+70\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+50\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Assume 10 randomly chosen participants from each group switch treatments
+after randomization but before starting treatment.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{table-with-only-patients-who-do-not-switch}{%
+Table with only patients who do not switch}}
+
+\begin{longtable}[]{@{}ccc@{}}
+\toprule
+\begin{minipage}[b]{0.15\columnwidth}\centering
+Response\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering
+Treatment \(A\)\strut
+\end{minipage} & \begin{minipage}[b]{0.25\columnwidth}\centering
+Treatment \(B\)\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Success\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+27\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+45\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Failure\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+63\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+45\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Attrition did not change measured success rates, but\ldots{}
+
+\begin{itemize}
+\tightlist
+\item
+  does reduce the effective sample size
+\end{itemize}
+
+What happens when `switchers’ are put back in?
+
+\begin{itemize}
+\item
+  10 \(A\) \(\rightarrow\) \(B\), 5 respond, 5 do not
+\item
+  10 \(B\) \(\rightarrow\) \(A\), 3 respond, 7 do not
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{itt-table-with-assigned-treatment-real-response}{%
+ITT table with assigned treatment, real response}}
+
+\(A\) gets 5 responders (who received B)
+
+\(B\) gets 3 responders (who received A)
+
+\begin{longtable}[]{@{}ccc@{}}
+\toprule
+\begin{minipage}[b]{0.15\columnwidth}\centering
+Response\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering
+Treatment \(A\)\strut
+\end{minipage} & \begin{minipage}[b]{0.25\columnwidth}\centering
+Treatment \(B\)\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Success\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+32\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+48\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.15\columnwidth}\centering
+Failure\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering
+68\strut
+\end{minipage} & \begin{minipage}[t]{0.25\columnwidth}\centering
+52\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+Apparent success rate:
+
+\begin{itemize}
+\item
+  \(A\): 32\% after crossover vs.~30\% before crossover
+\item
+  \(B\): 48\% after crossover vs 50\% before crossover
+\end{itemize}
+
+Response proportions have moved closer together.
+
+Non-random attrition can also cause bias in the analysis because of
+missing data.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{accounting-for-non-compliance}{%
+Accounting for non-compliance}}
+
+If some patients do not take their assigned treatments, power of the
+study will decrease. This issue has two sides:
+
+\emph{Drop-outs} (\(d_e\))
+
+\begin{itemize}
+\item
+  Patients who cannot tolerate the medication stop taking it.
+\item
+  Their hazard rate would become the same as the placebo group (if
+  included in study) at that point.
+\end{itemize}
+
+\emph{Drop-ins} (\(d_c\))
+
+\begin{itemize}
+\tightlist
+\item
+  Patients assigned to less effective therapy may not get symptom relief
+  and seek other therapy, or request to cross over.
+\end{itemize}
+
+A conservative remedy: adjust \(P_e\) and \(P_c\) as follows:
+
+\begin{align*}
+P_e^{*} &= P_e (1-d_e) + P_c d_e\\[1ex]
+P_c^{*} &=  P_c (1-d_c) + P_e d_c
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{esophageal-cancer-again}{%
+Esophageal cancer, again}}
+
+\begin{itemize}
+\item
+  Treatments for cancer are often toxic, and patients have difficulty
+  adhering to regimens.
+\item
+  \texttt{cpower()} can incoporate non-adherence through the parameters
+  \texttt{noncomp.c, noncomp.i}.
+\item
+  What happens to power with 20\% non-adherence on the intervention arm?
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(Hmisc)}
+\KeywordTok{cpower}\NormalTok{(}\DataTypeTok{tref =} \FloatTok{0.75}\NormalTok{, }\DataTypeTok{n =} \DecValTok{50}\OperatorTok{*}\DecValTok{5}\NormalTok{, }\DataTypeTok{mc =} \FloatTok{0.5}\NormalTok{, }
+       \DataTypeTok{r =} \DecValTok{28}\NormalTok{, }\DataTypeTok{accrual=} \DecValTok{3}\NormalTok{, }\DataTypeTok{tmin =} \DecValTok{3}\NormalTok{, }\DataTypeTok{noncomp.c=}\DecValTok{0}\NormalTok{, }\DataTypeTok{noncomp.i=}\DecValTok{20}\NormalTok{, }
+       \DataTypeTok{alpha=}\FloatTok{0.05}\NormalTok{, }\DataTypeTok{pr=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Power 
+## 0.77438
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{what-about-attrition}{%
+What about attrition}}
+
+\emph{Attrition} happens when participants leave a study; treatment and
+outcome assessments cannot be made.
+
+Attrition is also called \emph{loss to follow-up} and is common in long
+term follow-up for studies of chronic diseases.
+
+\texttt{cpower()} cannot adjust for attrition, but \texttt{nSurv()} in
+the package \texttt{gsDesign} can.
+
+A lab exercise uses \texttt{nSurv()} to reproduce the design of the
+SPRINT trial summarized at the beginning of this unit.
+
+\end{frame}
+
+\hypertarget{derivations}{%
+\section{Derivations}\label{derivations}}
+
+\begin{frame}{%
+\protect\hypertarget{heuristic-proof-of-the-distribution-of-the-log-rank}{%
+Heuristic proof of the distribution of the log-rank}}
+
+\begin{align*} 
+ E(d_{1j} | d_{1j}, d_{0j}, r_{1j}, r_{0j}) 
+    &= P( d_{1j} = 1 | d_{j}=1, r_{1j}, r_{0j}) \\[1ex]
+    &=  \frac  {r_{1j} \lambda_0 \theta}
+    {r_{1j} \lambda_0 \theta + r_{0j} \lambda_0}\\[1ex]
+     &=  \frac  {r_{1j}  \theta} {r_{1j}  
+\theta + r_{0j} }\\[1ex]
+     &=  \frac  {r_{1j}} {r_{1j} + r_{0j} } + \log(\theta) 
+      \left[\frac  {r_{1j}r_{0j}} {(r_{1j} + r_{0j})^2}\right]  \\
+\end{align*}
+
+But \(e_j = r_{1j}/(r_{1j} + r_{0j})\), so:
+\[    E(d_{1j} | d_{1j}, d_{0j}, r_{1j}, r_{0j}) - e_j =
+ \log(\theta) \left[\frac  {r_{1j}r_{0j}} {(r_{1j} + r_{0j})^2 }\right] \]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{heuristic-proof-of-the-distribution}{%
+Heuristic proof of the distribution\ldots}}
+
+If \(n_0=n_1\), then near H\(_0\), \(r_{1j} \approx r_{0j}\), hence,
+\[    E(d_{1j} | d_{1j}, d_{0j}, r_{1j}, r_{0j}) - e_j = \log(\theta) /4 \]
+
+Similarly, with no ties, \[ v_j = r_{1j} r_{0j}/r_j^2 \approx 1/4 \]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{alternative-derivation-using-the-partial-likelihood}{%
+Alternative derivation using the partial likelihood}}
+
+\small
+
+The partial likelihood is: \begin{align*}
+  l(\bbeta)   &=  \log \left[ \prod_{j=1}^{n}\left(    \frac
+      {   e^{\bbeta \bZ_j } }   {\sum_{\ell \in {\cal R}(\tau_j)}
+e^{\bbeta \bZ_{\ell}} }\right)^{\delta_j} \right]  \\[1ex]
+&=\sum_{j=1}^{n} \delta_j  \left[ \bbeta \bZ_j  -
+\log \left(\sum_{\ell \in {\cal R}(\tau_j)} e^{\bbeta \bZ_{\ell}}\right) 
+\right]
+\end{align*}
+
+The partial derivative of log-likelihood (the score statistic) is:
+\begin{align*}
+U(\bbeta)   &=  \frac{\partial}{\partial \bbeta} \ell(\bbeta) \\
+&=  \sum_{j=1}^{n} \delta_j  \left[ \bZ_j  -
+\frac{ \sum_{\ell \in {\cal R}(\tau_j)} \bZ_{\ell} ~e^{\bbeta \bZ_{\ell}} }
+{ \sum_{\ell \in {\cal R}(\tau_j)}   e^{\bbeta  \bZ_{\ell}} } \right]
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{partial-likelihood-derivation}{%
+Partial likelihood derivation \ldots}}
+
+The negative second partial derivative of the log-likelihood) is:
+\footnotesize \[
+-\frac{\partial^2}{\partial \bbeta^2} \ell(\bbeta) =
+ \sum_{j=1}^{n}   \delta_j \left[     
+\frac{ \sum_{\ell \in {\cal R}(\tau_j)} e^{\bbeta \bZ_{\ell}}
+\sum_{\ell \in {\cal R}(\tau_j)} \bZ_{\ell} e^{\bbeta \bZ_{\ell}}-
+(\sum_{\ell \in {\cal R}(\tau_j)} \bZ_{\ell} e^{\bbeta \bZ_{\ell}})^2}
+{ \sum_{\ell \in {\cal R}(\tau_j)} e^{\bbeta  \bZ_{\ell}} } \right]
+\]
+
+\normalsize
+
+The logrank statistic (with no ties) is equivalent to the score
+statistic for testing \(\bbeta=0\): \[
+Z_{LR} = \frac{U(0)}{\sqrt{I(0)}}
+\] By a Taylor series expansion:
+\[U(0) \cong U(\beta)- \beta \frac{\partial U}{\partial \beta}(0)\]
+\[E[U(0)]\cong \beta d /4 \hspace{0.3in} \text{and ~} I(0)\cong d/4\]
+
+\end{frame}
+
+\end{document}

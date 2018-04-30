@@ -1,0 +1,941 @@
+---
+title: "Significance Testing"
+author: "Dave Harrington"
+date: "May 14 - 18, 2018"
+output: 
+  beamer_presentation:
+     includes:
+       in_header: ../survival_header.tex
+     fig_width: 3.25
+     fig_height: 3.0
+     fig_caption: true
+     toc: true
+     keep_tex: true
+slide_level: 3
+urlcolor: darkblue 
+linkcolor: darkblue
+citecolor: darkblue
+
+--- 
+
+# Introduction    
+
+### Significance testing with event-time data
+
+In the medical literature, survival analysis is frequently used to analyze clinical trials that may potentially change practice.    
+
+- Significance testing is particularly important in this setting.
+
+The figure on the next slide appeared at the beginning of Unit 1.
+
+- Shows results of a randomized trial of ablation versus drug treatment for atrial fibrillation: 
+
+    - Estimates of probability of survival or hospital admission by treatment group 
+
+    - A $p$-value based on a *log-rank* test
+
+This unit explores log-rank tests and other testing methods.
+
+
+
+### Example: Time to death or hospitalization
+
+![Figure from Marrouche, et al., *NEJM* 2018](../figures/atrial_fib_death_hosp.pdf){width=70%}
+
+
+### Example: Clinical trial PBT01
+
+![Figure from Stadtmauer, et al, NEJM 2000](../figures/pbt01_survival.pdf){width=70%}
+
+The next slides reproduce this figure and $p$-value from patient-level data.
+
+### Numerical summary
+
+\scriptsize
+```{r, echo=TRUE, eval=FALSE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.survival <- survfit(Surv(survival, died) ~ treatment, 
+                              data = pbt01)
+pbt01.survival
+```
+
+### Numerical summary \ldots
+
+\scriptsize
+```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.survival <- survfit(Surv(survival, died) ~ treatment, 
+                              data = pbt01)
+pbt01.survival
+```
+
+### Figure
+
+\scriptsize
+```{r, echo=TRUE, eval=FALSE, fig.width=4.5, fig.height=4.0}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.logrank.chisq = survdiff(Surv(survival, died) ~ treatment, 
+                                data = pbt01)$chisq
+pbt01.logrank.pvalue = pchisq(pbt01.logrank.chisq, 1,
+                              lower.tail = FALSE)
+
+plot(pbt01.survival, lty = 2:3, col = 3:4, mark.time = TRUE, 
+     xlab = "Months after Randomization", 
+     ylab = "Probability of Survival",
+     axes = FALSE,
+     cex = 0.6)
+legend(40, 1.0, c("ABMT", "Control"), lty = 2:3, col = 3:4,
+       cex = 0.6)
+text(40, 0.6, "log-rank p-value = ", cex = 0.6)
+text(55, .6, round(pbt01.logrank.pvalue, digits = 2), cex = 0.6)
+text(70, 0.6, "(unstratified)", cex = 0.6)
+axis(1)
+axis(2)
+```
+
+----
+
+\scriptsize
+```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=4.0}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+pbt01.logrank.chisq = survdiff(Surv(survival, died) ~ treatment, 
+                                data = pbt01)$chisq
+pbt01.logrank.pvalue = pchisq(pbt01.logrank.chisq, 1,
+                              lower.tail = FALSE)
+
+plot(pbt01.survival, lty = 2:3, col = 3:4, mark.time = TRUE, 
+     xlab = "Months after Randomization", 
+     ylab = "Probability of Survival",
+     axes = FALSE,
+     cex = 0.6)
+legend(40, 1.0, c("ABMT", "Control"), lty = 2:3, col = 3:4,
+       cex = 0.6)
+text(40, 0.6, "log-rank p-value = ", cex = 0.6)
+text(55, .6, round(pbt01.logrank.pvalue, digits = 2), cex = 0.6)
+text(70, 0.6, "(unstratified)", cex = 0.6)
+axis(1)
+axis(2)
+```
+
+\footnotesize
+
+Note: The $p$-value is not identical to the one in the paper because the paper used a stratified test, stratifying on the cycle needed to induce complete response for the patient. Stratified tests coming later.
+
+### Parametric vs non-parametric approaches
+
+In the medical literature, survival analysis is often used in the study of treatments for chronic diseases such as cancer, diabetes, or cardiovascular disease.
+
+In most studies, a proportion of participants have not had an event by the time the study is analyzed.    
+
+- Thus, the right tail of the survival distribution is not observable.
+
+Parametric approaches can be useful in some settings, but they assume a model for the entire curve, and extrapolate tail behavior.
+
+Non-parametric methods make no assumptions about tail behavior and are less sensitive to outliers.
+
+This section emphasizes *non-parametric methods*.
+
+### Two-sample non-parametric tests for comparing survival distributions
+
+Comparing two distributions at a single time point
+
+The log-rank test
+
+Generalized Wilcoxon tests
+
+The Fleming-Harrington family
+
+\vspace{1cm}
+
+\small
+
+References:
+
+\begin{tabular}{ll}
+Hosmer \& Lemeshow &  Section 2.4\\
+Collett & Section 2.5\\
+Klein \& Moeschberger~~~~ & Section 7.3\\
+\end{tabular}
+
+# Comparing two distributions at a single time point      
+
+### Using  $\widehat{S_1}(t)$ and $\widehat{S_2}(t)$ 
+
+Sometimes a specific time point, $t^{\star},$ is of special interest.     
+
+- e.g., 5-year disease-free survival in cancer
+
+Simple method:       
+
+- Use the independence and approximate normality of $\widehat S_k(t^\star);  k \in\{ 0,1 \}$.   
+
+- Examine a confidence interval for the difference in estimated survival curves at $t^{\star}$.
+
+- Reject $H_0: S_1(t) = S_2(t)$ in favor of a two-sided alternative if the interval does not include 0.
+
+### Confidence interval for the difference of two survival curves
+
+The 95\% confidence interval is 
+\[
+\left[ \left ( \widehat S_1(t^\star) - \widehat S_0(t^\star) \right )
+\pm 1.96 \times \sqrt{ V_1(t^\star) + V_0 (t^\star) }\right],
+\]
+where $V_k(t^\star)$ is the estimated variance of $\widehat S_k(t^\star).$
+
+This method is rarely used because
+
+- it is not clear what $t^\star$ should be
+
+- there is potential for abuse when applied *post-hoc*
+
+### Example
+
+Use numerical estimates of the survival curves to find a 95\% confidence interval for the difference in survival curves at time point $t^\star = 10$ weeks for the Cox and Oakes leukemia data.
+
+The following slides show the estimates repeated from Unit 2 (Estimation).
+
+### KM numerical estimates, group == 0
+
+\scriptsize
+
+```{r echo = TRUE, eval=TRUE}
+library(survival)
+library(eventtimedata)
+leukemia.group.0 = 
+  subset.data.frame(cox.oakes.leukemia, group == 0)
+km.group.0 = survfit(Surv(time, relapse) ~ 1, 
+                     data = leukemia.group.0)
+summary(km.group.0)
+```
+
+### KM numerical estimates, group == 1
+
+\scriptsize
+
+```{r echo = TRUE, eval=TRUE}
+leukemia.group.1 = 
+  subset.data.frame(cox.oakes.leukemia, group == 1)
+km.group.1 = survfit(Surv(time, relapse) ~ 1, 
+                     data = leukemia.group.1)
+summary(km.group.1)
+```
+\normalsize
+
+### Calculations \ldots
+
+Lab exercise!
+
+# The log-rank test   
+
+### Mantel-Haenszel log-rank test
+
+The log-rank test is the most widely used non-parametric test.
+
+Begin with a  $2 \times 2$ table classifying those with and without the event of interest in a two group setting:
+\begin{center}
+\begin{tabular}{cccc}
+\hline \hline
+& \multicolumn{2}{c}{Event} & \\ \cline{2-3}
+\multicolumn{1}{c}{Group } & ~~~~Yes~~~~ & ~~~~No~~~~ & ~~~Total~~~\\ \hline
+0 & $d_0$ & $n_0 - d_0$ & $n_0$  \\
+1 & $d_1$ & $n_1 - d_1$ & $n_1$ \\
+\hline
+Total &  $d  $ & $n   - d  $ & $n  $  \\ \hline \hline
+\end{tabular}
+\end{center}
+
+The table shows the observed numbers with and without events
+in each group, and the margin totals.  
+
+### Mantel-Haenszel approach to a $2\times2$ table
+
+Define $D_0$ as the random variable representing the number with an event in Group 0.
+
+If the margins of this table $(d, n-d, n_0, n_1)$ are considered fixed, then $D_0$ follows a hypergeometric distribution,  depending on one parameter (the population odds ratio, $\psi$).
+
+Under $H_0$, the null hypothesis of no association between the event and group:
+\[E(D_0) = \frac{n_0 \, d}{n} = n_0 \left(\frac{d}{n}\right) \]
+
+\[\text{Var}(D_0) = \frac{n_0 \, n_1 \, d(n-d)}{n^2 (n-1)} \]
+
+### Mantel-Haenszel approach to a $2\times2$ table\ldots
+
+Thus, the Mantel-Haenszel statistic is
+\[\chi^2_{\tiny MH } = \frac{\left[d_0-n_0 \, d/n\right]^2}{\frac{n_0
+\, n_1 \, d(n-d)} {n^2 (n-1)}} \sim \chi^2_1
+\]
+
+$\chi^2_{\tiny MH}$ is approximately equivalent to the Pearson $\chi^2$ test for equality of the two groups given by:
+\[\chi^2_p = \sum \frac{(o-e)^2}{e}, \]
+where $o$ represents observed values and $e$ the expected values.
+
+### Example: Toxicity in a clinical trial with two treatments
+
+\begin{center}
+\begin{tabular}{cccc}
+\hline \hline
+& \multicolumn{2}{c}{Toxicity}   \\ \cline{2-3}
+\multicolumn{1}{c}{Group } & ~~~Yes~~~ & ~~~No~~~ & ~~~Total~~~ \\ \hline
+0 &  ~8    & 42  &  ~50       \\
+1 &  ~2   &  48 &   ~50        \\
+\hline
+Total & 10 & 90 &  100        \\ \hline \hline
+\end{tabular}
+\end{center}
+
+
+\begin{align*}
+\chi_p^2 &= 4.00 ~~~~ (p=0.046)\\[3ex]
+\chi_{\tiny MH}^2 &= 3.96 ~~~~ (p=0.047)
+\end{align*}
+
+
+### Pearson $\chi^2$ vs MH
+
+*Note:* the Pearson $\chi^2$ test applies to the case where the row margins are fixed but not the column margins, as a test of equivalence between the proportions with events in the two groups.  
+
+In this case, the variance is slightly different: 
+\[
+\text{Var}(D_0) = \frac{n_0 \, n_1 \, d(n-d)}{n^3}
+\]
+
+### For the case of $K$ tables
+
+Now suppose there are $K$ $2 \times 2$ tables, all independent. 
+
+The goal is  to test for a common group effect $H_0: \psi_j=\psi=1$ 
+versus $H_A: \psi \neq 1$. 
+
+The *Cochran-Mantel-Haenszel test* for a common odds ratio not equal to 1 can be written as:
+
+\[  
+\chi^2_{CMH} =   \frac{\left[ {\sum_{j=1}^K (d_{0j} - n_{0j} \times d_j/n_j)}\right]^2}
+        {\sum_{j=1}^K n_{1j} n_{0j} d_j (n_j-d_j)/[n_j^2(n_j-1)]}  \]
+
+
+This statistic is distributed approximately as $\chi^2_1$.
+
+### $K$ tables \ldots
+
+The subscript $j$ refers to the $j$-th table:
+
+\begin{center}
+\begin{tabular}{cccc}
+\hline \hline
+& \multicolumn{2}{c}{Event} & \\ \cline{2-3}
+\multicolumn{1}{c}{Group } & ~~~Yes~~~ & ~~~No~~~ & ~~~Total~~~\\ \hline
+0 & $d_{0j}$ & $n_{0j} - d_{0j}$ & $n_{0j}$  \\
+1 & $d_{1j}$ & $n_{1j} - d_{1j}$ & $n_{1j}$ \\
+\hline
+Total &  $d_j  $ & $n_j - d_j  $ & $n_j  $  \\ \hline \hline
+\end{tabular}
+\end{center}
+
+### Log-rank Test: Applying CMH to survival data
+
+For the two-group *log-rank* test:    
+
+- Construct a $2 \times 2$ table at each distinct failure time.
+
+- Compare the failure rates between the two groups, conditional on the number at risk in the groups.
+
+- Combine the results from each table using the Cochran-Mantel-Haenszel test.
+
+### Formal notation for the log-rank test
+
+Let $t_1, \ldots ,t_K$ represent the $K$ ordered, distinct failure times.
+
+The table at the $j$-th failure time, is
+\begin{center}
+\begin{tabular}{cccc}
+\hline \hline
+& \multicolumn{2}{c}{Die/Fail} & \\ \cline{2-3}
+\multicolumn{1}{c}{Group } & ~~~Yes~~~ & ~~~No~~~ & ~~Total~~\\ \hline
+0 & $d_{0j}$ & $r_{0j} - d_{0j}$ & $r_{0j}$ \\[2ex]
+1 & $d_{1j}$ & $r_{1j} - d_{1j}$ & $r_{1j}$ \\[2ex]
+\hline
+Total &  $d_j$ & $r_j - d_j$ & $r_j$  \\ \hline \hline
+\end{tabular}
+\end{center}
+where    
+
+- $d_{0j}$ and $d_{1j}$ are the number of failures in group 0 and 1, respectively, at the $j$-th failure time   
+
+-  $r_{0j}$ and $r_{1j}$ are the number at risk in groups 0 and 1, at the $j$-th failure time
+
+### The log-rank test statistic formula
+
+\begin{align*}
+\chi^2_{\text{log-rank}} &=
+\frac{\left[{\sum_{j=1}^K (d_{0j} - r_{0j} \times d_j/r_j)}\right]^2}
+{\sum_{j=1}^K  \frac{r_{1j} r_{0j} d_j (r_j-d_j)}{[r_j^2(r_j-1)]}}
+\end{align*}
+
+If the tables are all independent, then this statistic will have an approximate $\chi^2$ distribution with 1 df.
+
+
+### Notes about log-rank tests
+
+The log-rank statistic depends on ranks of event times only, that is, on the order in which events and censorings occur.
+
+If there are no tied failure times between the two groups, then $d_j=1$ and the log-rank statistic simplifies to
+\[\chi^2_{\text{log-rank}}  =  \frac{[\sum_{j=1}^K (d_{0j} - \frac{r_{0j}}{r_j})]^2}
+        {\sum_{j=1}^K r_{1j}r_{0j}/r_j^2}  \]
+
+The numerator can be interpreted as $[\sum (o-e)]^2$, where    
+
+- $o$ is the observed number of deaths in a group, and $e$ is the expected number, given the risk sets.
+
+- The expected number equals the number of failures times the proportion at risk in the group.
+
+- It does not matter which group is used for the sum.
+
+### Notes about the log-rank\ldots
+
+The ($o-e$) terms in the numerator  can be written as
+\[   \frac{r_{0j}r_{1j}}{r_j}(\widehat\lambda_{1j} - \widehat\lambda_{0j} ) \]
+
+Solution as a lab problem!
+
+### Assumptions behind log-rank test
+
+Censoring is independent.
+
+- This assumption is made in nearly all survival methods.
+
+The contributions to the statistic made by the $2 \times 2$ tables can be treated as independent.
+
+- Proven true in the 1980's
+
+The log-rank test is most powerful when hazards have a constant ratio over time.
+
+- This is termed the *proportional hazards* assumption.
+
+- It is not required for validity under the null hypothesis.
+
+
+
+
+### Efficiency of the log-rank test
+
+The CMH test for a series of tables stratified by a potential confounder is most powerful when \ldots  
+
+- The tables have a constant odds ratio.
+
+Analogously, the log-rank test is most powerful when \ldots
+
+- The hazard ratios are constant across $t$ time intervals.  
+
+- This corresponds to *proportional hazards*.
+
+### The recidivism data
+
+```{r, eval = TRUE, echo=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data("rossi")
+rossi.recidivism.km <- survfit(Surv(week, arrest) ~ fin, data = rossi)
+plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
+     xlab = "Weeks", 
+     ylab = "Probability of Re-arrest", 
+     axes = FALSE, 
+     conf.times = c(10,30,50),
+     main = "KM of Recidivism Probability, with Conf. Int.",
+     cex = 0.6, cex.main = 0.8)
+axis(1)
+axis(2)
+legend(10, .5, c("Financial Support", "No Financial Support"), lty = 2:3, col = 3:4,
+       cex = 0.6)
+```
+     
+### The recidivism data \ldots
+
+\scriptsize
+
+```{r, echo=TRUE, eval=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data("rossi")
+survfit(Surv(week, arrest) ~ fin, 
+                        data = rossi)
+survdiff(Surv(week, arrest) ~ fin, 
+                        data = rossi)
+```
+
+### What does non-proportional hazards look like?
+
+The next slides show figures presented at a February 5, 2018 meeting on non-proportional hazards. 
+
+All use data from published papers.
+
+The workshop (sponsored by Duke University Margolis Center)
+
+- reviewed instances where non-proportional hazards occurred in studies designed for drug approval
+
+- discussed strategies for modifying usual methods of analysis
+
+### Randomized trial in prostate cancer
+
+![Data from Hussain, et al., *Euro J Cancer*, 2015](../figures/hussain.pdf){width=80%}
+
+See [Hussain, et al.](../../clinical_papers/hussain.pdf)
+
+
+### RCT in acute leukemia
+
+![KM survival curves from Kantarjian, et al., *NEJM*, 2016](../figures/kantarjian.pdf){width=80%}
+
+See [Kantarjian, et al.](../../kantarjian.pdf)
+
+
+### RCT in acute leukemia \ldots
+
+![Cumulative hazards from Kantarjian, et al., *NEJM*, 2016](../figures/cum_haz_ALL.pdf){width=80%}
+
+### Another example, but with data
+
+\scriptsize
+```{r}
+#library(devtools)
+#install_github("keaven/nphsim")
+library(survival)
+library(nphsim)
+data(Ex6crossing)
+survfit(Surv(month,evntd) ~ trt, data = Ex6crossing)
+survdiff(Surv(month,evntd) ~ trt, data = Ex6crossing)
+```
+
+### The Kaplan-Meier estimate
+
+```{r, eval=TRUE, echo=FALSE, fig.width=4.5, fig.height=3.3}
+
+library(survival)
+library(nphsim)
+data(Ex6crossing)
+
+km = survfit(Surv(month,evntd) ~ trt, data = Ex6crossing)
+plot(km, lty = 2:3, col = 3:4, mark.time = TRUE,
+     xlab = "Months",
+     ylab = "Survival Probability",
+     axes = FALSE)
+axis(1)
+axis(2)
+```
+
+### The cumulative hazard
+
+```{r, eval = TRUE, echo=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(nphsim)
+data(Ex6crossing)
+
+km <- survfit(Surv(month, evntd) ~ trt, data = Ex6crossing)
+plot(km, lty = 2:3, col = 3:4, mark.time = TRUE, 
+     fun = "cumhaz",
+     xlab = "Months", 
+     ylab = "Cumulative Hazard", 
+     axes = FALSE, 
+     cex = 0.6, cex.main = 0.8)
+axis(1)
+axis(2)
+```
+
+# Weighted log-rank tests   
+
+### The Tarone-Ware class of tests
+
+\small
+This general class of tests is like the log-rank test, but adds weights ${w_j}$.  
+
+Many specific test statistics are included as special cases.
+\[ \chi^2_{TW} = \frac{[\sum_{j=1}^K {w_j} (d_{1j} - r_{1j} \times d_j/r_j)]^2}
+        {\sum_{l=1}^K \frac{w_j^2 r_{1j}r_{0j}d_j(r_j-d_j)}{r_j^2(r_j-1)}}  \]
+
+\begin{center}
+\begin{tabular}{ll}
+\hline \hline
+Test statistic &  Weight ${w_j}$ \\ \hline
+Log-rank              &  $w_j = 1$\\[2ex]
+Gehan's Wilcoxon     &  $w_j = r_j$\\[2ex]
+Peto/Prentice Wilcoxon       &  $w_j = n \widehat{S}(t_j)$\\[2ex]
+Fleming-Harrington~~~~   &  $w_j=[\widehat{S}(t_j)]^\rho ~ [1-\widehat{S}(t_j)]^\gamma$\\[2ex]
+Tarone-Ware          &  $w_j=\sqrt{r_j}$\\
+\hline \hline
+\end{tabular}
+\end{center}
+
+$r_j$ is the number of subjects at risk at the $j^{th}$ event time.
+
+### Some background
+
+The generalized Wilcoxon tests precede the Tarone-Ware or Fleming-Harrington class of tests.
+
+ - The Gehan-Wilcoxon was derived using a generalization of the $U$ statistic approach to the Mann-Whitney-Wilcoxon.
+
+ - The Peto/Prentice Wilcoxon was derived using a generalization of linear rank statistics.
+
+### More details on the Fleming-Harrington test
+
+The parameters $\rho$ and $\gamma$ can be any non-negative numbers:
+
+- If $\rho = \gamma = 0$, $w_j=1$ and the test is the usual log-rank test.    
+  
+-  If $\rho=1$ and $\gamma=0$, the test is similar to the Peto-Prentice.\footnote{This is the default ``Fleming'' test in SAS PROC LIFETEST.}
+
+- If $\rho=0$ and $\gamma=1$, what happens to $w_j$ over follow-up time?
+
+- If $\rho = \gamma = 1$, the weight $w_j$ reaches a maximum at the median, and is smaller for both large and small $t_j$.
+
+The \texttt{survdiff()} function in \textsf{R} sets $\gamma=0$ and allows the user to set $\rho$.
+
+### Earlier numerical example, $\rho = 1$
+
+\small
+
+This is a generalized Wilcoxon test
+
+```{r}
+#library(devtools)
+#install_github("keaven/nphsim")
+library(survival)
+library(nphsim)
+data(Ex6crossing)
+survdiff(Surv(month,evntd) ~ trt, rho = 1, data = Ex6crossing)
+```
+
+### Earlier numerical example, $\rho = 2$
+
+\small
+
+```{r}
+#library(devtools)
+#install_github("keaven/nphsim")
+library(survival)
+library(nphsim)
+data(Ex6crossing)
+survdiff(Surv(month,evntd) ~ trt, rho = 2, data = Ex6crossing)
+```
+
+### Be careful with weighted LR tests
+
+The weighted LR tests are often presented as emphasizing differences between two hazard functions.   
+
+For the F-H weights, $(\widehat{S}(t))^\rho(1 - \widehat{S}(t))^\gamma$,
+
+- $\rho > 0,\,\, \gamma = 0$: weights early differences ($\rho = 1$ gen Wilcoxon)    
+
+- $\rho = 0,\,\, \gamma > 0$: weights late differences
+
+- $\rho > 0,\,\, \gamma > 0$: weights differences near median
+
+- $\rho = 0,\,\, \gamma = 0$: weights differences equally over time (log-rank)
+
+Choosing the test post-hoc, based on observed data, leads to potentially increased Type I error.
+
+The [February 2018 Duke-Margolis workshop](https://healthpolicy.duke.edu/events/public-workshop-oncology-clinical-trials-presence-non-proportional-hazards) discussed ways to specify these tests in design and sample size calculations.
+
+- Full workshop materials available at the link.
+
+
+# Tests for more than two groups
+
+### Introduction
+
+Suppose data come from $P$ different groups. The data from group $p$ ($p=1,\ldots,P$) are:
+\[ (X_{p1},\delta_{p1}) \dots
+(X_{p n_p},\delta_{p n_p}) \] 
+
+Tests are based on a $P \times 2$ table at each distinct $K$ failure time.
+
+- Compare the event rates between the $P$ groups, conditional on the number at
+risk, combining the tables using the CMH approach
+
+- Final test statistic has $\chi^2$ distribution with $P - 1$ degrees of freedom
+
+### Example: prognosis in lymphoma
+
+The data \texttt{lymphoma.prognosis} in the package \texttt{eventtimedata} was used as the training sample in the International Prognostic Index published by [Shipp, et al.](../../clinical_papers/shipp_int_prog_index_nejm.pdf) in 1993. 
+
+The data record survival time and censoring for 1,385 patients with non-Hodgkin's lymphoma treated at sites in the US, Canada, and Europe.
+
+In this analysis, we look at the association of disease stage and survival.  See the package documentation for the variable definitions.
+
+### The code for the 4-group test
+
+\footnotesize
+
+```{r, eval=FALSE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(lymphoma.prognosis)
+
+stage.factor = as.factor(lymphoma.prognosis$STAGE)
+died = lymphoma.prognosis$SURVIVAL - 1
+died[died == 2] = 0  #recoding those lost to follow-up as censored
+survival.time = lymphoma.prognosis$SURVTIME
+lymphoma.survival <- survfit(Surv(survival.time, died) ~ 
+                               stage.factor)
+lymphoma.survival
+survdiff(Surv(survival.time, died) ~ stage.factor)
+```
+
+### The output for the 4-group test
+
+\footnotesize
+```{r, eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(lymphoma.prognosis)
+
+stage.factor = as.factor(lymphoma.prognosis$STAGE)
+died = lymphoma.prognosis$SURVIVAL - 1
+died[died == 2] = 0  #recoding those lost to follow-up as censored
+survival.time = lymphoma.prognosis$SURVTIME
+lymphoma.survival <- survfit(Surv(survival.time, died) 
+                             ~ stage.factor)
+lymphoma.survival
+survdiff(Surv(survival.time, died) ~ stage.factor)
+```
+### The survival plot
+
+
+```{r, eval=TRUE, echo=FALSE, fig.width=4.5, fig.height=3.8}
+library(survival)
+library(eventtimedata)
+data(lymphoma.prognosis)
+
+stage.factor = as.factor(lymphoma.prognosis$STAGE)
+died = lymphoma.prognosis$SURVIVAL - 1
+died[died == 2] = 0  #recoding those lost to follow-up as censored
+survival.time = lymphoma.prognosis$SURVTIME
+lymphoma.survival <- survfit(Surv(survival.time, died) 
+                             ~ stage.factor)
+
+plot(lymphoma.survival, col = 1:4, mark.time = TRUE, 
+     xlab = "Years", 
+     ylab = "Survival Probability", 
+     axes = FALSE, 
+     main = "Survival by Stage",
+     cex = 0.6, cex.main = 0.8)
+axis(1)
+axis(2)
+legend(2, .4, c("Stage 1", "Stage 2", "Stage 3", "Stage 4"), lty = 1,
+       col = 1:4, cex = 0.6)
+```
+
+# The stratified log-rank test
+
+### Example: length of stay in a nursing home
+
+The National Center for Health Services Research studied 36 for-profit nursing homes to assess 
+
+-   effects of different financial incentives on length of stay
+
+``Treated" nursing homes received 
+
+- Higher daily reimbursements for US Medicaid (financially needy) patients
+
+- Bonuses for improving a patient's health and sending them home
+
+Study included 1601 patients admitted between May 1, 1981 and
+April 30, 1982.\footnote{Data are in \texttt{nursing.home} in the \texttt{eventtimedata} package.}
+
+### Differences in length of stay by treatment
+
+\footnotesize
+
+```{r, eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(nursing.home)
+survdiff(Surv(stay, cens) ~ rx, data = nursing.home)
+```
+### A stratified analysis
+
+Length of stay may also be associated with gender. 
+
+- Women tend to be healthier in the US.
+
+A stratified test allows one to test for treatment differences, adjusting for gender (without using a modeling approach).
+
+ - assumes the shape of the hazard may vary between men and women, but that the effect of the incentive would be the same
+
+ - easy to do in almost any software
+
+### Differences in length of stay by treatment, stratified by gender
+
+\footnotesize
+
+```{r, eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(nursing.home)
+survdiff(Surv(stay, cens) ~ rx + strata(gender), 
+         data = nursing.home)
+```
+
+### The stratified test for the PBT01 data
+
+Log-rank test stratified on \texttt{cycle.of.resp}.
+
+This is the $p$-value in the Stadtmauer paper.
+
+  - Unstratified $p$-value (shown in earlier slides) is 0.34.
+
+\scriptsize
+```{r, echo=TRUE, eval=TRUE}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+
+survdiff(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
+              data = pbt01)
+```
+
+#  Derivations
+
+### The $P$-group log-rank statistic
+
+Let $t_1, \ldots, t_K$ represent the $K$ ordered, distinct failure times in the pooled sample.
+
+At the $j$-th failure time, the following table summarizes the data,
+\begin{center}
+\begin{tabular}{cccc}
+\hline \hline
+& \multicolumn{2}{c}{Fail} & \\ \cline{2-3}
+\multicolumn{1}{c}{Group } & ~~~Yes~~~ & ~~~No~~~ & ~~~Total~~~\\ \hline
+1 &  $d_{1j}$  & $r_{1j} - d_{1j}$ & $r_{1j}$ \\[2ex]
+. &    .       &     .             &       .    \\[2ex]
+P & $d_{Pj}$   & $r_{Pj} - d_{Pj}$ & $r_{Pj}$  \\ \hline
+Total &  $d_j  $ & $r_j - d_j  $ & $r_j  $  \\ \hline \hline
+\end{tabular}
+\end{center}
+where $d_{pj}$ is  the number of deaths in group $p$ at the $j$-th failure time, and $r_{pj}$ is the number at risk at that time.
+
+The tables are then combined using the CMH approach.
+
+
+### Details of the calculation
+
+\small
+For one table at a particular failure time, the test statistic would be constructed from the $P \times 1$ vector of (observed - expected) values.
+
+- Each group contributes one component of the sum.
+
+\footnotesize
+
+Let ${\bf O}_j = (d_1, \ldots, d_{(P-1)j})^T$ be a vector of the observed number of failures in groups 1 to $(P - 1)$ at the $j$-th death time. Given the risk sets $r_{1j}, \ldots, r_{Pj}$, and the fact that there are $d_j$ deaths, ${\bf O}_j$ has mean 
+\[{\bf E}_j = \left(\frac{d_j r_{1j}}{r_j}, \ldots, \frac{d_j r_{(P-1)j}}{r_j} \right)^T \]
+
+and variance-covariance matrix 
+
+ \[   {\bf V}_j = \left( \begin{array}{cccc} 
+                          v_{11j} & v_{12j} & ... & v_{1(P-1)j} \\
+                                  & v_{22j} & ... & v_{2(P-1)j} \\
+                              ... &         & ... & ... \\
+                                  &         &     & v_{(P-1)(P-1)j} \\
+                    \end{array} \right)  \]
+
+### Details of the calculation\ldots
+
+-  The $\ell$-th diagonal element is:
+\[     v_{\ell\ell j} = r_{\ell j}(r_j-r_{\ell j}) 
+d_j(r_j-d_j)/[r_j^2(r_j-1)]  \]
+
+-  The $\ell m$-th off-diagonal element is:
+\[     v_{\ell m j} = r_{\ell j}r_{mj}d_j(r_j-d_j)/[r_j^2(r_j-1)]  \]
+
+
+### Details of the calculation \ldots
+
+The resulting $\chi^2$ test for a single $P \times 1$ table has $(P-1)$ degrees of freedom and is constructed as follows:
+
+\[   ( {\bf O}_j - {\bf E}_j)^T \; {\bf V}^{-1}_j \; ( {\bf O}_j - {\bf E}_j)
+\]
+
+To generalize to $K$ tables (i.e., $K$ failure times), combine as in the log-rank:
+
+  - Let ${\bf O}_j$, ${\bf E}_j$ and ${\bf V}_j$ with the sums over the
+$K$ distinct failure times. 
+
+  - That is, let  ${\bf O} = \sum_{j=1}^{k}  {\bf O}_j$, ${\bf E} = \sum_{j=1}^{k} {\bf E}_j$, and ${\bf V} = \sum_{j=1}^{k}  {\bf V}_j$.  
+
+The test statistic is:
+\[
+ ( {\bf O} - {\bf E})^T \; {\bf V}^{-1} \; ( {\bf O} - {\bf E}),
+\]
+and has a $\chi^2$ distribution with $P - 1$ degrees of freedom.
+
+### The stratified log-rank test
+
+Used when assessing the association between survival and a factor $X$ that has two different levels.  
+
+- Want to stratify by a second factor, that has $S$ different levels.  
+
+First, divide the data into $S$ separate groups.  
+
+Within group $s$ ($s=1,...,S$), 
+
+- Construct the usual log-rank to assess the association between survival and the variable $X$.  
+
+- Let  $t_{1s}, \ldots ,t_{K_s s}$ represent the $K_s$ ordered, distinct death
+times \underline{in the $s$-th group}.
+
+### The stratified log-rank test \ldots
+
+At the $j$-th death time in group $s$:  
+
+\begin{center}
+\begin{tabular}{cccc}
+\hline \hline 
+& \multicolumn{2}{c}{Die/Fail} & \\ \cline{2-3}
+\multicolumn{1}{c}{X} & ~~~Yes~~~ & ~~~No~~~ & ~~~Total~~~\\ \hline
+1 & $d_{s1j}$ & $r_{s1j} - d_{s1j}$ & $r_{s1j}$ \\[2ex]
+2 & $d_{s2j}$ & $r_{s2j} - d_{s2j}$ & $r_{s2j}$  \\
+\hline
+Total &  $d_{sj}  $ & $r_{sj}   - d_{sj}  $ & $r_{sj}  $  \\ 
+\hline \hline
+\end{tabular}
+\end{center}
+
+### The stratified log-rank test \ldots
+
+Let 
+
+- $O_s$ be the sum of the ``o''s obtained by applying the log-rank calculations in the usual way to the data from group $s$.
+
+- $E_s$ be the sum of the ``e''s, 
+
+- $V_s$ be the sum of the ``v''s.  
+
+The  *stratified logrank* test statistic is
+
+\[  Z = \frac{\sum_{s=1}^{S} (O_s - E_s)}{\sqrt{\sum_{s=1}^{S} (V_s)}} \] 
+
+The test can easily be extended to weighted log-rank tests and to more than two levels of the factor $X$.
+
+<!---
+
+Stadtmauer EA, O'Neill A, Goldstein PG, Crilley P, Mangan KF, Ingle JN, Lazarus HM, Erban J, Sickles C, Glick JH: Phase III Randomized trial of high-dose chemotherapy (HDC) and stem cell support (SCT) shows no difference in overall survival or severe toxicity compared to maintenance chemotherapy with cyclophosphomide, methotrexate and 5-fluorouracil (CMF) for women with metastatic breast cancer who are responding to conventional induction chemotherapy: The Philadelphia Intergroup Study (PBT-01), ECOG, U. of Pennsylvania. Proc Am Soc Clin Oncol 18: 1a, 1999 (abstr 1)
+
+[HTML] Conventional-dose chemotherapy compared with high-dose chemotherapy plus autologous hematopoietic stem-cell transplantation for metastatic breast …
+EA Stadtmauer, A O'Neill, LJ Goldstein… - … England Journal of …, 2000 - Mass Medical Soc
+Background We conducted a randomized trial in which we compared high-dose 
+
+> library("sas7bdat", lib.loc="/Library/Frameworks/R.framework/Versions/3.4/Resources/library")
+> abmt <- read.sas7bdat("pbt01.sas7bdat")
+> 
+
+--->

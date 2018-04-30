@@ -1,0 +1,37 @@
+\frametitle{\protect \hypertarget {the-stratified-test-for-the-pbt01-data}{The stratified test for the PBT01 data}}
+
+Log-rank test stratified on \texttt{cycle.of.resp}.
+
+This is the \(p\)-value in the Stadtmauer paper.
+
+\begin{itemize}
+\tightlist
+\item
+  Unstratified \(p\)-value (shown in earlier slides) is 0.34.
+\end{itemize}
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(survival)}
+\KeywordTok{library}\NormalTok{(eventtimedata)}
+\KeywordTok{data}\NormalTok{(}\StringTok{"pbt01"}\NormalTok{)}
+
+\KeywordTok{survdiff}\NormalTok{(}\KeywordTok{Surv}\NormalTok{(survival,died) }\OperatorTok{~}\StringTok{ }\NormalTok{treatment }\OperatorTok{+}\StringTok{ }\KeywordTok{strata}\NormalTok{(cycle.of.resp),}
+              \DataTypeTok{data =}\NormalTok{ pbt01)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## survdiff(formula = Surv(survival, died) ~ treatment + strata(cycle.of.resp),
+##     data = pbt01)
+##
+##                     N Observed Expected (O-E)^2/E (O-E)^2/V
+## treatment=abmt    101       64     57.7     0.684      1.44
+## treatment=control  83       50     56.3     0.702      1.44
+##
+##  Chisq= 1.4  on 1 degrees of freedom, p= 0.231
+\end{verbatim}
+

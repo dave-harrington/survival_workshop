@@ -1,0 +1,1121 @@
+---
+title: "Proportional Hazards Regression: Special Topics"
+author: "Dave Harrington"
+date: "May 14 - 18, 2018"
+output: 
+  beamer_presentation:
+     includes:
+       in_header: ../survival_header.tex
+     fig_width: 3.25
+     fig_height: 3.0
+     fig_caption: true
+     toc: true
+     keep_tex: true
+slide_level: 3
+urlcolor: darkblue 
+linkcolor: darkblue
+citecolor: darkblue
+
+--- 
+
+# Introduction
+
+### A disclaimer
+
+The topics in this unit are treated only briefly, and are intended to serve as an introduction in a short course.
+
+Each topic could be a substantial part of an advanced course on regression and model fitting with the PH model.
+
+See texts such as *Therneau and Grambsch* or *Klein and Moeschberger*.
+
+# Diagnostics for the Cox model
+
+### Types of model diagnostics for Cox model
+
+Simple plots for  models with two groups
+
+Graphical diagnostics based on residuals for larger models
+
+Formal goodness-of-ft tests
+
+### Simple plots for models with two groups
+
+Suppose a covariate $Z$ is coded 0, 1. In the *PH* model, 
+\[
+\Lambda(t; Z = 1) = e^\beta \Lambda(t; Z = 0), \text{ so}
+\]
+\[ \log\left[\frac{\Lambda(t; Z = 1)}{\Lambda(t; Z = 0}\right] = \log(\Lambda(t; Z = 1)) - \log(\Lambda(t; Z = 0)) = \beta
+\]
+
+If the model is correct, then
+
+  - a simple plot of the difference of log cumulative hazard functions should be approximately constant
+  
+  - plots of the two log cumulative hazard functions should have the same separation
+
+### Simple plots for models with two groups \ldots
+
+Since
+\[
+  S(t) = \exp(-\Lambda(t)),
+\]
+\[
+\log(\Lambda(t)) = \log(-\log(S(t)))
+\]
+
+The plot of $\log(-\log(S(t)))$ vs $t$ is called the complementary log-log survival plot.\footnote{In \textsf{R}, the \texttt{"cloglog"} option in \texttt{survfit} plots $\log(-\log(S(t)))$ vs $\log(t)$.}
+
+### Example: PBT01
+
+In a stratified model, the simple diagnostic plot should be done within strata.
+
+\scriptsize
+```{r, echo=TRUE, eval=FALSE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+cycle.1 = subset(pbt01, cycle.of.resp == "cycle.1")
+cycle.1.km = survfit(Surv(survival,died) ~ treatment, data=cycle.1)
+
+plot(cycle.1.km, fun = "cloglog", conf.int=FALSE, lty = 2:3, 
+     axes=FALSE, col = 3:4, xlab="Months", ylab="Log(-Log(Survival))",
+     main="Cycle.1 Strata",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+legend("bottomright", lty=2:3, col = 3:4, c("AMBT", "Control"))
+```
+
+### PBT01, cycle.1 strata
+
+\scriptsize
+```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+cycle.1 = subset(pbt01, cycle.of.resp == "cycle.1")
+cycle.1.km = survfit(Surv(survival,died) ~ treatment, data=cycle.1)
+
+plot(cycle.1.km, fun = "cloglog", conf.int=FALSE, lty = 2:3, 
+     axes=FALSE, col = 3:4, xlab="Months", ylab="Log(-Log(Survival))",
+     main="Cycle.1 Strata",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+legend("bottomright", lty=2:3, col = 3:4, c("AMBT", "Control"))
+
+```
+
+### PBT01, cycle.2 strata
+
+\scriptsize
+```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data("pbt01")
+cycle.2 = subset(pbt01, cycle.of.resp == "cycle.2")
+cycle.2.km = survfit(Surv(survival,died) ~ treatment, data=cycle.2)
+
+plot(cycle.2.km, fun = "cloglog", conf.int=FALSE, lty = 2:3, 
+     axes=FALSE, col = 3:4, xlab="Months", ylab="Log(-Log(Survival))",
+     main="Cycle.2 Strata",
+     cex = 0.6, 
+     cex.main = 0.8)
+axis(1)
+axis(2)
+legend("bottomright", lty=2:3, col = 3:4, c("AMBT", "Control"))
+```
+
+### More diagnostics
+
+Several types of residuals are used with the Cox PH model.
+
+- Martingale residuals
+
+- Generalized (Cox-Snell) residuals
+
+- Schoenfeld and weighted Schoenfeld residuals
+
+- Scaled "dfbetas" residuals (approximate influence on parameter estimates from each case)
+
+All of these are easily available in the \texttt{survival} package using the \text{residuals()} after a PH fit, illustrated in the examples in this unit.
+
+### Martingale residuals: The counting process approach
+
+The martingale residuals arose from the counting process approach to survival data.
+
+Suppose
+
+- $X_i$ is the observed follow-up time for a case.
+
+- $T_i$ is the underlying failure time.
+
+- $U_i$ is the censoring time.
+
+- $\delta_i = I\{T_i \leq U_i\}$ is the indicator for failure.
+
+- $N_i(t) = I\{T_i \leq t, \delta_i = 1\}$
+
+- $Y_i(t) = I\{X_i \ge t\}$
+
+### Martingale residuals: The counting process approach\ldots
+
+It turns out that
+\[
+   M_i(t) = N_i(t) - \int_0^t Y_i(t) \exp[\bbeta {\bf Z}_i(t)] \lambda_0(u)du 
+\]
+is a zero mean stochastic process with independent increments (i.e., a martingale).
+
+The martingale residuals $m_i$ are
+\[m_i = \delta_i - \widehat{\Lambda}_i(T_i),\]
+where for case $i$,
+
+- $\delta_i$ is the observed indicator of failure.
+
+- $T_i$ is the observed follow-up time.
+
+- $\widehat{\Lambda}_i$ is the estimated covariate specific cumulative hazard.
+
+Martingale residuals are a form of *observed - expected* and have properties similar to residuals from linear models.
+
+
+### Properties of martingale residuals
+
+- $E(m_i) = 0$
+
+- $\sum_{i=1}^n m_i = 0$
+
+- $\text{var}(m_i) \approx E_i = \Lambda_i(X_i)$
+
+- $\text{cov}(m_i, m_j) \approx 0$.  Since the residuals must sum to zero there is a small negative correlation.
+
+A bit more surprising:
+
+Assume one dimensional covariate, and that the true model is
+\[
+        \lambda_i(t) = \lambda_0(t) e^{f(Z_i)}.
+\]
+
+Then it can be shown that
+\[
+   E(m_i) \approx c f(Z_i) \,
+\]
+where the constant $c$ depends on the amount of censoring. (Therneau, Grambsch, and Fleming, 1990)
+
+### Properties of martingale residuals\ldots
+
+Implications of the last slide:
+
+- A scatterplot of $Z$ versus $m$ should suggest the functional form of the covariate $f$, since $c$ will only affect the scale (labeling) of the vertical axis of the plot.
+
+These are not as easy to interpret as residuals from linear models since the $m_i$ are skewed and do not have constant variance.
+
+- Martingale residuals are calculated using 
+
+     - \texttt{residuals(phmodel), type = "martingale"}, where \texttt{phmodel} is defined as the \texttt{coxph()} model fit.
+
+- It is customary to add a LOESS curve to the plot.
+
+### Null model vs. partial residuals
+
+Martingale residuals can be calculated 
+
+  - in a null model with no covariates,  
+  
+    - This is the analogue of a scatterplot in regression before model estimation.
+
+  - or in a model with covariates to examine possible transformations after an initial model.
+
+As in linear regression, there are advantages and disadvantages to either approach.
+
+Null models are fit using \texttt{coxph(Surv() \char`~ \ 1)}.
+
+
+### Null model residuals against age in the Rossi data
+
+\footnotesize
+```{r eval=TRUE, echo=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ 1, data = rossi)
+mart.resid = residuals(rossi.phmodel, type = "martingale")
+plot(rossi$age, mart.resid)
+lines(lowess(rossi$age, mart.resid), col = "red")
+```
+
+### Partial martingale residuals against age in the Rossi data
+
+\footnotesize
+```{r eval=FALSE, echo=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+mart.resid = residuals(rossi.phmodel, type="martingale")
+plot(rossi$age, mart.resid)
+lines(lowess(rossi$age, mart.resid), col = "red")
+```
+
+
+### Partial martingale residuals against age in the Rossi data
+
+\footnotesize
+```{r eval=TRUE, echo=FALSE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+mart.resid = residuals(rossi.phmodel, type="martingale")
+plot(rossi$age, mart.resid)
+lines(lowess(rossi$age, mart.resid), col = "red")
+```
+
+Except for younger ages, there is no evident transformation.
+
+In the null model, what causes the line of residuals just below $y = -0.2$?  (Lab question)
+
+
+### Cox-Snell residuals: background
+
+If $T_i$ (the survival time for the $i$-th individual) has survivorship function $S_i(t)$, then 
+
+- the transformed random variable $S_i(T_i)$  will have a uniform distribution on $[0,1]$, 
+
+- and  $-\log[S_i(T_i)]$ should be from a unit exponential
+distribution.
+
+More mathematically stated:
+\begin{align*}
+\mbox{If ~~} T_i  &\sim S_i(t)\\
+\mbox{then}~~ S_i(T_i) &\sim  \text{Uniform}[0,1]\\
+\mbox{and}~ -\log S_i(T_i) &\sim \text{Exponential}(1)
+\end{align*}
+
+
+Proof in the labs.
+
+
+### Generalized (Cox-Snell) residuals
+
+The implication of the last result: 
+
+- If the model is correct, the estimated cumulative hazard for each individual at the time of death or censoring should behave like a censored sample from a unit exponential.  
+
+- This quantity, $\widehat{\Lambda}_i$, is called the  *generalized* or *Cox-Snell* residual.
+
+<!---
+
+### Generalized (Cox-Snell) residuals\ldots
+
+Suppose PH model has been fit:
+\[S(t;Z)=[S_0(t)]^{\exp(\beta Z)}\]
+
+In terms of hazards:
+\begin{align*}
+\lambda(t;{\bf Z}) &=\lambda_0(t)\exp(\bbeta {\bf Z})\\
+&= \lambda_0(t)\exp(\beta_1 Z_1+\beta_2 Z_2+ \cdots + \beta_k Z_k)
+\end{align*}
+
+After fitting, the following can be calculated:
+
+- $\widehat{\beta}_1,\ldots,\widehat{\beta}_k$
+- $\widehat{S}_0(t)$
+
+
+
+
+### Generalized (Cox-Snell) residuals\ldots
+
+So, for a case with covariates ${\bf Z}_i$, the predicted survival probability at each time $t$ can be calculated:
+\[
+\widehat{S}(t;{\bf Z}_i)=\left[\widehat{S}_0(t)\right]^{\exp(\bbeta {\bf Z}_i)}
+\]
+
+The Cox-Snell residual is 
+\[cs_i = \widehat{\Lambda}_i=-\log[\widehat{S}(T_i;Z_i)]\]
+The Cox-Snell residuals should behave like a sample of censored exponential variables with $\lambda = 1$.
+
+### Generalized (Cox-Snell) residuals\ldots
+
+The estimated survival distribution of the residuals should look exponential.
+
+The estimated cumulative hazard $\widehat{\Lambda}(t)$ should be a line of slope -1.
+
+  - Using the Fleming-Harrington estimate of a survival function,
+  \[
+  \widehat{\Lambda}(t) = -\log(\widehat{S}_{FH}(t)). 
+  \]
+  
+  - Thus, $-\log(\widehat{S}^*(t))$ should be a line of slope 1, where $S^*(t)$ is the survival function of the Cox-Snell residuals.
+
+--->
+
+### Calculating the Cox-Snell residuals in R
+
+Not difficult to program \textsf{R} to program and plot the Cox-Snell residuals, but not necessary.
+
+Recall the  *martingale* residuals
+\[m_i = \delta_i - \widehat{\Lambda}_i(T_i),\]
+where for case $i$, when there are no time-dependent covariates,
+\[cs_i = \delta_i - m_i = \widehat{\Lambda}_i(T_i) \]
+
+### Cox-Snell residuals in the Rossi data
+
+\footnotesize
+```{r eval=FALSE, echo=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+mart.resid = residuals(rossi.phmodel, type="martingale")
+cs.resid = rossi$arrest - mart.resid
+cs.surv = survfit(Surv(cs.resid, rossi$arrest) ~ 1, 
+                               type = "fleming-harrington")
+plot(cs.surv$time, -log(cs.surv$surv))
+abline(a = 0, b = 1, col = "red")
+```
+
+### Cox-Snell residuals in the Rossi data
+
+```{r eval=TRUE, echo=FALSE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+mart.resid = residuals(rossi.phmodel, type="martingale")
+cs.resid = rossi$arrest - mart.resid
+cs.surv = survfit(Surv(cs.resid, rossi$arrest) ~ 1, 
+                               type = "fleming-harrington")
+plot(cs.surv$time, -log(cs.surv$surv))
+abline(a = 0, b = 1, col = "red")
+```
+
+### Cox-Snell residuals \ldots
+
+The Cox-Snell residuals are theoretically appealing because the notion shows up more generally in non-linear models.
+
+However, they are not widely used because they do not help diagnose reasons for an ill-fitting model.
+
+The martingale and Schoenfeld residuals are more practially useful.
+
+### Schoenfeld residuals: testing the PH assumption
+
+The \textsf{R} function \texttt{cox.zph} provides a $p$-value for a test of the hypothesis that PH is the right model, as well as plots.
+
+ - The plots show *scaled Schoenfeld residuals* for each covariate, plotted against time.
+
+ - Under *PH*, the smoothing line should be approximately horizontal.
+
+ - These have become more popular than either the Cox-Snell or martingale residuals.
+
+Derivation not shown here, application on the next slide.
+
+### Schoenfield residuals in the Rossi data
+
+\footnotesize
+```{r eval=TRUE, echo=TRUE, fig.width=4.5, fig.height=3.3}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+rossi.zph = cox.zph(rossi.phmodel)
+rossi.zph
+```
+
+### Schoenfield residuals in the Rossi data
+
+\small
+```{r eval=TRUE, echo=FALSE, fig.width=4.5, fig.height=4.5}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+rossi.zph = cox.zph(rossi.phmodel)
+par(mfrow=c(2,2))
+plot(rossi.zph, col = "red")
+```
+
+
+### dfbeta residuals
+
+In an estimated linear model $y = {\bf X}{\bf b} + e$, it is easy to calculate the approximate change in the estimated coefficients ${\bf b} - {\bf b}_{-i}$ if case $i$ is dropped, using the *hat matrix*.
+
+  - These changes are often referred to as *dfbeta* residuals and help identify cases with high *leverage*.
+
+  - A similar (approximate) calculation can be done for the PH model using changes in the score function if a case is dropped (details not shown here).
+
+### dfbeta residuals \ldots
+
+
+The \texttt{residuals()} function used on a PH model fit can be used to calculate two versions of dfbeta residuals:
+
+- \texttt{dfbeta}: changes in the estimated coefficients
+
+    - easier to see true influence
+
+- \texttt{dfbetas}: changes in estimated coefficients divided by their standard errors
+    - easier to detect `large changes', since these can be thought of as approximately $N(0,1)$
+
+### Unstandardized dfbeta residuals for age in the rossi data
+
+\footnotesize
+```{r eval = FALSE, echo = TRUE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+unstand.dfbeta = residuals(rossi.phmodel, type = "dfbeta")
+rossi$caseid = 1:length(rossi$age)
+colnames(unstand.dfbeta) = names(rossi.phmodel$coef)
+
+plot(rossi$caseid, unstand.dfbeta[, "age"], xlab = "case id",
+     ylab = "age delta - beta", cex = 0.5)
+abline(h = 0, lty = 2, col "red")
+```
+
+
+### Unstandardized dfbeta residuals for age in the rossi data
+
+```{r eval = TRUE, echo = FALSE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+unstand.dfbeta = residuals(rossi.phmodel, type = "dfbeta")
+rossi$caseid = 1:length(rossi$age)
+colnames(unstand.dfbeta) = names(rossi.phmodel$coef)
+
+plot(rossi$caseid, unstand.dfbeta[, "age"], xlab = "case id",
+     ylab = "age delta - beta", cex = 0.5)
+abline(h = 0, lty = 2, col = "red")
+```
+
+### Standardized dfbeta residuals for age in the rossi data
+
+\footnotesize
+```{r eval = FALSE, echo = TRUE}
+library(survival)
+library(eventtimedata)
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+stand.dfbeta = residuals(rossi.phmodel, type = "dfbetas")
+rossi$caseid = 1:length(rossi$age)
+colnames(stand.dfbeta) = names(rossi.phmodel$coef)
+
+plot(rossi$caseid, stand.dfbeta[,2], xlab = "case id",
+     ylab = "age delta - beta", cex = 0.5)
+abline(h = 0, lty = 2, col = "red")
+```
+
+### Standardized dfbeta residuals for age in the rossi data
+
+```{r eval = TRUE, echo = FALSE}
+library(survival)
+library(eventtimedata)
+
+data(rossi)
+rossi.phmodel = coxph(Surv(week, arrest) ~ fin + age + race + mar, 
+                      data = rossi)
+stand.dfbeta = residuals(rossi.phmodel, type = "dfbetas")
+rossi$caseid = 1:length(rossi$age)
+colnames(stand.dfbeta) = names(rossi.phmodel$coef)
+
+plot(rossi$caseid, stand.dfbeta[,2], xlab = "case id",
+     ylab = "age delta - beta", cex = 0.5)
+abline(h = 0, lty = 2, col = "red")
+```
+
+# Correlated event times
+
+### Causes of correlated failure time data
+
+- Natural clustering of subjects in families, villages, treatment centers
+
+- Shared unmeasured covariates
+
+- Multiple event times from individual subjects
+
+We begin with a dataset...
+
+### Diabetic Retinopathy Study (DRS)
+
+Diabetic retinopathy 
+
+-  Complication associated with diabetes mellitus
+
+-  Abnormalities in the microvasculature within eye
+	retina. 
+
+- Leading cause of new cases of blindness in patients under 60 years of age in US
+
+
+### Diabetic Retinopathy Study (DRS)\ldots
+
+DRS begun in 1971 to study effectiveness of laser therapy in delaying onset of blindness.
+
+- Eligible patients had DR and visual acuity of 20/100 or better
+
+- One eye of each patient randomly selected for therapy; other eye observed without therapy
+
+- Main endpoint: visual acuity less than 5/200 at two consecutive 4-month follow-ups
+
+- 1,742 patients registered for the study.\footnote{Study originally reported in Murphy and Patz (1978).}
+
+- Subset used here consists of 197 patients that make up a 50% subsample of high-risk patients as defined in the study.\footnote{These 197 patients analyzed in \href{run:../../methods_papers/Huster\_drs.pdf}{Huster, 1989}. Data in \texttt{drs} dataset in \texttt{eventtimedata} package.}
+
+### The first 8 records
+
+\footnotesize
+```{r, eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(drs)
+drs[1:8,]
+```
+
+### Some features of the data
+
+Some important features of this dataset:
+
+- Strong intra-pair (within-person) correlation
+
+- No natural ordering of event times within the pairs
+
+Two ways to think about capturing the effect:
+
+-  *Marginal Model*: estimating the `average', or population effect of treatment, at least for the population represented by these cases
+
+- *Conditional Model*: estimating subject-specific effect (i.e., the within-subject difference in outcomes for the two eyes), conditional on some possible unobserved subject effect
+	
+# Marginal models for correlated event times
+
+### Background on marginal models
+
+Approach is a natural extension of generalized estimating equations used with correlated longitudinal data. 
+
+- Most popular method due to [\textcolor{darkblue}{Wei, Lin, and Weissfeld, 1989}](../../methods_papers/wlw.pdf) (*WLW*).
+
+- *DRS* is a good concrete example to keep in mind.
+
+Main ideas
+
+- Assume $K$ different possibly correlated failure times, $(T_1,\ldots, T_K)$.
+
+- In general, there would be a joint survivor function
+	\[
+		S(t_1, \ldots, t_K \mid {\bf Z}) 
+			= \Pr (T_1 > t_1,\dots,T_K > t_K \mid {\bf Z})
+	\]
+depending on a covariate vector ${\bf Z}$.
+
+- General approach of modeling and estimating $S$ difficult.  The most progress has been made with parametric models.
+
+### Marginal approach
+
+- Specify a model for marginal survivor function of $T_k$, 
+	\[	
+		S_k(t_k \mid \bZ_k^\prime),
+	\]
+	where $\bZ_k^\prime = (Z_{1k},\dots,Z_{pk})$ is a $p$-dimensional covariate vector associated with failure type $k$.
+
+- Estimate the $S_k$'s (or at least the effect of $\bZ_k$ on $S_k$) as if $T_1, \dots, T_K$ are independent.
+
+- Establish (through some general theory) that $\widehat{S}_k$ (or estimated regression effect) is unbiased.
+
+- Compute a `corrected' variance estimate for any estimated parameters that will account for the dependence among failure types.
+
+### Marginal model with the Cox model
+
+Marginal proportional hazards model of *WLW*:
+
+- Model hazard of $T_k$ as 
+	\[
+		\lambda_0(t) \exp(\bbeta^\prime \bZ_k) \mbox{ or } 
+		\lambda_{0k}(t) \exp(\bbeta^\prime \bZ_k)
+	\]
+
+- Construct partial likelihood function which assumes that failure types define independent subgroups or *strata*.
+
+- Compute a robust estimate of the $\mbox{cov}(\widehat{\bbeta})$, using a usual sandwich type estimator.   
+
+Details coming later\ldots
+
+### Notation in the DRS data
+
+- $T_1$ denotes failure time for left eye, $T_2$ for right eye
+
+- $\lambda_{01}(t) = \lambda_{02}(t) = \lambda_0(t)$
+
+- $\bZ_k^\prime$ = (treatment, age at onset) = $(Z_{1k},Z_{2k})$
+
+- It is natural to assume no biological difference between eyes, but if that were not the case, one could stratify on eye type or add a third covariate that denoted eye type.  
+
+- Treatment by eye type interactions would allow for different treatment effects by eye type.
+
+### Structure of the DRS dataset
+
+Datasets fit with WLW usually take one of two forms
+
+- Paired data, with no obvious way to distinguish between members of the pair (at least from the data)
+
+- Several identified failure types within an individual that are used to create strata, with a strata denoting a particular failure type.
+
+The \texttt{drs} dataset is of the first type.
+
+- Fit an unstratified model, assuming same baseline failure for each eye.
+
+- Calculate a robust variance to account for the within-pair correlation, using the \texttt{cluster} term in the model.
+
+### Marginal model in the DRS data
+
+\scriptsize
+```{r,eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(drs)
+
+coxph(formula = Surv(obstime, fail) ~ tx + age + cluster(id),
+      data = drs)
+```
+
+
+### The role of age in the drs
+
+Confounding should be minimized in a randomized trial.
+
+ - This can be assessed with a marginal model that includes only treatment.
+
+\scriptsize
+```{r,eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(drs)
+
+coxph(formula = Surv(obstime, fail) ~ tx + cluster(id),
+      data= drs)
+```
+
+### What about an age by treatment interaction?
+
+Randomized trials do not preclude interaction effects.
+
+  - One might suspect that the treatment acts differently on younger versus older participants.
+
+\scriptsize
+```{r,eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(drs)
+
+coxph(formula = Surv(obstime, fail) ~ tx*age + cluster(id),
+      data = drs)
+```
+
+
+### Some consequences of this modeling strategy
+
+Need not specify correlation structure among failure types.
+
+Does not exploit correlation structure that may be evident in some data.
+
+Requires that each observational unit (usually subject) have same number of failure types.
+
+Some failure types may produce dependent censoring for other types.  
+
+  - Why might that happen?
+
+### The robust variance estimator
+
+The robust variance is based on a ``sandwich'' estimate
+\[
+   V = {\cal I}^{-1} B {\cal I}^{-1},
+\]
+where
+
+- ${\cal I}^{-1}$ is the usual variance estimate of a Cox model, the inverse of the information matrix ${\cal I}$.
+- $B$ is a correction factor.
+
+This form of a variance estimate is widely used with generalized estimating equations and has been variously named
+
+- Huber sandwich estimator   
+- White's estimate
+- Horvitz-Thompson estimator   
+- Infinitesimal or approximate jacknife
+- WLE estimate
+
+
+### Robust variance estimate in the Cox model
+
+For a Cox model, the *WLW* estimator becomes, after some calculations, $D^\prime D$, where $D$ is the matrix of *dfbeta* residuals from \texttt{coxph}.
+
+The robust variance estimate is (essentially) a jackknife estimate of the covariance of the coefficient estimates.
+
+The jackknife statistic was one of the early versions of `bootstrap' estimates of variance calculated through resampling.
+
+The robust variance estimate is approximate, since the dfbeta residuals are approximate changes in coefficients when cases are dropped.
+
+ 
+
+# Conditional (Frailty) models for correlated event times
+
+### Frailty models
+
+
+Suppose data is made up of $J$ clusters, and that the $j^{th}$ cluster has $n_j$ members.
+
+Assume that conditional on an unobservable variable $\psi_j$ in cluster $j$, the failure times within a cluster are independent with hazard
+	\[
+		\lambda_j(t \mid \bZ_j) = \psi_j \lambda_0(t)
+		\exp(\bbeta^\prime \bZ_j).
+	\]
+$\psi$ is called the frailty term.
+
+Assume that the cluster-specific frailties $\psi_j (j = 1,\dots,J)$ are independent and identically distributed, and that failure times in different clusters are independent.
+
+### Estimation for frailty models
+
+Specify the marginal distribution for $\psi$.
+
+- Gamma frailty -- Clayton (1978)
+
+- Positive stable frailty -- Hougaard (1986a,
+		1986b, 1987)
+
+- Lognormal -- McGilchrist and Aisbett (1991)
+
+Write down joint likelihood for $(T, \psi)$ as $[T | \psi] [\psi]$, then integrate out $\psi$.  More later on other ways to do this.
+
+Estimation strategy outlined above suggests that one must have a parametric model for $T$, but \texttt{coxph} can also incorporate frailty terms.
+
+Parametric frailty models can be fit using \texttt{survreg} in the \texttt{survival} package, or the more extensive package \texttt{parfm}.
+
+
+### Consequences of the frailty models
+
+Intellectually appealing.
+
+Closely related to stratified models.
+
+Regression parameter $\bbeta$ must be interpreted only within clusters.  
+
+ - In fact, PH model must be interpreted within cluster.
+
+ - Theory shows that only the positive stable frailty distributions lead to marginal proportional hazards model. 
+
+Computational problems are substantial, but progress is being made.
+
+For cluster size $>$ 2, basic model $\longrightarrow$ symmetric correlation structure.   Work has been done to relax that.
+
+### Adding frailty terms to coxph with drs
+
+\scriptsize
+```{r eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(drs)
+
+coxph(formula = Surv(obstime, fail) ~ tx + age + 
+        frailty(id, distribution = "gamma"), data = drs)
+```
+
+### What about the age by treatment interaction examined earlier?
+
+\scriptsize
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+library(eventtimedata)
+data(drs)
+
+coxph(formula = Surv(obstime, fail) ~ tx*age + 
+        frailty(id, distribution = "gamma"), data = drs)
+```
+
+# Models for repeated events
+
+### Introduction
+
+Correlated failure time data may arise in repeated event data.
+
+  - In \texttt{drs}, the correlated failure times were measured on separate eyes and both measured from time 0.
+
+Perhaps best illustrated with the \texttt{cgd} dataset in the \texttt{survival} package.
+
+CGD is a heterogeneous group of rare inherited disorders characterized by recurrent infections beginning in childhood.
+
+### CGD dataset
+
+Data from 1986 trial conducted by International CGD Study Group.\footnote{
+Data appears in Appendix D.2 of Fleming and Harrington.}
+
+ - Randomized, double-blind trial comparing placebo with recombinant $\gamma$ interferon (rIFN-g), each administered 3 times daily for a year.
+
+ - 128 patients: 65 on placebo, 63 on rIFN-g.
+
+ - Primary outcome: time to first serious infection.
+
+ - Data collected on all serious infections until the end of follow-up, 400 days or less for nearly all patients.
+
+- Trial reported in *NEJM* (1991) **324: 509-516**.  
+
+
+### CGD dataset\ldots
+
+Data appears in two formats in the package \texttt{survival}.
+
+The dataset \texttt{cgd0} is the data as collected and as it appears in Fleming and Harrington.
+
+\footnotesize
+```{r, eval=TRUE, echo=FALSE}
+library(survival)
+data("cgd0")
+cgd0[1:6, c(1,4,6,13:16)]
+```
+
+
+
+### CGD dataset\ldots
+
+The dataset \texttt{cgd} has been transformed to the multi-line per case format used for correlated failure time data in \textsf{R}.
+
+\footnotesize
+```{r, eval=TRUE, echo=FALSE}
+library(survival)
+data("cgd")
+cgd[1:5, c(1,4,6,13:16)]
+```
+
+
+
+### Some simple summary statistics
+
+Observed events in placebo group:
+
+- 30 out of 65 individuals with at least one event
+
+- 56 total infections
+
+Observed events in treatment group:
+	
+- 14 out of 63 individuals with at least one event
+
+- 20 total infections
+
+### Modeling options
+
+There are three common approaches to data like these:
+
+- Analyze time to first event, ignoring the subsequent events
+
+- Multiplicative intensity (MI) model, also called the Andersen-Gill (AG) model
+
+- Marginal models for the infection times
+
+- Conditional (frailty) models
+
+
+### The Multiplicative Intensity (MI) model
+
+The MI model is a natural consequence of proportional hazards regression and Poisson regression.  
+
+Two approaches available:
+
+- Intuitive ideas based on Poisson process, analysis of binary data
+
+- More formal approach based on martingale theory
+
+
+Simple approach first.  Suppose an event may be observed repeatedly in same subject with continued follow-up.
+
+ - CGD data is a good concrete example to keep in mind.
+
+ - Let $N(t)$ be the number of observed events in a given subject by time $t$.
+
+ - In the Cox model for failure time data, $N(t) \leq 1$.
+
+
+### The Multiplicative Intensity (MI) model\ldots
+
+If    
+
+- $T$ is time to an event,  
+- $C$ is potential censoring time, and
+- $\bZ^\prime = (Z_1,\ldots, Z_p)$ is $p$-dimensional covariate vector,
+  
+    - For simplicity, assume the covariates are not time-dependent.   
+	
+then \ldots
+\begin{align*}
+\lambda(t \mid \bZ )dt &=  P (t \leq T < t+dt, T \leq C
+	\mid \bZ, T \ge t, C \ge t) \\
+&= \lambda_0(t) \exp(\bbeta^\prime \bZ).
+\end{align*}
+
+### Counting processes
+
+In the counting process model, 
+\[
+	dN(t) = N(t) - N(t-)
+\]
+is a binary variable analogous to $I(t \leq T < t + dt, T \leq C)$.  
+
+Let 
+
+- ${\cal F}_t$ represent the `history' of the observable data over $[0,t]$, and 
+
+- $Y(t) = 1$ if subject is at risk for an observable failure at time $t$ and 0 otherwise.
+
+It is reasonable to model
+\[
+	\mbox{E} \{dN(t) \mid {\cal F}_{t-}\} = Y(t) \lambda_0 (t)  
+		\exp(\bbeta^\prime \bZ) dt.
+\]
+
+
+### Counting processes\ldots
+
+Relationship on previous slide specifies `incremental' mean for $N$. 
+
+For second moment, let $dA(t) = Y(t) \lambda_0 (t) \exp(\bbeta {\bf Z}) dt$.  Then
+\[	\mbox{Var} \{dN(t) \mid {\cal F}_{t-}\} = 
+	dA(t)[1-dA(t)] \approx dA(t). \]
+	
+With this specification, $N(t)$ is Poisson-like with mean and
+variance function $A(t)$.
+
+We can think of the observable data as Poisson-like count data with 
+
+- Variable amounts of follow-up per person.
+
+- An event rate that may depend not only on covariates but time-dependent functions of the history of the observables. Note that dependence is multiplicative with respect to a common baseline rate function $\lambda_0$.
+
+- Possible gap times in the time-at-risk.
+
+### Martingale specification of the MI/AG model
+
+This approach is due to Andersen \& Gill (1982); discussed in detail in ABGK (1993) and Fleming \& Harrington (1991).
+
+We only give terminology here:
+
+A process $M$ is called a martingale with respect to a specification of history, ${\cal F}_t, t \ge 0$ if 
+
+1. $M(t)$ is adapted to ${\cal F}_t$ for each $t$,
+
+2. $\mbox{E}|M(t)| < \infty$ for all $t < \infty$, and
+
+3. $\mbox{E}\{M(t+s)|{\cal F}_t\} = M(t)$ a.s. for all $s\geq 0,t\geq 0$. 
+ 
+Condition (3) implies that $\mbox{E}\{M(t) - M(u)|{\cal F}_u\} = 0$ for all $u \le t$, 
+
+This is sometimes written informally as  $\mbox{E}\{dM(t) | {\cal F}_{t-}\} = 0.$
+
+### Martingale approach
+
+A *martingale model* for a counting process $N(t)$ is a specification of a time-dependent rate function $A(t)$, called the compensator for $N$, and a history of observables ${\cal F}_t$ such that 
+\[
+	M(t) = N(t) - A(t)
+\] 
+is an ${\cal F}_t$-martingale.
+
+### Consequences of modeling strategy
+
+- Standard partial likelihood methods lead to unbiased and asymptotically normal estimators.
+
+- Parameter estimates have simple interpretation.
+
+- Much of technology for standard Cox model (time-dependent covariates, diagnostics, etc.) applies here.
+
+- The centered process $M(t)$ has independent increments, a strong assumption about dependence structure. This implies that the inter-event times within an individual are independent.
+
+- Requires common baseline hazard within strata, and time origin must be chosen carefully.
+
+### Fitting the AG model
+
+Fitting the AG model in \textsf{R} uses the multi-line \texttt{t-start, t-stop} form of a survival dataset.
+
+Start with a simple model
+\footnotesize
+
+```{r eval=FALSE, echo=TRUE}
+library(survival)
+data(cgd)
+coxph(Surv(tstart, tstop, status) ~ treat + age 
+      + cluster(id), data=cgd)
+```
+
+### Fitting the AG model
+
+\footnotesize
+
+```{r eval=TRUE, echo=FALSE}
+library(survival)
+data(cgd)
+coxph(Surv(tstart, tstop, status) ~ treat + age 
+      + cluster(id), data=cgd)
+```
+
+### Strengths/weaknesses
+
+Strength of the model:
+
+- Easy to interpret
+
+Weaknesses:
+
+- The estimation procedure assumes that the repeated inter-event times are independent.
+
+- Treatment effects are constant across inter-event times.
+
+### Using the WLW approach with CGD data
+
+The WLW approach with these data assumes
+
+- Event types are the event number (i.e., first event, second event, etc.) per person.
+
+- Event types define strata.
+
+- Each failure time for event type is measured from time 0 on the original scale.
+
+    - The waiting time for the second event will be larger than for the first event.
+    
+    - The waiting time for the third event will be larger than for the first and second events.
+    
+    - etc \ldots
+    
+Details for a similar problem in the lab.
+
+### WLW with CGD data\ldots
+
+\footnotesize
+```{r eval=TRUE, echo=TRUE}
+library(eventtimedata)
+data(cgd.wlw)
+print(cgd.wlw[1:5, c(1,4,13:15)])
+n = length(cgd.wlw$time)
+print(cgd.wlw[(n-4):n, c(1,4,13:15)])
+```
+
+### WLW with CGD data\ldots
+
+\footnotesize
+```{r eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(cgd.wlw)
+coxph(Surv(time, status) ~ treat + age + strata(enum)
+      + cluster(id), data = cgd.wlw)
+```
+    

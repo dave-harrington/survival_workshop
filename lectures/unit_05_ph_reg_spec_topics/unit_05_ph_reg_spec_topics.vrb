@@ -1,0 +1,27 @@
+\frametitle{\protect \hypertarget {wlw-with-cgd-data-1}{WLW with CGD data\ldots }}
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(survival)}
+\KeywordTok{library}\NormalTok{(eventtimedata)}
+\KeywordTok{data}\NormalTok{(cgd.wlw)}
+\KeywordTok{coxph}\NormalTok{(}\KeywordTok{Surv}\NormalTok{(time, status) }\OperatorTok{~}\StringTok{ }\NormalTok{treat }\OperatorTok{+}\StringTok{ }\NormalTok{age }\OperatorTok{+}\StringTok{ }\KeywordTok{strata}\NormalTok{(enum)}
+      \OperatorTok{+}\StringTok{ }\KeywordTok{cluster}\NormalTok{(id), }\DataTypeTok{data =}\NormalTok{ cgd.wlw)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(time, status) ~ treat + age + strata(enum) +
+##     cluster(id), data = cgd.wlw)
+##
+##                coef exp(coef) se(coef) robust se     z       p
+## treatrIFN-g -1.4144    0.2431   0.2719    0.3674 -3.85 0.00012
+## age         -0.0379    0.9628   0.0134    0.0176 -2.15 0.03144
+##
+## Likelihood ratio test=37.9  on 2 df, p=5.92e-09
+## n= 896, number of events= 76
+\end{verbatim}
+

@@ -1,0 +1,25 @@
+\frametitle{\protect \hypertarget {km-of-recidivism-with-confidence-bands}{KM of recidivism, with confidence bands}}
+
+\footnotesize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(survival)}
+\KeywordTok{library}\NormalTok{(eventtimedata)}
+\KeywordTok{data}\NormalTok{(}\StringTok{"rossi"}\NormalTok{)}
+\NormalTok{rossi.recidivism.km <-}\StringTok{ }\KeywordTok{survfit}\NormalTok{(}\KeywordTok{Surv}\NormalTok{(week, arrest) }\OperatorTok{~}\StringTok{ }\NormalTok{fin, }
+                               \DataTypeTok{data =}\NormalTok{ rossi)}
+\KeywordTok{plot}\NormalTok{(rossi.recidivism.km, }\DataTypeTok{lty =} \DecValTok{2}\OperatorTok{:}\DecValTok{3}\NormalTok{, }\DataTypeTok{col =} \DecValTok{3}\OperatorTok{:}\DecValTok{4}\NormalTok{, }\DataTypeTok{mark.time =} \OtherTok{TRUE}\NormalTok{, }
+     \DataTypeTok{xlab =} \StringTok{"Weeks"}\NormalTok{, }
+     \DataTypeTok{ylab =} \StringTok{"Probability of Re-arrest"}\NormalTok{, }
+     \DataTypeTok{axes =} \OtherTok{FALSE}\NormalTok{, }
+     \DataTypeTok{conf.int =} \OtherTok{TRUE}\NormalTok{,}
+     \DataTypeTok{main =} \StringTok{"KM of Recidivism Probability, with Conf. Bands"}\NormalTok{,}
+     \DataTypeTok{cex =} \FloatTok{0.6}\NormalTok{, }\DataTypeTok{cex.main =} \FloatTok{0.8}\NormalTok{)}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\KeywordTok{legend}\NormalTok{(}\DecValTok{10}\NormalTok{, }\FloatTok{.5}\NormalTok{, }\KeywordTok{c}\NormalTok{(}\StringTok{"Financial Support"}\NormalTok{, }\StringTok{"No Financial Support"}\NormalTok{),}
+       \DataTypeTok{lty =} \DecValTok{2}\OperatorTok{:}\DecValTok{3}\NormalTok{, }\DataTypeTok{col =} \DecValTok{3}\OperatorTok{:}\DecValTok{4}\NormalTok{, }\DataTypeTok{cex =} \FloatTok{0.6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
