@@ -1,0 +1,363 @@
+---
+title: "Lab 4, PH Regression Special Topics: Solutions"
+author: "Dave Harrington"
+date: "May 2018"
+
+fontsize: 11pt
+geometry: margin=1in
+output: pdf_document
+---
+
+
+#### Problem 1: Plots based on cumulative hazard functions
+
+a) Suppose the baseline hazard function is a constant $\lambda_0$.  Show that a plot of $\log[-\log(\widehat{S}(t))]$ versus $\log(t)$ for a categorical covariate $Z$ should be both approximately linear in $\log(t)$ and parallel for the different  values of $Z$.  
+
+b) Show that if $T_i$ (the survival time for the $i^{th}$ individual) has survivorship function $S_i(t)$, then 
+
+    - the transformed random variable $S_i(T_i)$  will have a uniform distribution on $[0,1]$, and
+
+    - $-\log[S_i(T_i)]$ is from a unit exponential distribution.
+
+
+
+
+### Problem 1 Solution.
+
+a) The PH model with a constant baseline hazard $\lambda_0(t) = \lambda_0$ satisfies
+\begin{align*}
+  \lambda(t;Z) &= \lambda_0 \exp(\beta Z) \\
+  S(t;Z) &= \exp(-\lambda_0 t e^{\beta Z}) \\
+  -\log(S(t;Z)) &= \lambda_0 t e^{\beta Z} \\
+  \log(-\log(S(t;Z))) &= \log(\lambda_0) + \log(t) + \beta Z
+\end{align*}
+
+The last equation is linear in $\log(t)$. For different values of a categorical covariate $Z$, the slope will be constant but the intercepts will change.
+
+The function $\log(-\log(S(t;Z)))$ is called the complementary log-log function. The last equation illustrates why the \texttt{fun = "cloglog"} option in \texttt{plot(survfit()} plots complementary log-log versus log($t$).
+
+b) The first claim is an example of the more general probability integral transform in statistical theory.  Suppose $X$ is a random variable with distribution function $F$ that is strictly monotonically increasing and hence invertible.  Then $0 \leq F(X) \leq 1$ and for a value $0\leq a \leq 1$, 
+  \begin{align*}
+  P(F(X) \leq a ) &= P(X \leq F^{-1}(a)) \\
+     &= F(F^{-1}(a)) \\
+     &= a.
+  \end{align*}
+
+    If $S$ is the survival function corresponding to $F$ and $T$ is the random variable, then 
+  \begin{align*}
+  P(S(T) \leq a) &= P( 1 - F(T) \leq a) \\
+    &= P(F(T) \geq 1 - a) \\
+    &= a.
+  \end{align*}
+
+    With careful definitions, the assumption that $F$ be strictly increasing can be relaxed.
+    
+    To show that $-\log[S_i(T_i)]$ is from a unit exponential distribution:
+    \begin{align*}
+    P(-\log[S_i(T_i)] \leq t ) &= P(S_i(T_i) \geq e^{-t}) \\
+      &= 1 - e^{-t},
+    \end{align*}
+which is the cumulative distribution function of a unit exponential.
+
+\newpage
+
+#### Problem 2: Null model residuals
+
+In the Rossi recidivism example from lecture, what causes the "line" of residuals from the null model just below $y = -0.2$?  Explore your conjecture in the data.
+
+### Problem 2 Solution.
+
+The martingale residuals have the form $\delta_i - \widehat{\Lambda_i}(X_i)$, where $\delta_i$ is the usual failure time indicator and $\widehat{\Lambda}_i$ is the estimated cumulative hazard for the $i^{th}$ case.   In a null model, $\widehat{\Lambda}_i$ does not depend on any covariates and so has the same form for each case; i.e., $\widehat{\Lambda}_i(X_i) = \widehat{\Lambda}(X_i)$.
+
+The censored cases will all have martingale residual $-\widehat{\Lambda}(X_i)$, since $\delta_i$ = 0 for those cases.  The largest negative residuals will occur at the largest censoring times. In the \texttt{rossi} dataset, all the censoring happened at week 52.  An inspection of the \texttt{rossi} dataset shows that there are 318 cases censored at week 52.  These cases, of course, have various ages.  The scatterplot of week versus age shows the censored cases in red and the uncensored cases in green.
+
+
+```{r}
+library(survival)
+library(eventtimedata)
+data(rossi)
+plot(rossi$age, rossi$week, col = 2 + rossi$arrest)
+```
+
+\newpage
+
+#### Problem 3: Residuals for the MAC prevention trial analysis
+
+This exercise takes a closer look at the data in the MAC prophylaxis trial, examining regression diagnostics. See the last lab for a discussion of the study background. 
+
+The last lab examined the possibility of treatment effects and the association of CD4 counts for time to death in both adjusted and unadjusted models, and explored the association of sex with outcome, including the possibility of a sex by treatment interaction. The last lab also examined the assumption of proportional hazards in the unadjusted analysis of treatment effects.  This problem uses regression diagnostics to examine the quality of the fit of a PH model.
+
+a) Fit a Cox PH model to the following variables: \texttt{age}, \texttt{sex}, \texttt{karnof}, \texttt{antiret}, \texttt{cd4}, and \texttt{treatment}. Recall that the \texttt{treatment} variable was constructed in the last lab.
+
+b) Use martingale residuals to explore whether the variable \texttt{age} might be better modeled with a transformation.
+
+c) Do the same with the variable \texttt{karnof} and describe what you see.
+
+d) The model in the last lab used the categorical variable \texttt{cd4cat}. Do the residual plots suggest that was a good idea?
+
+e) Using \texttt{cd4} rather than \texttt{cd4cat} might result in certain cases with very low or high CD4 counts having large leverage on the estimated coefficient (of \texttt{cd4}).  Examine whether that might be the case with the appropriate type of residual.
+
+f) Repeat the analysis in part e) for the variable \texttt{age}.
+
+g) In a model that includes only the variable \texttt{sex}, use a $\log(-\log(\widehat{S}(t))$ vs $\log(t)$ plot to examine whether the PH assumption holds for \texttt{sex}.
+
+h) Use the scaled Schoenfeld residuals to examine the proportional hazards assumption for \texttt{sex}.  Does this approach suggest the same conclusion as the one from part g)?
+
+i) Use \texttt{cox.zph()} to explore the PH assumption for all the variables in the full model fit in part a), and describe the results.    
+
+\newpage
+
+### Problem 3 Solution.
+
+a) See below for the model fit.
+
+```{r eval=TRUE, echo=TRUE}
+library(survival)
+library(eventtimedata)
+data(mac)
+
+#recode treatment as a factor variable
+treatment = rep(1, length(mac$rif))
+treatment[mac$clari == 1] = 2
+treatment[mac$clari + mac$rif == 0] = 3
+mac$treatment = factor(treatment, labels =
+                         c("rif", "clari", "clari + rif"))
+
+#cox ph model
+mac.ph = coxph(Surv(dthtime, dthstat) ~ age + sex + karnof + antiret
+      + cd4 + treatment, data = mac)
+summary(mac.ph)
+```
+
+b) The smoothed line is roughly linear, which indicates that the assumption of linearity in the log hazard for age is reasonable. 
+
+```{r}
+#martingale residuals plotted against age
+mart.resids = residuals(mac.ph, type = "martingale")
+plot(mac$age, mart.resids)
+lines(lowess(mac$age, mart.resids, iter = 0), lty = 2,
+      col = "red")
+```
+
+
+c) There are relatively few observations with Karnofsky score 50 or 60. Linearity seems reasonable across the groups with Karnofsky score of 70 or higher.
+
+```{r}
+#martingale residuals plotted against karnof
+plot(mac$karnof, mart.resids)
+lines(lowess(mac$karnof, mart.resids, iter = 0), lty = 2,
+      col = "red")
+```
+
+d) There is some nonlinearity observable at the lower range of \texttt{cd4}, where most of the data are. This suggests that using the categorical variable \texttt{cd4cat} may be more appropriate.
+
+```{r}
+#martingale residuals plotted against cd4
+plot(mac$cd4, mart.resids)
+lines(lowess(mac$cd4, mart.resids, iter = 0), lty = 2,
+      col = "red")
+```
+
+
+e) To identify cases with high leverage, use either the dfbeta residuals or the standardized dfbetas. The plot below shows the dfbeta residuals plotted against patient ID. There are some cases with somewhat high dfbeta values compared to others, but none seem especially influential individually.
+
+```{r}
+#dfbeta residuals for cd4
+dfbeta = residuals(mac.ph, type = "dfbeta")
+colnames(dfbeta) = names(mac.ph$coef)
+plot(mac$patid, dfbeta[, "cd4"], xlab = "patient id",
+     ylab = "cd4 delta - beta")
+abline(h = 0, lty = 2, col = "red")
+```
+
+f) There is an observation that has large leverage on the age coefficient: patient 1164, who is the oldest patient in the dataset at age 70.
+
+```{r}
+#dfbeta residuals for age
+plot(mac$patid, dfbeta[, "age"], xlab = "patient id",
+     ylab = "age delta - beta")
+abline(h = 0, lty = 2, col = "red")
+
+which.min(dfbeta[, "age"])
+mac[1164, "age"]
+```
+
+g) The PH assumption appears to hold for \texttt{sex}: the lines are roughly linear and parallel.
+
+```{r}
+#complementary log-log plot, sex
+mac.sex = survfit(Surv(dthtime, dthstat) ~ sex, data = mac)
+plot(mac.sex, mark.time = F, lty = 1:2, col = 2:3,
+     fun = "cloglog", xlab = "log(t)", ylab = "log(-log(S(t)))")
+```
+
+h) The $p$-value is large; the test is not statistically significant and there is not evidence against the hypothesis that the PH assumption holds. From the plot, the smoothing line is approximately horizontal. This agrees with the conclusion from part g).
+
+```{r}
+#scaled schoenfield residuals, sex
+mac.ph.sex = coxph(Surv(dthtime, dthstat) ~ sex, data = mac)
+cox.zph(mac.ph.sex)
+plot(cox.zph(mac.ph.sex), col = "red")
+```
+
+i) The global test has a significant $p$-value, which suggests that the proportional hazards assumption does not hold. The $p$-value for \texttt{karnof} is highly significant, with $p$-value of 0.002; the plot shows some evidence of a trend over time. Plots for the other covariates show relatively linear smoothing fits. 
+
+```{r}
+#explore PH for all variables
+cox.zph(mac.ph)
+plot(cox.zph(mac.ph), col = "red")
+```
+
+
+\newpage
+
+#### Problem 4: Correlated event times
+
+Patients with superficial bladder cancer experience periodic recurrences of the disease in lesions that are generally limited to the urothelial lining of the bladder.  The risk of metastatic disease is low, and these superficial lesions can be removed surgically or treated with chemotherapy. Unfortunately, the lesions return and the disease can lead to death or invasive surgery.
+
+In their original paper on the analysis of correlated event times, Wei, Lin and Weissfeld used the data from a clinical trial of three treatments for superficial bladder cancer: thiotepa, pyridoxine (vitamin B6), and a placebo. The analysis presented in their paper examined the treatment effect of thiotepa versus placebo.
+
+The \texttt{survival} package contains three versions of the bladder cancer dataset: \texttt{bladder1}, \texttt{bladder}, and \texttt{bladdder2}. 
+
+  - The dataset \texttt{bladder1} contains the full data from the study, with all treatment arms and all 118 subjects. 
+  
+  - The dataset \texttt{bladder} contains data on 85 subjects with non-zero follow-up who were assigned to either thiotepa or placebo and only the first four recurrences for any patient. In this version of the dataset, the four tumors being followed are labeled with the \texttt{enum} variable, so there are four lines per case, and each line has the follow-up time measured from 0 (\texttt{stop}) and an event status indicator for that tumor (\texttt{event}). The \texttt{enum} variable is used for  strata in a WLW analysis. 
+
+  - The dataset \texttt{bladder2} is in the start-stop format used in the Andersen-Gill model for repeated events. The recurrences are treated as repeated events, with the start time for the next recurrence beginning at the stop time for the previous recurrence.  
+  
+For more detail (and perhaps more clarity!) refer to the documentation for \texttt{bladder} in the \texttt{survival} package and have a look at \texttt{bladder} and \texttt{bladder2} in the RStudio data browser.
+
+a) Explain the how the assumptions differ between using a marginal model based on the original WLW approach and a repeated events model based in AG. 
+
+b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa on the time to first recurrence of bladder cancer.
+
+c) Do the data support the assumption of proportional hazards on the time to first recurrence?
+
+d) The variables \texttt{number} and \texttt{size} are the number of tumors and the size of the largest tumor (cm) at initial presentation.   Does the estimated effect of treatment change when the model is adjusted for these variables?
+
+e) In this model, do  \texttt{number} and \texttt{size} seem to be modeled correctly with proportional hazards?
+
+f) The WLW paper also examined the possibility of a different treatment effect on the first through fourth recurrences. There are two ways to do this (at least!). One way is to fit separate models for each of the strata defined by the \texttt{enum} variable. Another way is to use a treatment by stratum interaction for each of the strata.
+
+    Explain the different assumptions behind the two approaches, do both analyses, and describe what you see.
+
+g)  Repeat parts b) - e), but using an Andersen-Gill model. Describe the results and explain how they differ from the WLW approach.  How does the interpretation of the coefficient for treatment differ between the two models?
+
+
+### Problem 4 Solution.
+
+a) A marginal model based on the WLW approach models each repeated event as a separate process and allows for a separate underlying hazard to be estimated for each event; failure types are assumed to define different strata. 
+
+    In the AG repeated events model, a common baseline hazard is estimated for all events. The model assumes that given the covariates and time-dependent functions of the patient history, the time increments between events are conditionally uncorrelated; each recurrence is assumed to be an independent event.
+
+b) The estimated hazard ratio for the unadjusted treatment effect of thiotepa is 0.641, with $p$-value of 0.15. There is not significant evidence of a treatment effect on the time to first recurrence of bladder cancer.
+
+```{r, echo=TRUE, eval=TRUE}
+library(survival)
+data(bladder)
+
+#marginal model, unadjusted
+coxph(Surv(stop, event) ~ rx + cluster(id), data = bladder)
+```
+
+c) Yes, the data support the assumption of proportional hazards on the time to first recurrence. The $p$-value is not significant and the plot does not show a pattern in the residuals over time.
+
+```{r}
+#assess PH with cox.zph
+bladder.zph = cox.zph(coxph(Surv(stop, event) ~ rx + cluster(id), 
+                            data = bladder))
+bladder.zph
+plot(bladder.zph, col = "red")
+```
+
+d) After adjusting for these variables, the estimated hazard ratio becomes 0.557, with $p$-value of 0.06. There is stronger evidence for a treatment effect than in the unadjusted model.
+
+```{r}
+#marginal model, adjust for size and number
+coxph(Surv(stop, event) ~ rx + size + number + cluster(id) + 
+        strata(enum), data = bladder)
+```
+
+e) Proportional hazards seems to be a reasonable assumption for \texttt{number} and \texttt{size}.
+
+```{r}
+#assess PH for model with size and number
+bladder.size.num.zph = cox.zph(coxph(Surv(stop, event) ~ rx + size + 
+                                       number + cluster(id), data = bladder))
+
+bladder.size.num.zph
+plot(bladder.size.num.zph, col = "red")
+```
+
+f)  The analysis fitting separate models for each stratum does not make the assumption of a constant treatment effect for each stratum, and in addition makes no assumption about the way the effect might change across strata.  The stratum effect is absorbed into the unspecified baseline hazard for each stratum.  Since each stratum is treated as a separate dataset, no information is `shared' across the strata.
+
+    The model which uses a stratum by treatment interaction also does not assume constant treatment effect across the strata, but does assume that the stratum effect has a proportional effect on the failure rate. That effect is estimated by the coefficient for the interaction terms and is not absorbed into the baseline hazard.  This model uses all the data in a single analysis but does make a strong assumption about the stratum effect.
+
+    The detailed output from the two approaches is different, of course.  In the stratified model with interactions, the main effect for treatment cannot be interpreted directly and has to be calculated for each stratum by combining the treatment and stratum effect for a particular stratum. Qualitatively, however, the results are similar. In both approaches, the treatment appears to reduce the rate of occurrences, though none of the treatment effects are significant. 
+
+
+```{r}
+#separate marginal models for each strata
+coxph(Surv(stop, event) ~ rx + cluster(id), 
+      data = subset(bladder, bladder$enum == 1))
+coxph(Surv(stop, event) ~ rx + cluster(id), 
+      data = subset(bladder, bladder$enum == 2))
+coxph(Surv(stop, event) ~ rx + cluster(id), 
+      data = subset(bladder, bladder$enum == 3))
+coxph(Surv(stop, event) ~ rx + cluster(id), 
+      data = subset(bladder, bladder$enum == 4))
+
+#create enum.factor
+enum = rep(1, length(bladder$enum))
+enum[bladder$enum == 2] = 2
+enum[bladder$enum == 3] = 3
+enum[bladder$enum == 4] = 4
+
+bladder$enum.factor = factor(enum, labels = 1:4)
+
+#marginal model, treatment by stratum interaction
+coxph(Surv(stop, event) ~ rx*enum.factor + cluster(id), 
+      data = bladder)
+```
+
+g)  The main differences between the AG and WLW analyses are as follows.
+
+    - The interpretation of the treatment effect is different. In the AG  model, the estimated treatment effect estimates the way in which the treatment changes the rate of recurrence from one recurrence time to the next.  In the WLW approach, each recurrence time is treated as if it were measured from diagnosis and the treatment effect is an estimate of the way treatment changes the time to each recurrence.  Much more biological or clinical background is needed to say  which approach is better, but if at the time of a recurrence any visible tumors are removed, then the AG approach modeling the inter-occurrence times seems preferable.
+
+    -  In both approaches, the estimated treatment effect is negative, and so treatment seems to reduce the rate at which recurrences happen. In models that do not adjust for size and number of tumors, the treatment effect is not significant.  In adjusted analyses, both approaches yield nearly significant treatment effects.
+
+    - Both approaches suggest the possibility of a time-dependent treatment effect, but not a statistically significant one.
+
+    - The diagnostic plots suggest that the AG model fits the data quite well.
+
+    - There are many more important details that can be pointed out, but (for me, at least) there is a particularly important `take-home' point.  The two approaches both suggest that the treatment may reduce the rate of recurrences in bladder cancer, but the study is not large enough to establish that definitively.  There is not enough information in the problem statement to allow one to infer which modeling approach is more appropriate biologically, but when different approaches yield the same overall conclusion, there may be no need to claim that one approach is superior for this setting.
+
+
+```{r}
+data(bladder2)
+
+#AG model, unadjusted
+coxph(Surv(start, stop, event) ~ rx + cluster(id), data = bladder2)
+
+#assess PH with cox.zph
+bladder.ag.zph = cox.zph(coxph(Surv(start, stop, event) ~ rx + 
+                                 cluster(id), data = bladder2))
+bladder.ag.zph
+plot(bladder.ag.zph, col = "red")
+
+#AG model, adjust for size and number
+coxph(Surv(start, stop, event) ~ rx + size + number + cluster(id),
+      data = bladder2)
+
+#assess PH for model with size and number
+bladder.ag.adj.zph = cox.zph(coxph(Surv(start, stop, event) ~ rx + size + 
+                               number + cluster(id), data = bladder2))
+bladder.ag.adj.zph
+plot(bladder.ag.adj.zph, col = "red")
+```
+
+
+
+
+
+

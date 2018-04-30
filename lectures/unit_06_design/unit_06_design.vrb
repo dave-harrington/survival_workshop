@@ -1,0 +1,17 @@
+
+\scriptsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(Hmisc)}
+\KeywordTok{cpower}\NormalTok{(}\DataTypeTok{tref =} \FloatTok{0.75}\NormalTok{, }\DataTypeTok{n =} \DecValTok{50}\OperatorTok{*}\DecValTok{5}\NormalTok{, }\DataTypeTok{mc =} \FloatTok{0.5}\NormalTok{, }
+       \DataTypeTok{r =} \DecValTok{28}\NormalTok{, }\DataTypeTok{accrual=} \DecValTok{3}\NormalTok{, }\DataTypeTok{tmin =} \DecValTok{3}\NormalTok{, }\DataTypeTok{noncomp.c=}\DecValTok{0}\NormalTok{, }\DataTypeTok{noncomp.i=}\DecValTok{20}\NormalTok{, }
+       \DataTypeTok{alpha=}\FloatTok{0.05}\NormalTok{, }\DataTypeTok{pr=}\OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Power
+## 0.77438
+\end{verbatim}
+

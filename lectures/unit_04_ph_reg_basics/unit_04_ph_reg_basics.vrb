@@ -1,0 +1,22 @@
+\frametitle{\protect \hypertarget {a-larger-model}{A larger model}}
+
+\footnotesize
+
+\begin{verbatim}
+## Call:
+## coxph(formula = Surv(tstart, tstop, relapse) ~ treat * treat.off +
+##     beck + age + race + strata(site), data = uis2)
+##
+##                         coef exp(coef) se(coef)     z       p
+## treatlong           -0.53187   0.58751  0.24247 -2.19 0.02827
+## treat.off            2.24928   9.48089  0.19729 11.40 < 2e-16
+## beck                 0.00927   1.00931  0.00474  1.95 0.05076
+## age                 -0.00291   0.99710  0.00747 -0.39 0.69729
+## raceother           -0.41081   0.66311  0.11133 -3.69 0.00022
+## treatlong:treat.off  0.68670   1.98715  0.26391  2.60 0.00927
+##
+## Likelihood ratio test=370  on 6 df, p=0
+## n= 1099, number of events= 471
+##    (75 observations deleted due to missingness)
+\end{verbatim}
+

@@ -1,0 +1,927 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[ignorenonframetext,]{beamer}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Introduction and Background},
+            pdfauthor={Dave Harrington},
+            colorlinks=true,
+            linkcolor=darkblue,
+            citecolor=darkblue,
+            urlcolor=darkblue,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\newif\ifbibliography
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+\setbeamertemplate{part page}{
+\centering
+\begin{beamercolorbox}[sep=16pt,center]{part title}
+  \usebeamerfont{part title}\insertpart\par
+\end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+\centering
+\begin{beamercolorbox}[sep=12pt,center]{part title}
+  \usebeamerfont{section title}\insertsection\par
+\end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+\centering
+\begin{beamercolorbox}[sep=8pt,center]{part title}
+  \usebeamerfont{subsection title}\insertsubsection\par
+\end{beamercolorbox}
+}
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\usepackage{amsmath,verbatim}
+
+\usepackage{fancyvrb}
+\usepackage{manfnt}
+\usepackage[normalem]{ulem}
+
+%\usepackage[colorlinks=true]{hyperref}
+
+\mode<presentation>{\usetheme{Malmoe}}
+
+%\synctex=1
+
+\setbeamertemplate{headline}{}
+
+
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamerfont{frametitle}{shape=\scshape}
+\setbeamertemplate{itemize items}[circle]
+\setbeamercovered{transparent}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]{} 
+
+
+\definecolor{forest}{rgb}{0, .5, 0}
+\definecolor{brick}{rgb}{.5, 0, 0}
+\definecolor{darkgreen}{rgb}{0, .5, 0}
+\definecolor{darkred}{rgb}{.7, .15, .15}
+\definecolor{darkblue}{rgb}{0, 0, .5}
+\definecolor{Green}{rgb}{0.2,1,0.2}
+
+
+\newcommand{\R}{\textsf{R}}
+\newcommand{\RStudio}{\textsl{R Studio}}
+\newcommand{\var}{\mbox{Var}}
+\newcommand{\Cov}{\mbox{Cov}}
+\newcommand{\Cor}{\mbox{Cor}}
+\newcommand{\cip}{\mbox{$\perp\!\!\!\perp$}}
+\newcommand{\bpsi}{\mbox{\boldmath$\psi$}}
+\newcommand{\bbeta}{\mbox{\boldmath$\beta$}}
+\newcommand{\bhat}{\mbox{\boldmath$\hat\beta$}}
+\newcommand{\btheta}{\mbox{\boldmath$\theta$}}
+\newcommand{\beeta}{\mbox{\boldmath$\eta$}}
+\newcommand{\bfeta}{\mbox{\boldmath$\eta$}}
+\newcommand{\bpsinot}{\mbox{\boldmath{$\psi_0$}}}
+\newcommand{\bZ}{\bf Z}
+
+%\usepackage[english]{babel}
+\usepackage{lmodern}
+\renewcommand\ttfamily{\usefont{T1}{lmtt}{m}{n}}
+
+%\usepackage{palatino}
+\usepackage[T1]{fontenc}
+%\usepackage[lmodern]{babel}
+
+% make all tt fonts bold to look more like Verbatim
+\renewcommand\ttfamily{\usefont{T1}{lmtt}{m}{n}}
+
+% Comment these out if you don't want a slide with just the
+% part/section/subsection/subsubsection title:
+\AtBeginPart{
+  \let\insertpartnumber\relax
+  \let\partname\relax
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \let\insertsectionnumber\relax
+  \let\sectionname\relax
+  \frame{\sectionpage}
+}
+\AtBeginSubsection{
+  \let\insertsubsectionnumber\relax
+  \let\subsectionname\relax
+  \frame{\subsectionpage}
+}
+
+\begin{comment}
+
+%reduces space between code chunk and output
+\usepackage{etoolbox}
+\setlength{\parskip}{0pt}
+\setlength{\OuterFrameSep}{0pt}
+\makeatletter
+\preto{\@verbatim}{\topsep=-10pt \partopsep=10pt }
+\makeatother
+
+\end{comment}
+
+\title{Introduction and Background}
+\author{Dave Harrington}
+\date{May 14 - 18, 2018}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\tableofcontents[hideallsubsections]
+\end{frame}
+\hypertarget{administrative-information}{%
+\section{Administrative Information}\label{administrative-information}}
+
+\begin{frame}{%
+\protect\hypertarget{instructor-coordinates}{%
+Instructor coordinates}}
+
+Dave Harrington
+
+\begin{itemize}
+\tightlist
+\item
+  Department of Biostatistics, Harvard T.H. Chan School of Public
+  Health\\
+\item
+  Department of Biostatistics and Computational Biology, Dana-Farber
+  Cancer Institute
+\item
+  Email:
+  \href{mailto:dharrington846@gmail.com}{dharrington846@gmail.com}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{course-format}{%
+Course format}}
+
+\begin{itemize}
+\tightlist
+\item
+  Lectures, but please ask questions
+\item
+  Labs (practical exercises)
+\item
+  Readings (typically, papers from literature)
+\item
+  Computing (in \textsf{R})
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{acknowledgements}{%
+Acknowledgements}}
+
+Many individuals have contributed to these notes in courses at Harvard,
+Ghent University, Hasselt University, and other institutions.
+
+Special acknowledgements to\\
+- Rui Wang, Paige Williams, Rebecca Betensky, and Paul Catalano
+(Harvard)\\
+- Louise Ryan (University of Technology, Sydney) - Els Goetghebeur (U
+Ghent)\\
+- Julie Vu (University College London).
+
+\end{frame}
+
+\hypertarget{important-definitions}{%
+\section{Important Definitions}\label{important-definitions}}
+
+\begin{frame}{%
+\protect\hypertarget{main-ideas}{%
+Main ideas}}
+
+Survival analysis typically focuses on \emph{time-to-event} data.
+
+Examples:
+
+\begin{itemize}
+\tightlist
+\item
+  Time to death from a chronic disease
+\item
+  Time to progression of a disease
+\item
+  Time to onset (or relapse) of a disease
+\item
+  Length of stay in a hospital or a nursing home
+\end{itemize}
+
+The terms \emph{survival time} and \emph{event time} will be used to
+mean the time to an event.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{most-useful-references}{%
+Most useful references}}
+
+\begin{itemize}
+\tightlist
+\item
+  Klein and Moeschberger: \emph{Survival Analysis: Techniques for
+  censored and truncated data}
+\item
+  Therneau and Grambsch: \emph{Modeling Survival Data: extending the Cox
+  Model (R)}
+\item
+  Collett: \emph{Modelling Survival Data in Medical Research}
+\item
+  Hosmer, Lemeshow, and May: \emph{Applied Survival Analysis, 2nd ed.}
+\item
+  Kleinbaum: \emph{Survival Analysis: A self-learning text}
+\item
+  Cox and Oakes: \emph{Analysis of Survival Data}
+\end{itemize}
+
+I recommend the K\&M text, supplemented by T\&G.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{a-few-more-references}{%
+A few more references}}
+
+\begin{itemize}
+\tightlist
+\item
+  Fleming and Harrington: \emph{Counting Processes and Survival
+  Analysis}
+\item
+  Kalbfleisch and Prentice: \emph{The Statistical Analysis of Failure
+  Time Data}
+\item
+  Allison: \emph{Survival Analysis Using the SAS System}
+\item
+  Miller: \emph{Survival Analysis}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{%
+\protect\hypertarget{packages-used}{%
+Packages used}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"devtools)}
+\StringTok{library(devtools)}
+\StringTok{install.packages(c("}\NormalTok{survival}\StringTok{", "}\NormalTok{KMSurv}\StringTok{",}
+\StringTok{                   "}\NormalTok{gsDesign}\StringTok{", "}\NormalTok{Hmisc}\StringTok{"))}
+\StringTok{install_github("}\NormalTok{keaven}\OperatorTok{/}\NormalTok{nphsim}\StringTok{", "}\NormalTok{dave}\OperatorTok{-}\NormalTok{harrington}\OperatorTok{/}\NormalTok{eventtimedata}\StringTok{")}
+\end{Highlighting}
+\end{Shaded}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{example-time-to-death-or-hospitalization}{%
+Example: Time to death or hospitalization}}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight]{../figures/atrial_fib_death_hosp.pdf}
+\caption{Figure from Marrouche, et al., \emph{NEJM} 2018}
+\end{figure}
+
+See
+\href{../../clinical_papers/catheter_ablation_atrial_fib.pdf}{Marrouche,
+et al.}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{structure-of-event-time-data}{%
+Structure of event time data}}
+
+\begin{figure}
+\includegraphics[width=0.5\linewidth]{../figures/censoring_1} \includegraphics[width=0.5\linewidth]{../figures/censoring_2} \caption{Event time data as observed (L) versus to a data analyst (R)}\label{fig:unnamed-chunk-2}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{characteristics-of-event-time-data}{%
+Characteristics of event time data}}
+
+\begin{itemize}
+\tightlist
+\item
+  `Individuals’ do not all enter the study at the same time.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    This is referred to as \emph{staggered entry}.
+  \end{itemize}
+\item
+  When the study ends, some individuals still haven’t had the event.
+\item
+  Other individuals drop out or are lost during the study.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    The last time they were still “free” of the event is all that is
+    known.
+  \end{itemize}
+\end{itemize}
+
+The last two features relate to \emph{censoring} of the failure times.
+
+The first of the times until the study ends or the subject drops out is
+called a \emph{censoring time}.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{a-hypothetical-example}{%
+A hypothetical example}}
+
+Assume 10 subjects assigned to each of four treatments after cancer
+remission, followed until death or end of study at 36 months.
+
+The times to death (months):
+
+\textbf{Trt 1:} Deaths at 2, 3, 7, 9, 15, 16 (4 alive at end)
+
+\textbf{Trt 2:} Deaths at 1, 1, 2, 4, 4, 6, 7, 9, 11 (1 alive at end)
+
+\textbf{Trt 3:} Deaths at 1, 1, 2, 4, 4, 5 (4 alive at end)
+
+\textbf{Trt 4:} Deaths at 2, 3, 7, 9, 15, 22, 27, 28, 29 (1 alive at
+end)
+
+\begin{itemize}
+\tightlist
+\item
+  For Treatment 1, what is the average time to death?
+\item
+  Comparing Treatments 1 and 2, which appears better?
+\item
+  Comparing Treatments 1 and 3, which appears better?
+\item
+  Comparing Treatments 3 and 4, which appears better?
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{descriptive-comparisons-of-average-death-time}{%
+Descriptive comparisons of ``average’’ death time}}
+
+\begin{tabular}{lccc}
+\hline
+Treatment & \multicolumn{2}{c}{Among Deaths:} & Median adjusting \\
+\cline{2-3} 
+ Group & Mean & Median & for Censoring (KM) \\ \hline
+1 & 8.67 & 8.00 & 15.5\\
+2 & 5.00 & 4.00 & 5.0 \\
+3 & 2.83 & 3.00 & 4.5 \\
+4 & 15.78 & 15.00 & 18.5\\ \hline
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{comparisons-of-treatments-p-values}{%
+Comparisons of treatments (p-values)}}
+
+Methods to do these calculations coming in this course.
+
+\begin{tabular}{lccc}
+\hline
+Comparison & Log-Rank Test & Wilcoxon Test & Exponential Model \\ \hline
+1 vs 2     & 0.045 & 0.048 & 0.014 \\
+3 vs 4     & 0.62 & 0.67 & 0.56 \\
+1 vs 3     & 0.63 & 0.37 & 0.73 \\
+2 vs 4     & 0.15 & 0.06 & 0.09 \\
+1 vs 4     & 0.37 & 0.68 & 0.34 \\
+\hline
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{more-key-features-of-survival-data}{%
+More key features of survival data}}
+
+\begin{itemize}
+\item
+  Survival times are often \emph{right-skewed}, so the median is usually
+  a better measure of center than the mean.
+\item
+  The median can be estimated from data that include censored
+  observations (not always possible with the mean).
+\item
+  Calculating summary statistics and comparing survival distributions
+  must account for cases without events.
+\item
+  Comparisons between survival distributions may yield different
+  conclusions depending on assumptions.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{types-of-censoring}{%
+Types of censoring}}
+
+\textbf{Right-censoring}
+
+Let \(T_i\) be the time to event and \(U_i\) be the time to censoring
+for an individual \(i\). Only the r.v. \(X_i=\min(T_i,U_i)\) is
+observed, due to
+
+\begin{itemize}
+\tightlist
+\item
+  loss to follow-up
+\item
+  drop-out
+\item
+  study termination (`administrative censoring’)
+\end{itemize}
+
+Called \emph{right}-censoring because the true unobserved event is to
+the right of the censoring time (i.e., after the censoring time).
+
+In addition to \(X_i\), the \emph{failure indicator} \(\delta_i\) is
+observable:
+
+\[\delta_i=\left\{\begin{array}{ccc}
+1 & \mbox{if} & T_i\le U_i \\
+0 & \mbox{if} & T_i>U_i \end{array} \right. \]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{types-of-censoring-1}{%
+Types of censoring \ldots}}
+
+\textbf{Left-censoring}
+
+The r.v.’s observed are \(Y_i=\max(T_i,U_i)\) and the failure indicator
+\(\epsilon_i\): \[\epsilon_i=\left\{\begin{array}{ccc}
+1 & \mbox{if} & U_i\le T_i \\
+0 & \mbox{if} & U_i>T_i \end{array} \right. \]
+
+Ex.: study of age at which African children learn a task (Miller).
+
+\begin{itemize}
+\tightlist
+\item
+  Some already knew the task (left-censoring)
+\item
+  Some learned during study (exact)
+\item
+  Some had not yet learned by end of study (right-censoring)
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{types-of-censoring-2}{%
+Types of censoring\ldots}}
+
+\textbf{Interval-censoring}
+
+Observe \((L_i,R_i)\) where \(T_i\in (L_i,R_i)\)
+
+Examples:
+
+\begin{itemize}
+\item
+  Time to prostate cancer, observe longitudinal PSA measurements
+\item
+  Time to undetectable viral load in AIDS studies, based on measurements
+  of viral load taken at each clinic visit
+\item
+  Detect recurrence of colon cancer after surgery. Follow patients every
+  3 months after resection of primary tumor.
+\end{itemize}
+
+This short course is restricted to right-censoring.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{independent-versus-informative-censoring}{%
+Independent versus informative censoring}}
+
+Censoring is \textbf{independent} if \(U_i\) is independent of \(T_i\).
+
+Examples:
+
+\begin{itemize}
+\tightlist
+\item
+  If \(U_i\) is the planned end of the study (say, 2 years after the
+  study opens), then it is usually independent of the event times.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    What if there is a trend over calendar time in the survival times?
+  \end{itemize}
+\item
+  If \(U_i\) is the time that a patient drops out of the study because
+  they have become much sicker and/or had to discontinue taking the
+  study treatment, then \(U_i\) and \(T_i\) are probably not
+  independent.
+\end{itemize}
+
+An individual censored at \(U\) should be \emph{representative} of all
+subjects who survive to \(U\).
+
+Censoring is considered \textbf{informative} if the distribution of
+\(U_i\) contains information about the parameters characterizing the
+distribution of \(T_i\).
+
+\end{frame}
+
+\hypertarget{survival-distributions}{%
+\section{Survival Distributions}\label{survival-distributions}}
+
+\begin{frame}{%
+\protect\hypertarget{some-mathematical-definitions}{%
+Some mathematical definitions}}
+
+There are several equivalent ways to characterize the probability
+distribution of a survival random variable.
+
+\begin{itemize}
+\tightlist
+\item
+  The density function \(f(t)\)
+\item
+  The survivor function \(S(t)\)
+\item
+  The hazard function \(\lambda(t)\)
+\item
+  The cumulative hazard function \(\Lambda(t)\)
+\end{itemize}
+
+Some are special to survival analysis.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{density-function}{%
+Density function}}
+
+For a \emph{discrete} random variable
+
+Suppose that \(T\) takes values in \(a_1,a_2, \ldots, a_J\).
+\begin{align*}
+ f(t) &=  P(T = t) \\
+ &=  \left\{ \begin{array}{ccc}
+ f_j &\mbox{ if } & t=a_j, j=1,2,\ldots,J \\[1ex]
+ 0 &\mbox{ if } & t\ne a_j, j=1,2,\ldots,J
+ \end{array}
+ \right.
+ \end{align*}
+
+For a \emph{continuous} random variable
+
+\[  f(t) = \lim_{\Delta t \rightarrow 0}
+ \frac{1}{\Delta t}  P(t \le T < t+\Delta t) \]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{survivorship-function-st}{%
+Survivorship function \(S(t)\)}}
+
+In other settings, the cumulative distribution function
+\[F(t)=P(T\le t) = 1- S(t)\] is of interest.
+
+In survival analysis, interest tends to focus on \(S(t) = P(T > t)\),
+the \emph{survival} or \emph{survivorship}
+function.\footnote{Be careful:  some books use the definition $S(t)=P(T \geq t)$.}
+
+The survival function measures the probability an individual will
+experience the event beyond time \emph{t}.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{survivorship-function-st-1}{%
+Survivorship function \(S(t)\) \ldots}}
+
+For a \emph{continuous} random variable:
+\[   S(t) = \int_{t}^{\infty} f(u) du \]
+
+For a \emph{discrete} random variable:
+\[ S(t) = \sum_{u > t} f(u) = \sum_{a_j > t} f(a_j) = \sum_{a_j > t} f_j \]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{hazard-function-lambdat}{%
+Hazard function \(\lambda(t)\)}}
+
+The hazard function measures the probability of death at time \(t\),
+conditional on having survived until that time.
+
+\begin{itemize}
+\tightlist
+\item
+  This is sometimes called the \emph{instantaneous failure rate}.
+\end{itemize}
+
+For a \emph{continuous} random variable \(T\): \begin{align*}
+\lambda(t)  &= \lim_{\Delta t \rightarrow 0} \, \frac{1}{\Delta t}\,
+P(t \le T <  t+\Delta t | T \ge t) \\[2ex]
+&= \lim_{\Delta t \rightarrow 0} \, \frac{1}{\Delta t} \,
+\frac{P([t \le T <  t+\Delta t] ~~ \bigcap~~ [T \ge t])}
+{P(T \ge t)}\\[2ex]
+&= \lim_{\Delta t \rightarrow 0} \, \frac{1}{\Delta t} \,
+\frac{P(t \le T <  t+\Delta t)}{P(T \ge t)}\\[2ex]
+&= \frac{f(t)}{S(t)}
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{hazard-function-lambdat-1}{%
+Hazard function \(\lambda(t)\)\ldots}}
+
+For a \emph{discrete} random variable \(T\):
+
+\begin{align*}
+  \lambda(a_j)\equiv \lambda_j   &= P(T = a_j | T \ge a_j)
+   =  \frac{P(T=a_j)}{P(T\ge a_j)}\\[1ex]
+  &= \frac{f(a_j)}{S(a_j -)}
+  = \frac{f(t)}{\sum_{k:a_k\ge a_j}f(a_k)}
+  \end{align*}
+
+The form of the denominator for both continuous and discrete variables
+is the reason some books use \(P(T \ge t)\) as the definition of the
+survivor function.
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{cumulative-hazard-function-lambdat}{%
+Cumulative hazard function \(\Lambda(t)\)}}
+
+For a \emph{continuous} random variable \emph{T}: \begin{align*}
+\Lambda(t)  &=\int_0^t \lambda(u) du
+\end{align*}
+
+For a \emph{discrete} random variable \emph{T}: \begin{align*}
+\Lambda(t) &= \sum_{k:a_k \leq t} \lambda_k
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{relationship-between-st-and-lambdat}{%
+Relationship between \(S(t)\) and \(\lambda(t)\)}}
+
+For a continuous random variable, \[
+\lambda(t)=\frac{f(t)}{S(t)}.
+\]
+
+For a right-continuous survivor function \(S(t)\), \[
+f(t) = -S'(t) \text{ or } S'(t) = -f(t).
+\]
+
+These relationships can be used to show another way to write
+\(\lambda(t)\): \[
+\lambda(t) = \frac{f(t)}{S(t)} = - \frac{-f(t)}{S(t)} = - \left(\frac{1}{S(t)} \right) S'(t) = - \frac{d}{dt} [\log S(t)]
+\]
+
+\[
+\lambda(t)= - \frac{d}{dt} [\log S(t)]
+\]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{relationship-between-st-and-lambdat-1}{%
+Relationship between \(S(t)\) and \(\Lambda(t)\)}}
+
+For a \emph{continuous} random variable:
+
+\begin{align*}
+\Lambda(t) &= \int_0^t \lambda(u)du \\
+&= \int_0^t -\frac{d}{du} \log S(u) du \\
+&= -\log S(t)+\log S(0)\\
+\end{align*}
+
+Thus, \(S(t)=e^{-\Lambda(t)}\).
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{relationship-between-st-and-lambdat-2}{%
+Relationship between \(S(t)\) and \(\Lambda(t)\)\ldots}}
+
+For a \emph{discrete} random variable:
+
+Suppose that \(a_j\leq t < a_{j+1}\). Then \begin{align*}
+S(t)= P(T>t ) &= P(T > a_1, T > a_2, \ldots, T >  a_{j}) \\
+&= P(T >  a_1) \times P(T >  a_2|T > a_1) \times \cdots \\
+&\,\, \cdots \times P(T >  a_{j}|T > a_{j-1})\\
+&= (1-\lambda_1) \times \cdots \times (1-\lambda_j)\\
+&= \prod_{k:a_k \leq t}(1-\lambda_k)
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{relationships-an-overview}{%
+Relationships: an overview}}
+
+\[  f(t) \Delta t  \approx  P(t \le T < t+\Delta t) \]
+\[ \lambda(t) \Delta t \approx  P(t \le T < t+\Delta t | T \ge t) \]
+\[   S(t) = P(T>t) = \int_{t}^{\infty} f(u) du \]\\
+\[ f(t) =  - \frac{d}{dt} S(t) \] \[ \lambda(t)=\frac{f(t)}{S(t)} \]
+\[ \lambda(t)  =  - \frac{d}{dt}  [\log S(t)] \]
+
+\[ S(t) = e^{-\Lambda(t)} \]
+\[S(t) \approx 1 -\Lambda(t) \text{ while the cumulative hazard is small.}\]
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{some-parametric-survival-distributions}{%
+Some parametric survival distributions}}
+
+The \emph{exponential distribution}
+
+\begin{itemize}
+\tightlist
+\item
+  Simplest distribution, only one unknown parameter
+\item
+  Plays a role similar to that of the normal distribution in linear
+  regression
+\end{itemize}
+
+\begin{align*}
+f(t) &= \lambda e^{-\lambda t} \mbox{ for } t\ge 0 \\
+S(t) &=  \int_t^\infty f(u) du  =  e^{-\lambda t} \\
+\lambda(t) &=  \frac{f(t)}{S(t)}  = 
+\lambda ~~~~~\mbox{ constant hazard} \\
+\Lambda(t) &=  \int_0^t \lambda(u) \, du  = 
+\int_0^t \lambda \, du  = \lambda t  
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{some-parametric-survival-distributions-1}{%
+Some parametric survival distributions\ldots}}
+
+The \emph{Weibull distribution} generalizes the exponential, and has two
+parameters
+
+\begin{itemize}
+\tightlist
+\item
+  \(\lambda\): the \emph{scale} parameter\\
+\item
+  \(\gamma\): the \emph{shape} parameter
+\end{itemize}
+
+\begin{align*}
+S(t) &= e^{-\lambda t^\gamma} \\
+f(t) &=  \frac{-d}{dt}S(t)=\gamma \lambda t^{\gamma-1}
+e^{-\lambda t^\gamma}\\
+\lambda(t) &= \gamma \lambda t^{\gamma-1}\\
+\Lambda(t) &= \int_0^t\lambda(u) du = \lambda t^\gamma
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{%
+\protect\hypertarget{the-weibull-distribution}{%
+The Weibull distribution\ldots}}
+
+The Weibull distribution is convenient because of simple forms. It
+includes several hazard shapes:
+
+\begin{itemize}
+\item
+  \(\gamma=1 \rightarrow \mbox{ constant hazard}\)
+\item
+  \(0<\gamma<1 \rightarrow \mbox{ decreasing hazard}\)
+\item
+  \(\gamma > 1 \rightarrow \mbox{ increasing hazard}\)
+\end{itemize}
+
+\end{frame}
+
+\end{document}
