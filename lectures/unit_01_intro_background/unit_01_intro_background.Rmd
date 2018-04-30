@@ -83,7 +83,7 @@ I recommend the K\&M text, supplemented by T\&G.
 ### Packages used
 
 ```{r, echo=TRUE, eval=FALSE}
-install.packages("devtools)
+install.packages("devtools")
 library(devtools)
 install.packages(c("survival", "KMSurv",
                    "gsDesign", "Hmisc"))
