@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Lab 5, Sample Size and Power"
 author: "Dave Harrington"
@@ -99,3 +100,106 @@ The investigators will be able to enroll 200 women per year into the study and p
 
 #### Problem 4 Solution.
 
+=======
+---
+title: "Lab 5, Sample Size and Power"
+author: "Dave Harrington"
+date: "May 2018"
+
+fontsize: 11pt
+geometry: margin=1in
+output: pdf_document
+---
+
+### Problem 1: Thinking about sample size
+
+When designing a study, one needs to decide how long the study will run (for budgeting and analysis reasons) and estimate how many patients need to be enrolled in order to observe a certain power of tests for a given Type I error and magnitude of the difference of interest.
+
+a) What is a potential issue if too few patients are recruited for a study? 
+
+b) Are there any issues if too many patients are recruited?
+
+
+
+#### Problem 1 Solution.
+
+a) 
+
+b) 
+
+\newpage
+
+
+
+
+### Problem 2: Calculating power
+
+Consider a phase III cancer clinical trial in which the time to tumor progression is the primary endpoint. Suppose that the failure times in the standard and new treatment arms are exponentially distributed, with a rate of progression in the standard treatment arm of 50\% per year and, under the alternative, a median time to  progression of 4 years in the new treatment arm. Suppose there are 10 progression events observed during the study and the two-sided significance level is 0.05. 
+
+a) What is the power of the study to detect a difference in hazards between the two arms? 
+
+b) If the desired power is 0.80, how many events do investigators need to observe?
+
+
+
+#### Problem 2 Solution.
+
+a) 
+
+b) 
+
+\newpage
+
+
+
+
+### Problem 3: Reproducing the power calculations for the SPRINT trial
+
+Here is the quote at the beginning of the sample size slides from the SPRINT paper describing the sample size calculation for the trial.
+
+\begin{quote}
+We planned a 2-year recruitment period, with a maximum follow-up of 6 years, and anticipated a loss to follow-up of 2\% per year. With an enrollment target of 9,250 participants, we estimated that the trial would have 88.7\% power to detect a 20\% effect with respect to the primary outcome, assuming an event rate of 2.2\% in the standard-treatment group.
+\end{quote}
+
+a) Use \texttt{nSurv()} in the package \texttt{gsDesign} to reproduce the design of the SPRINT trial.  You will have to spend a bit of time reading the help page for \texttt{nSurv} and scanning the published manuscript for the trial.  The link to the manuscript is in the Unit 6 lecture slides. 
+
+b) How many events were anticipated to provide the 88.7\% power?
+
+c) How much power would the study have had if there had been only a 15\% reduction expected in the rate of the primary endpoint?
+
+d) How can the power of the study from part c) be increased to 90\% if the study size does not change (i.e., the enrollment rate and enrollment period does not change)?
+
+
+
+
+#### Problem 3 Solution.
+
+a) 
+
+
+b) 
+
+
+c) 
+
+
+d) 
+
+\newpage
+
+
+
+### Problem 4: Power in observational studies
+
+Some investigators in the environmental health department want to conduct a study to assess the effects of exposure to toluene on time to pregnancy. They will conduct a cohort study involving women who work in a chemical factory in China.
+
+It is estimated that 20\% of the women will have workplace exposure to toluene. Furthermore, it is known that among unexposed women, 80\% will become pregnant within a year. Suppose that among exposed women, 70\% will become pregnant within a year.
+
+The investigators will be able to enroll 200 women per year into the study and plan an additional year of follow-up at the end of accrual. Assuming 2 years of accrual, are there enough recruited women to be able to detect a reduction in the 1-year pregnancy rate with 85\% power?
+
+
+
+
+#### Problem 4 Solution.
+
+>>>>>>> d43d87e62592d0cf19c1143bda39b3303302a94c

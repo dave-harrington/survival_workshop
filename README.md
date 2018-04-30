@@ -1,2 +1,1 @@
-# survival_workshop
-Survival analysis workshop using R
+# survival_2018

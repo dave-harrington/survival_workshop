@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #specific files to ignore
 ./lectures/survival_header.tex
 survival_workshop.Rproj
@@ -48,3 +49,9 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 .Rproj.user
+=======
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+>>>>>>> d43d87e62592d0cf19c1143bda39b3303302a94c
