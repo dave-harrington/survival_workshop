@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #specific files to ignore
 ./lectures/survival_header.tex
 survival_workshop.Rproj
@@ -6,6 +5,15 @@ survival_workshop.Rproj
 00_intro_to_R/00_getting.started.Rmd
 00_intro_to_R/console_layout_web.png
 
+
+#TeX temporary files
+*.tex
+
+# beamer
+*.nav
+*.pre
+*.snm
+*.vrb
 
 # LaTeX temporary files
 *.aux
@@ -45,13 +53,11 @@ vignettes/*.pdf
 # knitr and R markdown default cache directories
 /*_cache/
 /cache/
+
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
 .Rproj.user
-=======
-.Rproj.user
 .Rhistory
 .RData
 .Ruserdata
->>>>>>> d43d87e62592d0cf19c1143bda39b3303302a94c
