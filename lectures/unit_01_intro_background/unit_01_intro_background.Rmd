@@ -41,10 +41,11 @@ Dave Harrington
 Many individuals have contributed to these notes in courses at Harvard, Ghent University, Hasselt University, and other institutions.  
 
 Special acknowledgements to    
+
 - Rui Wang, Paige Williams, Rebecca Betensky, and Paul Catalano (Harvard)    
 - Louise Ryan (University of Technology, Sydney)
 - Els Goetghebeur (U Ghent)   
-- Julie Vu (University College London).
+- Julie Vu (University College London)
 
 # Important Definitions
 
@@ -82,12 +83,15 @@ I recommend the K\&M text, supplemented by T\&G.
 
 ### Packages used
 
+\scriptsize
+
 ```{r, echo=TRUE, eval=FALSE}
 install.packages("devtools")
 library(devtools)
 install.packages(c("survival", "KMSurv",
                    "gsDesign", "Hmisc"))
-install_github("keaven/nphsim", "dave-harrington/eventtimedata")
+install_github("keaven/nphsim", 
+               "dave-harrington/eventtimedata")
 ```
 
 ### Example: Time to death or hospitalization
