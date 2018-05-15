@@ -54,9 +54,3 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 .Rproj.user
-<<<<<<< HEAD
-.Rhistory
-.RData
-.Ruserdata
-=======
->>>>>>> parent of 512c4e6... Merge branch 'master' of https://github.com/dave-harrington/survival_workshop
