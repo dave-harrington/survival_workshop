@@ -129,16 +129,16 @@ Assume 10 subjects assigned to each of four treatments after cancer remission, f
 The times to death (months):
 
 **Trt 1:**
-Deaths at 2, 3, 7, 9, 15, 16  (4 alive at end)
+Deaths at 2, 3, 7, 9, 15, 16  (additional 4 alive at end)
 
 **Trt 2:** 
-Deaths at 1, 1, 2, 4, 4, 6, 7, 9, 11 (1 alive at end)
+Deaths at 1, 1, 2, 4, 4, 6, 7, 9, 11 (add. 1 alive at end)
 
 **Trt 3:**
-Deaths at 1, 1, 2, 4, 4, 5  (4 alive at end)
+Deaths at 1, 1, 2, 4, 4, 5  (add. 4 alive at end)
 
 **Trt 4:** 
-Deaths at 2, 3, 7, 9, 15, 22, 27, 28, 29 (1 alive at end)
+Deaths at 2, 3, 7, 9, 15, 22, 27, 28, 29 (add. 1 alive at end)
 
 - For Treatment 1, what is the average time to death?
 - Comparing Treatments 1 and 2, which appears better?

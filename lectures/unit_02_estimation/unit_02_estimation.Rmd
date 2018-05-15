@@ -26,17 +26,6 @@ citecolor: darkblue
 - *The non-parametric Kaplan-Meier (KM) estimate*
     - KM also called the product limit estimator because of original derivation
 
-<!---
-
-Still missing
-
-- restricted mean survival
-- confidence intervals for median
-- units for cumulative hazard
-- replace hats with widehats
-- illustrate use of survminer
-
---->
 
 ### The Kaplan-Meier Estimator: General idea
 
@@ -326,7 +315,7 @@ the confidence interval will be in the proper range when transformed back.
 The median is usually defined as 
 
 \[
-    q_{0.5} = \min\{t_j: \widehat{S}(t) = 0.5\}.
+    q_{0.5} = \min\{t_j: \widehat{S}(t) \ge 0.5\}.
 \]
 
 Other quantiles are defined similarly.
@@ -610,30 +599,6 @@ over all intervals preceding time $t$.
 
 Thus, the general formula for the conditional probability of surviving the $j$-th interval that holds for all 4 cases is $1-\frac{d_j}{r_j}$.
      
-<!---     
-     
-### KM estimator derivation, continuous case \ldots
-
-Use the same approach by grouping the event times into
-intervals (say, one interval for each month),  then counting
-up the number of deaths (events) in each to estimate the probability
-of surviving the interval (this is called the *lifetable estimate*).
-
-\begin{center}
-\begin{tabular}{l|p{.4in}|p{.4in}|p{.4in}
- |p{.4in}|p{.4in}|p{.4in}|p{.4in}|p{.4in}|p{.4in}|p{.4in}
- |p{.4in}|p{.4in}|p{.4in}|p{.4in}|p{.4in}}
-  &   &  &   & &   & &   & C &   &   &   & \\
-  &   &  & D & & C & & C & D & D & D & C & \\  \hline
-& \multicolumn{4}{|c|}{--Month 1--} 
-& \multicolumn{4}{|c|}{--Month 2--} 
-& \multicolumn{4}{|c|}{--Month 3--} \\
-\end{tabular}
-\end{center}
-
-However, the assumption that those censored survive until the end of the interval wouldn't be quite accurate, so the approximation would not be a good one
-
---->
 
 ### KM estimator derivation, continuous case \ldots
 
@@ -733,11 +698,4 @@ Substitute the previous result for $\widehat{\text{var}}\left[\log[\widehat{S}(t
 \[\widehat{\text{var}}(\widehat{S}(t)) = [\widehat{S}(t)]^2  \sum_{j: \tau_j \leq t} \frac{d_j}{(r_j-d_j) r_j} \]
 
 
-<!--- 
-Lindsey JC, Ryan L
-Tutorial in biostatistics: methods for interval-censored data (vol 17, pg
-219, 1998)
-STAT MED 18: (7) 890-890 APR 15 1999 
-
---->
 

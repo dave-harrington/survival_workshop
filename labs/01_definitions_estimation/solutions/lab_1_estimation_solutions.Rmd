@@ -68,9 +68,10 @@ a) To find the median (i.e., value at the 50$^{th}$ percentile), use the definit
 
 
     The $20^{th}$ and $80^{th}$ percentiles are found using the same approach to find the median, since the median is just the $50^{th}$ percentile.  For any $p^{th}$ percentile $t_p$, 
-\[t_p = \frac{-\log(p/100)}{\lambda}.\]
+\[t_p = \frac{-\log((1 - p)/100)}{\lambda},\]
+since the survival function gives right tail probabilities.
 
-    Thus, $t_{20} = \frac{- \log(0.20)}{\lambda} = \frac{\log(5)}{\lambda}$ and  $t_{80} = \frac{- \log(0.80)}{\lambda}$.
+    Thus, $t_{20} = \frac{- \log(0.80)}{\lambda} = \frac{\log(5)}{\lambda}$ and  $t_{80} = \frac{- \log(0.20)}{\lambda}$.
 
 b) The survival function for the exponential distribution is
 \[
@@ -238,7 +239,7 @@ legend(x = "topright", lty = 1:3,
 
 This exercise begins with the construction of a simulated dataset from a clinical trial with potentially censored failure time observations.   The simulation builds the clinical trial dataset using the concept of staggered entry and finite follow-up shown in the graphic in the slide labeled `Structure of event time data' in Unit 1.
 
-The result of the simulation will be dataset of 300 participants, each with a treatment assignment, a follow-up time $X$, and a failure indicator $\delta$.
+The result of the simulation will be dataset of 300 participants, a follow-up time $X$, and a failure indicator $\delta$.
 
 The simulated trial has the following characteristics:
 
@@ -316,14 +317,14 @@ obs.time = pmin(potential.obs.time, failure.time)
 summary(failure.time)
 sd(failure.time)
 
-#plot km estimator of survival
+#plot km estimator of survival, assuming no censoring
 library(survival)
 survfit(Surv(failure.time, failed) ~ 1)
 
 #compare km estimator with true survival function
 exp.survival = function(lambda,t){exp(-lambda* t)}
 
-plot(survfit(Surv(failure.time, failed) ~ 1), lty = 1, 
+plot(survfit(Surv(obs.time, failed) ~ 1), lty = 1, 
      conf.int=FALSE, mark.time = TRUE,
      xlab = "Months", ylab = "Survival Probability")
 lines(exp.survival(log(2)/median.failure.time, 1:200), lty = 2)
@@ -336,7 +337,7 @@ summary(obs.time)
 plot(survfit(Surv(obs.time) ~ 1), lty = 3, #curve for X = obs.time
      conf.int=FALSE, mark.time = TRUE,
      xlab = "Months", ylab = "Survival Probability")
-lines(survfit(Surv(failure.time, failed) ~ 1), lty = 1, 
+lines(survfit(Surv(obs.time, failed) ~ 1), lty = 1, 
      conf.int=FALSE, mark.time = TRUE)
 lines(exp.survival(log(2)/median.failure.time, 1:200), lty = 2)
 legend(x = "topright", lty = c(3, 1, 2), 
@@ -349,7 +350,7 @@ summary(uncensored.times)
 plot(survfit(Surv(uncensored.times) ~ 1), lty = 3, #curve for uncensored cases
      conf.int=FALSE, mark.time = TRUE,
      xlab = "Months", ylab = "Survival Probability")
-lines(survfit(Surv(failure.time, failed) ~ 1), lty = 1, 
+lines(survfit(Surv(obs.time, failed) ~ 1), lty = 1, 
      conf.int=FALSE, mark.time = TRUE)
 lines(exp.survival(log(2)/median.failure.time, 1:200), lty = 2)
 legend(x = "topright", lty = c(3, 1, 2), 
@@ -451,11 +452,7 @@ d) The 5-number summary for a distribution consists of the minimum and the maxim
 
     Provide two 5-number summaries for the control group with these data. For the first summary, use just the observation times stored in \texttt{stay}, ignoring censoring; the \texttt{summary( )} command can be used. For the second 5-number summary, the elements should be the estimated 1st quartile, 3rd quartile, and median from the Kaplan-Meier and the largest and smallest observed times to discharge for censored cases. The quantiles from a KM fit in \textsf{R} can be calculated using the \texttt{quantile} function.  The command \texttt{quantile(km, 0.5)} returns the median with its confidence interval for a KM fit named \texttt{km}.
 
-<!---
 
-    What are the advantages and disadvantages of the two approaches?
-
---->
 
 e) Most manuscripts of randomized trials with event-time data report a 'median follow-up'. There are several definitions of median follow-up in use.  The first uses the median of all observed follow-up times.  This is the variable $X$ in the slides and the variable \texttt{stay} in this dataset.  The second reports the median of the follow-up times among participants who have not had an observed failure.  
 
@@ -485,11 +482,7 @@ b) The intervention arm has considerably longer follow-up. The chapter by Morris
 
 c) See below for plot.
 
-<!---
 
-It is difficult to read precisely the confidence intervals for the survival probability at 100 days, but they appear to be roughly 0.5 $\pm 0.01$. 
-
---->
 
 d) Ignoring censoring, the 5-number summary for \texttt{stay} is (0, 28, 108, 379, 726) days. The second 5-number summary is (0, 28, 108, 428, 597), as calculated from the KM fit and the minimum and maximum censored observations in the control group.
 

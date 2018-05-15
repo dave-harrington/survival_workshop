@@ -273,11 +273,7 @@ e) The short and long treatment groups both consist of a mixture of treatment pr
 
 f)  What do you notice about the time point at which the survival curves begin to diverge? Speculate on the possible reason for the pattern in the curves.
 
-<!---
 
-g) Why are there no confidence intervals for the short duration survival curve beyond 250 days?  Are there any contributions to the log-rank statistic beyond 250 days?
-
---->
 
 ### Problem 5 Solution.
 
@@ -304,7 +300,7 @@ library(eventtimedata)
 data(uis)
 
 #determine ordering of coding, needed for labeling curves
-table(uis$treat, as.numeric(uis$treat))
+levels(uis$treat)
 
 #plot survival curves by treatment group
 uis.km <- survfit(Surv(los, censor) ~ treat, data = uis)
