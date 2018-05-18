@@ -169,12 +169,12 @@ It turns out that
 is a zero mean stochastic process with independent increments (i.e., a martingale).
 
 The martingale residuals $m_i$ are
-\[m_i = \delta_i - \widehat{\Lambda}_i(T_i),\]
+\[m_i = \delta_i - \widehat{\Lambda}_i(X_i),\]
 where for case $i$,
 
 - $\delta_i$ is the observed indicator of failure.
 
-- $T_i$ is the observed follow-up time.
+- $X_i$ is the observed follow-up time.
 
 - $\widehat{\Lambda}_i$ is the estimated covariate specific cumulative hazard.
 
@@ -216,7 +216,7 @@ These are not as easy to interpret as residuals from linear models since the $m_
 
      - \texttt{residuals(phmodel), type = "martingale"}, where \texttt{phmodel} is defined as the \texttt{coxph()} model fit.
 
-- It is customary to add a LOESS curve to the plot.
+- It is customary to add a LOESS or LOWESS curve to the plot.
 
 ### Null model vs. partial residuals
 
@@ -224,7 +224,7 @@ Martingale residuals can be calculated
 
   - in a null model with no covariates,  
   
-    - This is the analogue of a scatterplot in regression before model estimation.
+  - This is the analogue of a scatterplot in regression before model estimation.
 
   - or in a model with covariates to examine possible transformations after an initial model.
 
@@ -361,8 +361,10 @@ Not difficult to program \textsf{R} to program and plot the Cox-Snell residuals,
 
 Recall the  *martingale* residuals
 \[m_i = \delta_i - \widehat{\Lambda}_i(T_i),\]
-where for case $i$, when there are no time-dependent covariates,
-\[cs_i = \delta_i - m_i = \widehat{\Lambda}_i(T_i) \]
+where for case $i$, when there are no time-dependent covariates, so
+\[cs_i = \delta_i - m_i = \widehat{\Lambda}_i(T_i), \]
+where $cs_i$ is the Cox-Snell residual for case $i$.
+
 
 ### Cox-Snell residuals in the Rossi data
 
@@ -480,7 +482,7 @@ rossi$caseid = 1:length(rossi$age)
 colnames(unstand.dfbeta) = names(rossi.phmodel$coef)
 
 plot(rossi$caseid, unstand.dfbeta[, "age"], xlab = "case id",
-     ylab = "age delta - beta", cex = 0.5)
+     ylab = "age dfbeta", cex = 0.5)
 abline(h = 0, lty = 2, col "red")
 ```
 
@@ -499,7 +501,7 @@ rossi$caseid = 1:length(rossi$age)
 colnames(unstand.dfbeta) = names(rossi.phmodel$coef)
 
 plot(rossi$caseid, unstand.dfbeta[, "age"], xlab = "case id",
-     ylab = "age delta - beta", cex = 0.5)
+     ylab = "age dfbeta", cex = 0.5)
 abline(h = 0, lty = 2, col = "red")
 ```
 
@@ -516,8 +518,8 @@ stand.dfbeta = residuals(rossi.phmodel, type = "dfbetas")
 rossi$caseid = 1:length(rossi$age)
 colnames(stand.dfbeta) = names(rossi.phmodel$coef)
 
-plot(rossi$caseid, stand.dfbeta[,2], xlab = "case id",
-     ylab = "age delta - beta", cex = 0.5)
+plot(rossi$caseid, stand.dfbeta[,"age"], xlab = "case id",
+     ylab = "age dfbeta standard", cex = 0.5)
 abline(h = 0, lty = 2, col = "red")
 ```
 
@@ -535,7 +537,7 @@ rossi$caseid = 1:length(rossi$age)
 colnames(stand.dfbeta) = names(rossi.phmodel$coef)
 
 plot(rossi$caseid, stand.dfbeta[,2], xlab = "case id",
-     ylab = "age delta - beta", cex = 0.5)
+     ylab = "age dfbeta standard.", cex = 0.5)
 abline(h = 0, lty = 2, col = "red")
 ```
 
@@ -656,7 +658,7 @@ Details coming later\ldots
 
 ### Notation in the DRS data
 
-- $T_1$ denotes failure time for left eye, $T_2$ for right eye
+- $T_1$ denotes failure time for treated eye, $T_2$ for eye given control treatment.
 
 - $\lambda_{01}(t) = \lambda_{02}(t) = \lambda_0(t)$
 

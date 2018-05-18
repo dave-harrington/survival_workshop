@@ -229,7 +229,7 @@ For more detail (and perhaps more clarity!) refer to the documentation for \text
 
 a) Explain the how the assumptions differ between using a marginal model based on the original WLW approach and a repeated events model based in AG. 
 
-b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa on the time to first recurrence of bladder cancer.
+b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa of bladder cancer in a marginal model, using the WLW approach.
 
 c) Do the data support the assumption of proportional hazards on the time to first recurrence?
 
@@ -250,21 +250,22 @@ a) A marginal model based on the WLW approach models each repeated event as a se
 
     In the AG repeated events model, a common baseline hazard is estimated for all events. The model assumes that given the covariates and time-dependent functions of the patient history, the time increments between events are conditionally uncorrelated; each recurrence is assumed to be an independent event.
 
-b) The estimated hazard ratio for the unadjusted treatment effect of thiotepa is 0.641, with $p$-value of 0.15. There is not significant evidence of a treatment effect on the time to first recurrence of bladder cancer.
+b) The estimated hazard ratio for the unadjusted treatment effect of thiotepa is 0.621, with $p$-value of 0.14. There is not significant evidence of a treatment effect on the time to first recurrence of bladder cancer.
 
 ```{r, echo=TRUE, eval=TRUE}
 library(survival)
 data(bladder)
 
 #marginal model, unadjusted
-coxph(Surv(stop, event) ~ rx + cluster(id), data = bladder)
+coxph(Surv(stop, event) ~ rx + cluster(id) + strata(enum), data = bladder)
 ```
 
-c) Yes, the data support the assumption of proportional hazards on the time to first recurrence. The $p$-value is not significant and the plot does not show a pattern in the residuals over time.
+c) Yes, the data support the assumption of proportional hazards on the time to first recurrence. The $p$-value is not significant and the plot does not show a pattern in the residuals over time, although at first glance it may appear otherwise.  The confidence bands for the estimated value $\widehat{\beta}(t)$ are reasonably wide and except at the left edge of the plot it would be possible to fit a horizontal line between the bands.  It is important to remember that failing to reject the null hypothesis of PH is not the same as proving PH.  There may be some evidence here of a departure from PH, but it is not extreme.
 
 ```{r}
 #assess PH with cox.zph
-bladder.zph = cox.zph(coxph(Surv(stop, event) ~ rx + cluster(id), 
+bladder.zph = cox.zph(coxph(Surv(stop, event) ~ rx + cluster(id) + 
+                              strata(enum), 
                             data = bladder))
 bladder.zph
 plot(bladder.zph, col = "red")
@@ -278,18 +279,19 @@ coxph(Surv(stop, event) ~ rx + size + number + cluster(id) +
         strata(enum), data = bladder)
 ```
 
-e) Proportional hazards seems to be a reasonable assumption for \texttt{number} and \texttt{size}.
+e) Proportional hazards seems to be a reasonable assumption for \texttt{number}, but less so for \texttt{size}.
 
 ```{r}
 #assess PH for model with size and number
 bladder.size.num.zph = cox.zph(coxph(Surv(stop, event) ~ rx + size + 
-                                       number + cluster(id), data = bladder))
+                                       number + cluster(id) 
+                                     + strata(enum), data = bladder))
 
 bladder.size.num.zph
 plot(bladder.size.num.zph, col = "red")
 ```
 
-f)  The analysis fitting separate models for each stratum does not make the assumption of a constant treatment effect for each stratum, and in addition makes no assumption about the way the effect might change across strata.  The stratum effect is absorbed into the unspecified baseline hazard for each stratum.  Since each stratum is treated as a separate dataset, no information is `shared' across the strata.
+f)  The analysis fitting separate models for each stratum does not make the assumption of a constant treatment effect for each stratum, and in addition makes no assumption about the way the effect might change across strata.  The stratum effect is absorbed into the unspecified baseline hazard for each stratum.  Since each stratum is treated as a separate dataset, no information is `shared' across the strata.  Note that in the model restricted to \texttt{enum==1}, the analysis estimates the treatment effect on the time to the first event.
 
     The model which uses a stratum by treatment interaction also does not assume constant treatment effect across the strata, but does assume that the stratum effect has a proportional effect on the failure rate. That effect is estimated by the coefficient for the interaction terms and is not absorbed into the baseline hazard.  This model uses all the data in a single analysis but does make a strong assumption about the stratum effect.
 

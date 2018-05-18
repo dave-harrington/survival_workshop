@@ -27,11 +27,11 @@ These notes focus on proportional hazards regression models.
 *Proportional Hazards (PH)  models*    
 \[   \lambda(t;{\bf Z}) = \lambda_0(t) \Psi({\bf Z}) \]
 
-    - The second term is usually written $\Psi(Z) =  e^{\beta Z}$.
+- The second term is usually written $\Psi(Z) =  e^{\beta Z}$.
 
-    - Suppose $Z=1$ for treated subjects and $Z=0$ for untreated subjects.  The hazard is increased by a factor of $e^\beta$ for treated subjects versus untreated subjects.
+- Suppose $Z=1$ for treated subjects and $Z=0$ for untreated subjects.  The hazard is increased by a factor of $e^\beta$ for treated subjects versus untreated subjects.
          
-    - This is a *semi-parametric* model.
+- This is a *semi-parametric* model.
 
 
 ### Other regression models for survival data 
@@ -47,7 +47,7 @@ These notes focus on proportional hazards regression models.
 
 *Additive Hazards Regression models*
 \[
-   \lambda(t; Z(t) = \beta_0(t) + \sum_{k=1}^p \beta_k(t) Z_k(t)
+   \lambda(t; Z(t)) = \beta_0(t) + \sum_{k=1}^p \beta_k(t) Z_k(t)
 \]
 
 Klein \& Moeschberger have excellent treatments of both of these models
@@ -74,13 +74,12 @@ included
 
 A categorical covariate $A$ with $a$ levels is usually modeled with   
 
-  - $(a-1)$ binary variables\footnote{These are sometimes called dummy variables or 0-1 variables.} ($U_1,U_2,\ldots,U_a$) such that $U_j=1 \, \, \mbox{  if } A=j$.  
+  - $a$ binary variables\footnote{These are sometimes called dummy variables or 0-1 variables.} ($U_1, U_2,\ldots,U_a$) such that $U_j=1 \, \, \mbox{  if } A=j$.  
 
   - Then,
 \[\lambda_i(t)=\lambda_0(t)\exp(\beta_2 U_2+\beta_3 U_3+\cdots+\beta_a U_a)\]
   
-  - In the above model, the subgroup with $A=1$ or $U_1=1$ is the
-reference group.
+  - In the above model, the subgroup with $A=1$ or $U_1=1$ is the reference group and is not included in the model.
 
 Alternatively, in \textsf{R}, categorical covariates can (and should) be stored or converted to *factor* variables.
 
@@ -180,7 +179,7 @@ plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE,
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
-legend(10, .5, c("Financial Support", "No Financial Support"), lty = 2:3,
+legend(10, .5, c("No Financial Support", "Financial Support"), lty = 2:3,
        col = 3:4, cex = 0.6)
 ```
 
@@ -201,7 +200,7 @@ plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE,
 axis(1)
 axis(2)
 legend("topleft", inset = c(0.1, 0.3), 
-       c("Financial Support", "No Financial Support"), 
+       c("No Financial Support", "Financial Support"), 
        lty = 2:3, col = 3:4,
        cex = 0.6)
 ```
@@ -279,7 +278,7 @@ Notation for risk sets:
 
 - ${\cal R}(\tau_j)$ is the risk set at the $j$-th failure time.
 
--  ${\cal R}(X_i)$ is the risk set at the failure time of individual $i$.  
+-  ${\cal R}(X_i)$ is the risk set at the failure time of individual $i$ when $\delta_i = 1$  
 
 -  $r_j$ is the number of individuals in ${\cal R}(\tau_j)$,  while ${\cal R}(\tau_j)$ identifies the subjects at risk.
 
@@ -351,7 +350,7 @@ $\left[e^{\beta Z_i}/
 ~~\\
 1 & ~6 & \{1,2,3,4\} & 3 & 
 $e^{7\beta}/[e^{4\beta} + e^{5\beta} + e^{7\beta} + e^{3\beta}]$\\[3ex]
-2 & ~8 & \{1,2,4\} & 2 & $e^{5\beta}/[e^{4\beta} + e^{5\beta} + e^{3\beta}]^0 = 1$ \\[3ex]
+2 & ~8 & \{1,2,4\} & 2 & $\left(e^{5\beta}/[e^{4\beta} + e^{5\beta} + e^{3\beta}]\right)^0 = 1$ \\[3ex]
 3 & ~9 & \{1,4\} & 1 & 
 $e^{4\beta}/[e^{4\beta} + e^{3\beta}]$\\[3ex]
 4 & 10 & \{4\} & 4 & 
@@ -798,7 +797,7 @@ pbt01.ph = coxph(Surv(survival,died) ~ treatment,
               data = pbt01)
 newdata = data.frame(treatment = c("abmt", "control"))
 
-{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
      lty = 2:3, col = 3:4, mark.time = TRUE,
      axes = FALSE, 
      main = "Probability of Surviving, Assuming PH",
@@ -808,9 +807,9 @@ axis(1)
 axis(2)
 
 legend("topright", lty = 2:3, col = 3:4,
-       c("Control", "ABMT"),
+       c("ABMT", "Control"),
        cex=0.6)
-}
+
 ```
 
 ---
@@ -825,7 +824,7 @@ pbt01.ph = coxph(Surv(survival,died) ~ treatment,
               data = pbt01)
 newdata = data.frame(treatment = c("abmt", "control"))
 
-{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
      lty = 2:3, col = 3:4, mark.time = TRUE,
      axes = FALSE, 
      main = "Probability of Surviving, Assuming PH",
@@ -835,9 +834,9 @@ axis(1)
 axis(2)
 
 legend("topright", lty = 2:3, col = 3:4,
-       c("Control", "ABMT"),
+       c("ABMT", "Control"),
        cex=0.6)
-}
+
 ```
 
 
@@ -859,7 +858,7 @@ pbt01.ph = coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
               data = pbt01)
 newdata = data.frame(treatment = c("abmt", "control"))
 
-{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
      lty = c(2,2,3,3), col = 3:4, mark.time = TRUE,
      axes = FALSE, 
      main = "Probability of Surviving, ABMT",
@@ -872,7 +871,7 @@ legend("topright", lty = c(2,2,3,3), col = 3:4,
        c("ABMT, resp cycle 1", "ABMT, resp cycle 2",
          "Control, resp cycle 1", "Control, resp cycle 2"),
        cex=0.6)
-}
+
 ```
 
 ----
@@ -887,7 +886,7 @@ pbt01.ph = coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
               data = pbt01)
 newdata = data.frame(treatment = c("abmt", "control"))
 
-{plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
+plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
      lty = c(2,2,3,3), col = 3:4, mark.time = TRUE,
      axes = FALSE, 
      main = "Probability of Surviving, ABMT",
@@ -900,7 +899,7 @@ legend("topright", lty = c(2,2,3,3), col = 3:4,
        c("ABMT, resp cycle 1", "ABMT, resp cycle 2",
          "Control, resp cycle 1", "Control, resp cycle 2"),
        cex=0.6)
-}
+
 ```
 
 

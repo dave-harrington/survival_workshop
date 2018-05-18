@@ -369,6 +369,14 @@ A randomized study\footnote{\texttt{rossi} dataset in \texttt{eventtimedata} pac
 - \texttt{arrest}: \texttt{1} = arrest during the follow-up,  \texttt{0} = no arrest
 
 
+### Important detail
+
+Always check the order of categories in a factor variable in R when labeling plots
+
+```{r}
+levels(rossi$fin)
+```
+
 ### KM of recidivism, with confidence intervals
 
 \footnotesize
@@ -381,14 +389,14 @@ rossi.recidivism.km <- survfit(Surv(week, arrest) ~ fin,
                                data = rossi)
 plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
      xlab = "Weeks", 
-     ylab = "Probability of Recidivism", 
+     ylab = "Probability of No Recidivism", 
      axes = FALSE, 
      conf.times = c(10,30,50),
-     main = "KM of Recidivism Probability, with Conf. Int.",
+     main = "KM of No Recidivism Probability, with Conf. Int.",
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
-legend(10, .5, c("Financial Support", "No Financial Support"), 
+legend(10, .5, c("No Financial Support", "Financial Support"), 
        lty = 2:3, col = 3:4, cex = 0.6)
 ```
 
@@ -402,14 +410,14 @@ rossi.recidivism.km <- survfit(Surv(week, arrest) ~ fin,
                                data = rossi)
 plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
      xlab = "Weeks", 
-     ylab = "Probability of Recidivism", 
+     ylab = "Probability of No Recidivism", 
      axes = FALSE, 
      conf.times = c(10,30,50),
      main = "KM of Recidivism Probability, with Conf. Int.",
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
-legend(10, .5, c("Financial Support", "No Financial Support"), 
+legend(10, .5, c("No Financial Support", "Financial Support"), 
        lty = 2:3, col = 3:4, cex = 0.6)
 ```
 
@@ -429,13 +437,13 @@ plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE,
      ylab = "Cumulative Hazard of Recidivism", 
      axes = FALSE, 
      conf.times = c(10,30,50),
-     main = "Cumulative Risk of Recidivism Probability, 
+     main = "Cumulative Risk of Recidivism, 
      with Conf. Int.",
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
 legend("topleft", inset = c(0.1, 0.3), 
-       c("Financial Support", "No Financial Support"),
+       c("No Financial Support", "Financial Support"),
        lty = 2:3, col = 3:4, cex = 0.6)
 ```
 
@@ -453,13 +461,13 @@ plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE,
      ylab = "Cumulative Hazard of Recidivism", 
      axes = FALSE, 
      conf.times = c(10,30,50),
-     main = "Cumulative Risk of Recidivism Probability, 
+     main = "Cumulative Risk of Recidivism, 
      with Conf. Int.",
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
 legend("topleft", inset = c(0.1, 0.3), 
-       c("Financial Support", "No Financial Support"),
+       c("No Financial Support", "Financial Support"),
        lty = 2:3, col = 3:4, cex = 0.6)
 ```
 
@@ -490,14 +498,14 @@ rossi.recidivism.km <- survfit(Surv(week, arrest) ~ fin,
                                data = rossi)
 plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
      xlab = "Weeks", 
-     ylab = "Probability of Re-arrest", 
+     ylab = "Probability of No Recidivism", 
      axes = FALSE, 
      conf.int = TRUE,
-     main = "KM of Recidivism Probability, with Conf. Bands",
+     main = "KM of Probability of No Recidivism, with Conf. Bands",
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
-legend(10, .5, c("Financial Support", "No Financial Support"),
+legend(10, .5, c("No Financial Support", "Financial Support"),
        lty = 2:3, col = 3:4, cex = 0.6)
 ```
 
@@ -511,20 +519,19 @@ rossi.recidivism.km <- survfit(Surv(week, arrest) ~ fin,
                                data = rossi)
 plot(rossi.recidivism.km, lty = 2:3, col = 3:4, mark.time = TRUE, 
      xlab = "Weeks", 
-     ylab = "Probability of Re-arrest", 
+     ylab = "Probability of No Recidivism", 
      axes = FALSE, 
      conf.int = TRUE,
-     main = "KM of Recidivism Probability, with Conf. Bands",
+     main = "KM of Probability of No Recidivism, with Conf. Bands",
      cex = 0.6, cex.main = 0.8)
 axis(1)
 axis(2)
-legend(10, .5, c("Financial Support", "No Financial Support"),
+legend(10, .5, c("No Financial Support", "Financial Support"),
        lty = 2:3, col = 3:4, cex = 0.6)
 ```
 
 ### Example: Application to FDA (7 March 2018)
 
-<!--- post fda link when available --->
 
 On 7 March 2018, Amgen asked for FDA approval of the drug blinatumumab in patients with a sub-type of acute lymphoblastic leukemia (ALL).
 

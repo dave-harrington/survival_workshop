@@ -508,8 +508,8 @@ See [Kantarjian, et al.](../../kantarjian.pdf)
 
 \scriptsize
 ```{r}
-#library(devtools)
-#install_github("keaven/nphsim")
+library(devtools)
+install_github("keaven/nphsim")
 library(survival)
 library(nphsim)
 data(Ex6crossing)

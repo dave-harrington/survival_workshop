@@ -194,7 +194,7 @@ From the calculation for power:
 &\Longrightarrow \beta = \Phi\left(z_{1-\alpha/2} - \frac{\Delta}{2s/\sqrt{n}}\right) \\
 &\Longrightarrow z_{1 - \beta} = z_{1 - \alpha/2} - \frac{\Delta}{2s/\sqrt{n}} \\
 &\Longrightarrow z_{\beta} + z_{1 - \alpha/2} = \frac{\Delta}{2s/\sqrt{n}} \\
-&\Longrightarrow n  = \frac{(z_{1-\alpha/2} + z_{1-\beta})^2 4} {s^2} \\
+&\Longrightarrow n  = \frac{(z_{1-\alpha/2} + z_{1-\beta})^2 4 s^2} {\Delta^2} \\
 \end{align*}
 
 
@@ -363,7 +363,7 @@ Ratio & ~~80\%~~ & ~~90\%~~ \\ \hline
 
 Most studies are designed to detect a hazard ratio of 1.5-2.0.
 
-#Practical considerations
+# Practical considerations
 
 ### Practical considerations
 
@@ -403,7 +403,7 @@ Note that this result does not depend on $R$.
 Suppose the 5-year survival rate on treatment A is 20\% and investigators want 90\% power to detect an improvement to 30\%.  
 
 The corresponding hazard ratio of treatment to control is:
-\[ \frac{ln(0.3)}{ln(0.2)} = \frac{-1.204}{-1.609} = 0.748 \]
+\[ \frac{\log(0.3)}{\log(0.2)} = \frac{-1.204}{-1.609} = 0.748 \]
 
 From the power formula for the log-rank, the number of events needed to detect this improvement with 90\% power, based on a 2-sided 5\% level test is
 \[    d = \frac{4 (1.96 + 1.282)^2}{[\log(0.748)]^2}  =  499 \]
@@ -643,7 +643,7 @@ cpower(tref = 0.75, n = 150, mc = 0.5,
 
 \scriptsize
 
-```{r eval=TRUE, echo = FALSE, message = FALSE}
+```{r eval=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
 library(Hmisc)
 cpower(tref = 0.75, n = 150, mc = 0.5, 
        r = 28, accrual = 3, tmin = 1, 
