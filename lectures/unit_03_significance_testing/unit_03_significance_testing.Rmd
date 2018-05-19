@@ -1,5 +1,5 @@
 ---
-title: "Significance Testing"
+title: "Significance Testing: The Log-Rank and Weighted Log-Rank Tests"
 author: "Dave Harrington"
 date: "May 14 - 18, 2018"
 output: 
@@ -10,7 +10,7 @@ output:
      fig_height: 3.0
      fig_caption: true
      toc: true
-     keep_tex: true
+     keep_tex: false
 slide_level: 3
 urlcolor: darkblue 
 linkcolor: darkblue

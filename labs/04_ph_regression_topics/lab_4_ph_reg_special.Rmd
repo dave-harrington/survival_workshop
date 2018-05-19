@@ -113,7 +113,7 @@ For more detail (and perhaps more clarity!) refer to the documentation for \text
 
 a) Explain the how the assumptions differ between using a marginal model based on the original WLW approach and a repeated events model based in AG. 
 
-b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa on the time to first recurrence of bladder cancer.
+b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa on bladder cancer in a marginal model, using the WLW approach.
 
 c) Do the data support the assumption of proportional hazards on the time to first recurrence?
 

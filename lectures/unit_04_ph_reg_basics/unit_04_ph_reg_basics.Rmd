@@ -10,7 +10,7 @@ output:
      fig_height: 3.0
      fig_caption: true
      toc: true
-     keep_tex: true
+     keep_tex: false
 slide_level: 3
 urlcolor: darkblue 
 linkcolor: darkblue
@@ -859,7 +859,7 @@ pbt01.ph = coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
 newdata = data.frame(treatment = c("abmt", "control"))
 
 plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
-     lty = c(2,2,3,3), col = 3:4, mark.time = TRUE,
+     lty = c(2,2,3,3), col = c(3,3,4,4), mark.time = TRUE,
      axes = FALSE, 
      main = "Probability of Surviving, ABMT",
      cex = 0.6, 
@@ -867,7 +867,7 @@ plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival",
 axis(1)
 axis(2)
 
-legend("topright", lty = c(2,2,3,3), col = 3:4,
+legend("topright", lty = c(2,2,3,3), col = c(3,3,4,4),
        c("ABMT, resp cycle 1", "ABMT, resp cycle 2",
          "Control, resp cycle 1", "Control, resp cycle 2"),
        cex=0.6)
@@ -887,7 +887,7 @@ pbt01.ph = coxph(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
 newdata = data.frame(treatment = c("abmt", "control"))
 
 plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival", 
-     lty = c(2,2,3,3), col = 3:4, mark.time = TRUE,
+     lty = c(2,2,3,3), col = c(3,3,4,4), mark.time = TRUE,
      axes = FALSE, 
      main = "Probability of Surviving, ABMT",
      cex = 0.6, 
@@ -895,7 +895,7 @@ plot(survfit(pbt01.ph, newdata), xlab = "Months", ylab="Survival",
 axis(1)
 axis(2)
 
-legend("topright", lty = c(2,2,3,3), col = 3:4,
+legend("topright", lty = c(2,2,3,3), col = c(3,3,4,4),
        c("ABMT, resp cycle 1", "ABMT, resp cycle 2",
          "Control, resp cycle 1", "Control, resp cycle 2"),
        cex=0.6)
@@ -969,7 +969,7 @@ Initial model estimates treatment effect, adjusting for
 library(survival)
 library(eventtimedata)
 coxph(formula = Surv(time, censor) ~ treat + beck +
-age * site + race * site, data = uis)
+age * race + strata(site), data = uis)
 ```
 
 Model interpretation discussed with the next slide
@@ -982,7 +982,7 @@ Model interpretation discussed with the next slide
 library(survival)
 library(eventtimedata)
 coxph(formula = Surv(time, censor) ~ treat + beck +
-age * site + race * site, data = uis)
+age * race + strata(site), data = uis)
 ```
 \normalsize
 

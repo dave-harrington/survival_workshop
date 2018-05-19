@@ -10,7 +10,7 @@ output:
      fig_height: 3.0
      fig_caption: true
      toc: true
-     keep_tex: true
+     keep_tex: false
 slide_level: 3
 urlcolor: darkblue 
 linkcolor: darkblue
@@ -381,9 +381,9 @@ It follows that
 \]
 Doubling the median survival of a treatment group compared to a control group corresponds to halving the hazard.  
 
-### Using $R$-year survival rates with an exponential distribution
+### Using $R$-year survival probabilities with an exponential distribution
 
-Suppose the $R$-year survival rate is $S_1(R)$ in group 1 and $S_0(R)$ in group 0.  
+Suppose the $R$-year survival probability is $S_1(R)$ in group 1 and $S_0(R)$ in group 0.  
 
 Under the exponential model:
 \[ S_i(R) = \exp(-\lambda_i R) \]
@@ -393,14 +393,14 @@ Hence,
 = \frac{-\lambda_1 R}{-\lambda_0 R} =\frac{\lambda_1}{\lambda_0} =
 e^{\beta} = \theta\]
 
-Hence, doubling the hazard rate from group 1 to group 0 corresponds to doubling the log of the $R$-year survival rate.  
+Hence, doubling the hazard rate from group 1 to group 0 corresponds to doubling the log of the $R$-year survival probability.  
 
 Note that this result does not depend on $R$. 
 
 
 ### Example  
 
-Suppose the 5-year survival rate on treatment A is 20\% and investigators want 90\% power to detect an improvement to 30\%.  
+Suppose the 5-year survival probability on treatment A is 20\% and investigators want 90\% power to detect an improvement to 30\%.  
 
 The corresponding hazard ratio of treatment to control is:
 \[ \frac{\log(0.3)}{\log(0.2)} = \frac{-1.204}{-1.609} = 0.748 \]

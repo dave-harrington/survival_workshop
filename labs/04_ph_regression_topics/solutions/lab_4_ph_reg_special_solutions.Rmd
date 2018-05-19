@@ -117,16 +117,17 @@ library(eventtimedata)
 data(mac)
 
 #recode treatment as a factor variable
-treatment = rep(1, length(mac$rif))
-treatment[mac$clari == 1] = 2
-treatment[mac$clari + mac$rif == 0] = 3
-mac$treatment = factor(treatment, labels =
+mac$treatment = rep(1, length(mac$rif))
+mac$treatment[mac$clari == 1] = 2
+mac$treatment[mac$clari + mac$rif == 0] = 3
+mac$treatment <- factor(mac$treatment, labels =
                          c("rif", "clari", "clari + rif"))
 
 #cox ph model
-mac.ph = coxph(Surv(dthtime, dthstat) ~ age + sex + karnof + antiret
-      + cd4 + treatment, data = mac)
+mac.ph = with(mac,coxph(Surv(dthtime, dthstat) ~ age + sex + karnof + antiret
+      + cd4 + treatment, data = mac))
 summary(mac.ph)
+
 ```
 
 b) The smoothed line is roughly linear, which indicates that the assumption of linearity in the log hazard for age is reasonable. 
@@ -191,19 +192,23 @@ plot(mac.sex, mark.time = F, lty = 1:2, col = 2:3,
      fun = "cloglog", xlab = "log(t)", ylab = "log(-log(S(t)))")
 ```
 
-h) The $p$-value is large; the test is not statistically significant and there is not evidence against the hypothesis that the PH assumption holds. From the plot, the smoothing line is approximately horizontal. This agrees with the conclusion from part g).
+h) The $p$-value is large; the test is not statistically significant and there is not evidence against the hypothesis that the PH assumption holds. From the plot, the smoothing line is approximately horizontal. This agrees with the conclusion from part g).It is sometimes helpful to add a horizontal line to the plot as a visual aid in checking whether the smooth line that comes from the residuals has slope 0.
 
 ```{r}
 #scaled schoenfield residuals, sex
+library(eventtimedata)
+data(mac)
 mac.ph.sex = coxph(Surv(dthtime, dthstat) ~ sex, data = mac)
 cox.zph(mac.ph.sex)
 plot(cox.zph(mac.ph.sex), col = "red")
+abline(h = 0, col = "blue")
 ```
 
 i) The global test has a significant $p$-value, which suggests that the proportional hazards assumption does not hold. The $p$-value for \texttt{karnof} is highly significant, with $p$-value of 0.002; the plot shows some evidence of a trend over time. Plots for the other covariates show relatively linear smoothing fits. 
 
 ```{r}
 #explore PH for all variables
+
 cox.zph(mac.ph)
 plot(cox.zph(mac.ph), col = "red")
 ```
@@ -229,7 +234,7 @@ For more detail (and perhaps more clarity!) refer to the documentation for \text
 
 a) Explain the how the assumptions differ between using a marginal model based on the original WLW approach and a repeated events model based in AG. 
 
-b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa of bladder cancer in a marginal model, using the WLW approach.
+b) Use a Cox PH model with a robust standard error to estimate the unadjusted treatment effect of thiotepa on bladder cancer in a marginal model, using the WLW approach.
 
 c) Do the data support the assumption of proportional hazards on the time to first recurrence?
 
@@ -260,7 +265,9 @@ data(bladder)
 coxph(Surv(stop, event) ~ rx + cluster(id) + strata(enum), data = bladder)
 ```
 
-c) Yes, the data support the assumption of proportional hazards on the time to first recurrence. The $p$-value is not significant and the plot does not show a pattern in the residuals over time, although at first glance it may appear otherwise.  The confidence bands for the estimated value $\widehat{\beta}(t)$ are reasonably wide and except at the left edge of the plot it would be possible to fit a horizontal line between the bands.  It is important to remember that failing to reject the null hypothesis of PH is not the same as proving PH.  There may be some evidence here of a departure from PH, but it is not extreme.
+c) Yes, the data support the assumption of proportional hazards on the time to first recurrence. The $p$-value is not significant and the smoothing line in the plot does not show a tendency to increase or decrease.  That is evident from the horizontal line added to the plot.  
+
+The confidence bands for the estimated value $\widehat{\beta}(t)$ are reasonably wide and except at the left edge of the plot it would be possible to fit a horizontal line between the bands.  It is important to remember that failing to reject the null hypothesis of PH is not the same as proving PH.  There may be some evidence here of a departure from PH, but it is not extreme.
 
 ```{r}
 #assess PH with cox.zph
@@ -269,6 +276,7 @@ bladder.zph = cox.zph(coxph(Surv(stop, event) ~ rx + cluster(id) +
                             data = bladder))
 bladder.zph
 plot(bladder.zph, col = "red")
+abline(a = 0, b = 0, col = "blue")
 ```
 
 d) After adjusting for these variables, the estimated hazard ratio becomes 0.557, with $p$-value of 0.06. There is stronger evidence for a treatment effect than in the unadjusted model.
