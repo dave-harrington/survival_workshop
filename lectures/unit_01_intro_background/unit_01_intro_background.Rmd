@@ -83,6 +83,8 @@ I recommend the K\&M text, supplemented by T\&G.
 
 ### Packages used
 
+Executing the following commands from within R Studio will download and install the R packages used in this course.
+
 \scriptsize
 
 ```{r, echo=TRUE, eval=FALSE}
@@ -92,7 +94,12 @@ install.packages(c("survival", "KMSurv",
                    "gsDesign", "Hmisc"))
 install_github("keaven/nphsim", 
                "dave-harrington/eventtimedata")
+
 ```
+
+The lecture and lab files can be downloaded from
+
+https://github.com/dave-harrington/survival_workshop
 
 ### Example: Time to death or hospitalization
 
@@ -178,7 +185,7 @@ Comparison & Log-Rank Test & Wilcoxon Test & Exponential Model \\ \hline
 
 - Survival times are often *right-skewed*, so the median is usually a better measure of center than the mean.
 
-- The median can be estimated from data that include censored observations (not always possible with the mean).  
+- The median can often be estimated from data that include censored observations (not always possible with the mean).  
 
 - Calculating summary statistics and comparing survival distributions must account for cases without events.
 
@@ -215,9 +222,9 @@ The r.v.'s observed are $Y_i=\max(T_i,U_i)$ and the failure indicator $\epsilon_
 
 Ex.: study of age at which African children learn a task (Miller). 
 
-- Some already knew the task (left-censoring) 
-- Some learned during study (exact)
-- Some had not yet learned by end of study (right-censoring)
+- Some already knew the task (event time left-censored) 
+- Some learned during study (event time observable)
+- Some had not yet learned by end of study (event time right-censored)
 
 ### Types of censoring\ldots
 
@@ -233,7 +240,7 @@ Examples:
 
 - Detect recurrence of colon cancer after surgery. Follow patients every 3 months after resection of primary tumor.
 
-This short course is restricted to right-censoring.
+The notes for this short course are restricted to right-censoring.
 
 ### Independent versus informative censoring
 
@@ -277,7 +284,7 @@ Suppose that $T$ takes values in $a_1,a_2, \ldots, a_J$.
  \right.
  \end{align*}
 
-For a *continuous* random variable
+For a *continuous* random variable with $S(t)$ differentiable
 
 \[  f(t) = \lim_{\Delta t \rightarrow 0}
  \frac{1}{\Delta t}  P(t \le T < t+\Delta t) \]
@@ -292,6 +299,8 @@ is of interest.
 In survival analysis, interest tends to focus on $S(t) = P(T > t)$, the *survival* or *survivorship* function.\footnote{Be careful:  some books use the definition $S(t)=P(T \geq t)$.} 
 
 The survival function measures the probability an individual will experience the event beyond time *t*.
+
+For simplicity, we assume that the survivor function $S(t)$ for a continuous random variable $T$ is differentiable.
 
 ### Survivorship function $S(t)$ \ldots
 

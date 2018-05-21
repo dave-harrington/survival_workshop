@@ -360,9 +360,9 @@ The estimated cumulative hazard $\widehat{\Lambda}(t)$ should be a line of slope
 Not difficult to program \textsf{R} to program and plot the Cox-Snell residuals, but not necessary.
 
 Recall the  *martingale* residuals
-\[m_i = \delta_i - \widehat{\Lambda}_i(T_i),\]
+\[m_i = \delta_i - \widehat{\Lambda}_i(X_i),\]
 where for case $i$, when there are no time-dependent covariates, so
-\[cs_i = \delta_i - m_i = \widehat{\Lambda}_i(T_i), \]
+\[cs_i = \delta_i - m_i = \widehat{\Lambda}_i(X_i), \]
 where $cs_i$ is the Cox-Snell residual for case $i$.
 
 
@@ -577,7 +577,7 @@ DRS begun in 1971 to study effectiveness of laser therapy in delaying onset of b
 
 - 1,742 patients registered for the study.\footnote{Study originally reported in Murphy and Patz (1978).}
 
-- Subset used here consists of 197 patients that make up a 50% subsample of high-risk patients as defined in the study.\footnote{These 197 patients analyzed in \href{run:../../methods_papers/Huster\_drs.pdf}{Huster, 1989}. Data in \texttt{drs} dataset in \texttt{eventtimedata} package.}
+- Subset used here consists of 197 patients that make up a 50% subsample of high-risk patients as defined in the study.\footnote{These 197 patients analyzed in Huster et. al, Biometrics (1989)}. Data in \texttt{drs} dataset in \texttt{eventtimedata} package.}
 
 ### The first 8 records
 
@@ -609,7 +609,7 @@ Two ways to think about capturing the effect:
 
 Approach is a natural extension of generalized estimating equations used with correlated longitudinal data. 
 
-- Most popular method due to [\textcolor{darkblue}{Wei, Lin, and Weissfeld, 1989}](../../methods_papers/wlw.pdf) (*WLW*).
+- Most popular method due to Wei, Lin, and Weissfeld, *JASA* (1989) (*WLW*).
 
 - *DRS* is a good concrete example to keep in mind.
 
@@ -695,7 +695,7 @@ coxph(formula = Surv(obstime, fail) ~ tx + age + cluster(id),
 ```
 
 
-### The role of age in the drs
+### The role of age in the drs data
 
 Confounding should be minimized in a randomized trial.
 
@@ -954,15 +954,15 @@ Simple approach first.  Suppose an event may be observed repeatedly in same subj
 If    
 
 - $T$ is time to an event,  
-- $C$ is potential censoring time, and
+- $U$ is potential censoring time, and
 - $\bZ^\prime = (Z_1,\ldots, Z_p)$ is $p$-dimensional covariate vector,
   
     - For simplicity, assume the covariates are not time-dependent.   
 	
 then \ldots
 \begin{align*}
-\lambda(t \mid \bZ )dt &=  P (t \leq T < t+dt, T \leq C
-	\mid \bZ, T \ge t, C \ge t) \\
+\lambda(t \mid \bZ )dt &=  P (t \leq T < t+dt, T \leq U
+	\mid \bZ, T \ge t, U \ge t) \\
 &= \lambda_0(t) \exp(\bbeta^\prime \bZ).
 \end{align*}
 
@@ -972,7 +972,7 @@ In the counting process model,
 \[
 	dN(t) = N(t) - N(t-)
 \]
-is a binary variable analogous to $I(t \leq T < t + dt, T \leq C)$.  
+is a binary variable analogous to $I(t \leq T < t + dt, T \leq U)$.  
 
 Let 
 

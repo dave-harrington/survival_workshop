@@ -298,7 +298,7 @@ max.obs.time = enrollment.period + followup.period
 median.failure.time = 18
 
 exp.rate = log(2)/median.failure.time
-set.seed(14052018)   #set seed
+set.seed(14052018)  
 
 #simulate entry times and failure times
 entry.time = runif(total.enrollment, min = 0, max = enrollment.period)

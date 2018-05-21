@@ -52,7 +52,7 @@ The next slides reproduce this figure and $p$-value from patient-level data.
 ### Numerical summary
 
 \scriptsize
-```{r, echo=TRUE, eval=FALSE, fig.width=4.5, fig.height=3.3}
+```{r, echo=TRUE, eval=TRUE, fig.width=4.5, fig.height=3.3}
 library(survival)
 library(eventtimedata)
 data("pbt01")
@@ -62,18 +62,6 @@ pbt01.survival <- survfit(Surv(survival, died) ~ treatment,
 pbt01.survival
 ```
 
-### Numerical summary \ldots
-
-\scriptsize
-```{r, echo=FALSE, eval=TRUE, fig.width=4.5, fig.height=3.3}
-library(survival)
-library(eventtimedata)
-data("pbt01")
-
-pbt01.survival <- survfit(Surv(survival, died) ~ treatment, 
-                              data = pbt01)
-pbt01.survival
-```
 
 ### Figure
 
@@ -355,7 +343,7 @@ For the two-group *log-rank* test:
 
 ### Formal notation for the log-rank test
 
-Let $t_1, \ldots ,t_K$ represent the $K$ ordered, distinct failure times.
+Let $\tau_1, \ldots,\tau_K$ represent the $K$ ordered, distinct failure times.
 
 The table at the $j$-th failure time, is
 \begin{center}
@@ -426,8 +414,6 @@ The log-rank test is most powerful when hazards have a constant ratio over time.
 - It is not required for validity under the null hypothesis.
 
 
-
-
 ### Efficiency of the log-rank test
 
 The CMH test for a series of tables stratified by a potential confounder is most powerful when \ldots  
@@ -490,8 +476,6 @@ The workshop (sponsored by Duke University Margolis Center)
 
 ![Data from Hussain, et al., *Euro J Cancer*, 2015](../figures/hussain.pdf){width=80%}
 
-See [Hussain, et al.](../../clinical_papers/hussain.pdf)
-
 
 ### RCT in acute leukemia
 
@@ -508,8 +492,6 @@ See [Kantarjian, et al.](../../kantarjian.pdf)
 
 \scriptsize
 ```{r}
-library(devtools)
-install_github("keaven/nphsim")
 library(survival)
 library(nphsim)
 data(Ex6crossing)
@@ -607,8 +589,6 @@ The \texttt{survdiff()} function in \textsf{R} sets $\gamma=0$ and allows the us
 This is a generalized Wilcoxon test
 
 ```{r}
-#library(devtools)
-#install_github("keaven/nphsim")
 library(survival)
 library(nphsim)
 data(Ex6crossing)
@@ -620,8 +600,6 @@ survdiff(Surv(month,evntd) ~ trt, rho = 1, data = Ex6crossing)
 \small
 
 ```{r}
-#library(devtools)
-#install_github("keaven/nphsim")
 library(survival)
 library(nphsim)
 data(Ex6crossing)
@@ -808,7 +786,7 @@ survdiff(Surv(survival,died) ~ treatment + strata(cycle.of.resp),
 
 ### The $P$-group log-rank statistic
 
-Let $t_1, \ldots, t_K$ represent the $K$ ordered, distinct failure times in the pooled sample.
+Let $\tau_1, \ldots, \tau_K$ represent the $K$ ordered, distinct failure times in the pooled sample.
 
 At the $j$-th failure time, the following table summarizes the data,
 \begin{center}
@@ -870,7 +848,7 @@ To generalize to $K$ tables (i.e., $K$ failure times), combine as in the log-ran
   - Let ${\bf O}_j$, ${\bf E}_j$ and ${\bf V}_j$ with the sums over the
 $K$ distinct failure times. 
 
-  - That is, let  ${\bf O} = \sum_{j=1}^{k}  {\bf O}_j$, ${\bf E} = \sum_{j=1}^{k} {\bf E}_j$, and ${\bf V} = \sum_{j=1}^{k}  {\bf V}_j$.  
+  - That is, let  ${\bf O} = \sum_{j=1}^{K}  {\bf O}_j$, ${\bf E} = \sum_{j=1}^{K} {\bf E}_j$, and ${\bf V} = \sum_{j=1}^{K}  {\bf V}_j$.  
 
 The test statistic is:
 \[
@@ -890,7 +868,7 @@ Within group $s$ ($s=1,...,S$),
 
 - Construct the usual log-rank to assess the association between survival and the variable $X$.  
 
-- Let  $t_{1s}, \ldots ,t_{K_s s}$ represent the $K_s$ ordered, distinct death
+- Let  $\tau_{1s}, \ldots ,\tau_{K_s s}$ represent the $K_s$ ordered, distinct death
 times \underline{in the $s$-th group}.
 
 ### The stratified log-rank test \ldots
@@ -926,16 +904,3 @@ The  *stratified logrank* test statistic is
 
 The test can easily be extended to weighted log-rank tests and to more than two levels of the factor $X$.
 
-<!---
-
-Stadtmauer EA, O'Neill A, Goldstein PG, Crilley P, Mangan KF, Ingle JN, Lazarus HM, Erban J, Sickles C, Glick JH: Phase III Randomized trial of high-dose chemotherapy (HDC) and stem cell support (SCT) shows no difference in overall survival or severe toxicity compared to maintenance chemotherapy with cyclophosphomide, methotrexate and 5-fluorouracil (CMF) for women with metastatic breast cancer who are responding to conventional induction chemotherapy: The Philadelphia Intergroup Study (PBT-01), ECOG, U. of Pennsylvania. Proc Am Soc Clin Oncol 18: 1a, 1999 (abstr 1)
-
-[HTML] Conventional-dose chemotherapy compared with high-dose chemotherapy plus autologous hematopoietic stem-cell transplantation for metastatic breast …
-EA Stadtmauer, A O'Neill, LJ Goldstein… - … England Journal of …, 2000 - Mass Medical Soc
-Background We conducted a randomized trial in which we compared high-dose 
-
-> library("sas7bdat", lib.loc="/Library/Frameworks/R.framework/Versions/3.4/Resources/library")
-> abmt <- read.sas7bdat("pbt01.sas7bdat")
-> 
-
---->

@@ -113,7 +113,7 @@ a)  We will examine more detailed diagnostics later, but it is clear in the surv
 
 b) The log-rank statistic tests the hypotheses $H_0: S_1(t) = S_2(t)$ for all $t \ge 0$ versus the alternative $H_A: S_1(t) \neq S_2(t)$ for at least one $t \ge 0$.  The null and alternative are equivalent to $H_0: \lambda_1(t) = \lambda_2(t)$ for all $t \ge 0$ versus the alternative $H_A: \lambda_1(t) \neq \lambda_2(t)$ for at least one $t \ge 0$.  The $p$-value for the log-rank test is 0.07, which is non-significant using a traditional significance level of $\alpha = 0.05$.
 
-c) The alternative form of the log-rank statistic shown in Problem 2 helps explain what is going on in this dataset.  When hazards  cross, some of the terms in the weighted differences of hazard functions will be positive, while others will be negative, perhaps pushing the numerator towards 0 before it is squared and producing the the statistically nonsignificant result. 
+c) The alternative form of the log-rank statistic shown in Problem 2 helps explain what is going on in this dataset.  When hazards cross, some of the terms in the weighted differences of hazard functions will be positive, while others will be negative, perhaps pushing the numerator towards 0 before it is squared and producing the the statistically nonsignificant result. 
 
 d) The generalized Wilcoxon test has $p$-value 0.01, which is significant at the $0.05$ level.  The generalized Wilcoxon test emphasizes differences in the survival curves when the curves are near 1; that is, for smaller values of $t$. That feature is summarized by saying it 'emphasizes early differences'; those differences are evident in the survival plots.
 

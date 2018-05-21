@@ -488,7 +488,7 @@ The  *log(partial likelihood)* is:
   {   e^{\bbeta {\bf Z}_j } }   {\sum_{\ell \in {\cal R}(\tau_j)}
         e^{\bbeta {\bf Z}_\ell} } \right]  \\
  &= \sum_{j=1}^{K}   \left[ \beta {\bf Z}_j  - 
-      \log [\sum_{\ell \in {\cal R}(\tau_j)} e^{\bbeta {\bf Z}_\ell}] \right]  \\
+      \log \left(\sum_{\ell \in {\cal R}(\tau_j)} e^{\bbeta {\bf Z}_\ell}\right) \right]  \\
  &=  \sum _{j=1}^{K}  l_j (\bbeta) 
 \end{align*}
 where $l_j$ is the log-partial likelihood contribution at the $j$-th

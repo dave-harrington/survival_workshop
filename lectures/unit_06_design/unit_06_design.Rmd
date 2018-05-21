@@ -602,11 +602,15 @@ Parameters:
 
 ### Using cpower() for esophageal cancer example
 
+From the earlier calculations, the trial needs at least 215 events to have 80% power.
+
+Try an initial guess of 250 patients enrolled over 5 years, and followed for 1 year.
+
 The parameters:
 
 - \texttt{tref} is 9 months, or 0.75 years, and since that is the median in the control group, \texttt{mc} = 0.5 = $S_c(0.75)$ 
-- \texttt{n} = 150 patients enrolled over 3 years 
-- \texttt{accrual} = 3, and let us set \texttt{tmin} = 1 year of follow-up
+- \texttt{n} = 250 patients enrolled over 3 years 
+- \texttt{accrual} = 5, and set \texttt{tmin} = 1 year of follow-up
 - \texttt{alpha} = 0.05   
 - Assume no non-compliance
 
@@ -627,14 +631,13 @@ Mortality at 0.75 years is reduced from 50\% to 36\%, a proportionate reduction 
 
 ### Using cpower() for esophageal cancer example \ldots
 
-What if we allow 1 year of follow-up?
 
 \scriptsize
 
 ```{r eval=FALSE, echo = TRUE}
 library(Hmisc)
-cpower(tref = 0.75, n = 150, mc = 0.5, 
-       r = 28, accrual = 3, tmin = 1, 
+cpower(tref = 0.75, n = 250, mc = 0.5, 
+       r = 28, accrual = 5, tmin = 1, 
        noncomp.c = 0, noncomp.i = 0, 
        alpha = 0.05, pr = TRUE)   
 ```
@@ -645,19 +648,21 @@ cpower(tref = 0.75, n = 150, mc = 0.5,
 
 ```{r eval=TRUE, echo = FALSE, message=FALSE, warning=FALSE}
 library(Hmisc)
-cpower(tref = 0.75, n = 150, mc = 0.5, 
-       r = 28, accrual = 3, tmin = 1, 
+cpower(tref = 0.75, n = 250, mc = 0.5, 
+       r = 28, accrual = 5, tmin = 1, 
        noncomp.c = 0, noncomp.i = 0, 
        alpha = 0.05, pr = TRUE)  
 ```
 
 ### Example: Esophageal cancer
 
-Power of initial guess is too low.
+This is a pretty good guess:
 
-- 67\% power because only 65 + 56 = 121 events
+- 89\% power because of 114 + 103 = 217 events
 
-We can increase enrollment time or follow-up time or both.
+Perhaps the study can enroll fewer patients and follow longer
+
+Examine slightly lower enrollment: 220 patients over 5 years, varying lengths of follow-up time
 
 \texttt{cpower()} can be used to search for a design.
 
@@ -665,14 +670,14 @@ We can increase enrollment time or follow-up time or both.
 
 \scriptsize
 ```{r, eval=TRUE, echo=TRUE}
-accrual.period = c(3)
+accrual.period = c(5)
 followup.period = c(1,2,3,4)
 num.accrual.periods = length(accrual.period)
 num.followup.periods = length(followup.period)
 perc.reduct = 28
 p = matrix(0,nrow = num.accrual.periods, ncol = num.followup.periods)
 for(jj in 1:num.followup.periods){
-  p[1,jj]= cpower(tref = 0.75, n = 150, mc = .50, r = perc.reduct, 
+  p[1,jj]= cpower(tref = 0.75, n = 220, mc = .50, r = perc.reduct, 
        accrual = accrual.period, tmin = followup.period[jj], 
        noncomp.c = 0, noncomp.i = 0, 
        alpha = 0.05, pr = FALSE)
@@ -682,6 +687,8 @@ p
 
 \normalsize
 
+220 patients would have to be followed for 4 years to get the same power.
+
 A more thorough search\ldots
 
 ---
@@ -689,8 +696,8 @@ A more thorough search\ldots
 \scriptsize
 
 ```{r eval=FALSE, echo=TRUE}
-accrual.period = c(3,5,7,9)
-enrollment.total = 50*accrual.period
+accrual.period = c(5,6)
+enrollment.total = 44*accrual.period
 followup.period = c(1,3,5,7)
 num.accrual.periods = length(accrual.period)
 num.followup.periods = length(followup.period)
@@ -724,8 +731,8 @@ power.table
 \scriptsize
 
 ```{r eval=TRUE, echo=FALSE}
-accrual.period = c(3,5,7,9)
-enrollment.total = 50*accrual.period
+accrual.period = c(5,6)
+enrollment.total = 44*accrual.period
 followup.period = c(1,3,5,7)
 num.accrual.times = length(accrual.period)
 num.followup.times = length(followup.period)
@@ -752,28 +759,19 @@ for (ii in 1:num.accrual.times){
 ```
 
 ```{r eval=TRUE, echo=TRUE}
-rownames(power.table) <- c("yrs follow-up", rep("-", 4))
-colnames(power.table) <- c("yrs enrollment", rep("-", 4))
+colnames(power.table) <- c("yrs follow-up", rep("-", 4))
+rownames(power.table) <- c("yrs enrollment", rep("-", 2))
 round(power.table, digits = 3)
 ```
 
-\normalsize
+### Several alternative designs
 
-Studies often need to be larger than anticipated.
+- Enroll for 5 years, follow for 5 years and follow for 5 years.
 
-Take a closer look at the design with 5 years of enrollment and 3 years of follow-up.
+- Enroll for 6 years and follow for 1 year.
 
+Better design depends on the cost of enrollment vs follow-up.
 
----
-
-\scriptsize
-
-```{r eval=TRUE, echo = FALSE, message=FALSE}
-library(Hmisc)
-cpower(tref = 0.75, n = 50*5, mc = 0.5, 
-       r = 28, accrual = 5, tmin = 3, noncomp.c = 0, noncomp.i = 0, 
-       alpha = 0.05, pr = TRUE)   
-```
 
 ### What is the effect of non-compliance?
 
@@ -924,7 +922,7 @@ P_c^{*} &=  P_c (1-d_c) + P_e d_c
 
 - \texttt{cpower()} can incoporate non-adherence through the parameters \texttt{noncomp.c, noncomp.i}.
 
-- What happens to power with 20\% non-adherence on the intervention arm?
+- What happens to power with 20\% non-adherence on the intervention arm, even at the higher enrollment rate of 50 patients per year.
 
 ---
 
