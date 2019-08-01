@@ -92,8 +92,8 @@ install.packages("devtools")
 library(devtools)
 install.packages(c("survival", "KMSurv",
                    "gsDesign", "Hmisc"))
-install_github("keaven/nphsim", 
-               "dave-harrington/eventtimedata")
+install_github("keaven/nphsim") 
+install_github("dave-harrington/eventtimedata")
 
 ```
 
